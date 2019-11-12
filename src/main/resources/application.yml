@@ -8,7 +8,7 @@ security:
 spring:
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://172.16.60.8;databaseName=Oauth2
+    url: jdbc:sqlserver://172.16.60.8;databaseName=Intranet2
     username: sa
     password: Adr@2!0&@
     hikari:
@@ -16,3 +16,6 @@ spring:
   jackson:
     serialization:
       INDENT_OUTPUT: true
+  app-name: INTRANET
+
+
