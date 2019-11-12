@@ -1,0 +1,23 @@
+{
+  "groups": [
+    {
+      "name": "security",
+      "type": "az.gov.adra.config.SecurityProperties",
+      "sourceType": "az.gov.adra.config.SecurityProperties"
+    },
+    {
+      "name": "security.jwt",
+      "type": "az.gov.adra.config.SecurityProperties$JwtProperties",
+      "sourceType": "az.gov.adra.config.SecurityProperties",
+      "sourceMethod": "getJwt()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "security.jwt.public-key",
+      "type": "org.springframework.core.io.Resource",
+      "sourceType": "az.gov.adra.config.SecurityProperties$JwtProperties"
+    }
+  ],
+  "hints": []
+}
