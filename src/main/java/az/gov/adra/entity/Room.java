@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Role {
+public class Room {
 
-    private Integer id;
-    private String roleType;
+    private Long id;
+    private String name;
 
 }

@@ -1,6 +1,9 @@
 package az.gov.adra.service;
 
+import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.Activity;
+import az.gov.adra.entity.ActivityReview;
+import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.repository.interfaces.ActivityRepository;
 import az.gov.adra.service.interfaces.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +31,21 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.findAllActivities(offset);
     }
 
-//    @Override
-//    public ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException {
-//        return activityRepository.findActivityByActivityId(id);
-//    }
-//
-//    @Override
-//    public List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException {
-//        return activityRepository.findReviewsByActivityId(id);
-//    }
-//
-//    @Override
-//    public void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException {
-//        activityRepository.addActivityReview(activityReview);
-//    }
-//
+    @Override
+    public ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException {
+        return activityRepository.findActivityByActivityId(id);
+    }
+
+    @Override
+    public List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException {
+        return activityRepository.findReviewsByActivityId(id);
+    }
+
+    @Override
+    public void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException {
+        activityRepository.addActivityReview(activityReview);
+    }
+
 //    @Override
 //    public void addActivity(Activity activity) throws ActivityCredentialsException {
 //        activityRepository.addActivity(activity);

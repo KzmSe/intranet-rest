@@ -1,5 +1,6 @@
-package az.gov.adra.entity;
+package az.gov.adra.dataTransferObjects;
 
+import az.gov.adra.entity.Employee;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,16 +10,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Activity {
+public class ActivityDTO {
 
-    private Integer id;
+    private int id;
     private Employee employee;
     private String title;
     private String description;
-    private Integer viewCount;
+    private int viewCount;
     private String imgUrl;
+    private int positiveCount;
+    private int negativeCount;
     private String dateOfReg;
     private String dateOfDel;
-    private Integer status;
+    private int status;
 
 }

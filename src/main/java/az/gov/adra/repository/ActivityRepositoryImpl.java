@@ -1,15 +1,20 @@
 package az.gov.adra.repository;
 
 import az.gov.adra.constant.ActivityConstants;
+import az.gov.adra.constant.MessageConstants;
+import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.Activity;
+import az.gov.adra.entity.ActivityReview;
 import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.Person;
+import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.repository.interfaces.ActivityRepository;
 import az.gov.adra.util.TimeParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -118,89 +123,89 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return activityList;
     }
 
-//    @Override
-//    public ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException {
-//        if (!isActivityExistWithGivenId(id)) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_NOT_FOUND);
-//        }
-//
-//        ActivityDTO activity = jdbcTemplate.queryForObject(findActivityByActivityIdSql, new Object[]{id, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, new RowMapper<ActivityDTO>() {
-//            @Override
-//            public ActivityDTO mapRow(ResultSet rs, int i) throws SQLException {
-//                ActivityDTO activity1 = new ActivityDTO();
-//                activity1.setId(rs.getInt("activity_id"));
-//                activity1.setTitle(rs.getString("title"));
-//                activity1.setDescription(rs.getString("description"));
-//                activity1.setViewCount(rs.getInt("view_count"));
-//                activity1.setImgUrl(rs.getString("img_url"));
-//
-//                LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
-//                activity1.setDateOfReg(dateOfReg.format(TimeParserUtil.DATE_FORMATTER));
-//
-//                activity1.setPositiveCount(rs.getInt("positive"));
-//                activity1.setNegativeCount(rs.getInt("negative"));
-//
-//                Person person = new Person();
-//                person.setId(rs.getInt("person_id"));
-//                person.setName(rs.getString("name"));
-//                person.setSurname(rs.getString("surname"));
-//
-//                Employee employee = new Employee();
-//                employee.setId(rs.getInt("employee_id"));
-//                employee.setPerson(person);
-//                activity1.setEmployee(employee);
-//
-//                return activity1;
-//            }
-//        });
-//
-//        return activity;
-//    }
-//
-//    @Override
-//    public List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException {
-//        if (!isActivityExistWithGivenId(id)) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_NOT_FOUND);
-//        }
-//
-//        List<ActivityReview> reviews = jdbcTemplate.query(findReviewsByActivityIdSql, new Object[]{id, ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE}, new ResultSetExtractor<List<ActivityReview>>() {
-//            @Override
-//            public List<ActivityReview> extractData(ResultSet rs) throws SQLException, DataAccessException {
-//                List<ActivityReview> list = new LinkedList<>();
-//                while (rs.next()) {
-//                    ActivityReview activityReview = new ActivityReview();
-//                    activityReview.setId(rs.getInt("activity_review_id"));
-//                    activityReview.setDescription(rs.getString("description"));
-//
-//                    LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
-//                    activityReview.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
-//
-//                    Person person = new Person();
-//                    person.setId(rs.getInt("person_id"));
-//                    person.setName(rs.getString("name"));
-//                    person.setSurname(rs.getString("surname"));
-//
-//                    Employee employee = new Employee();
-//                    employee.setPerson(person);
-//                    activityReview.setEmployee(employee);
-//
-//                    list.add(activityReview);
-//                }
-//
-//                return list;
-//            }
-//        });
-//
-//        return reviews;
-//    }
-//
-//    @Override
-//    public void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException {
-//        int affectedRows = jdbcTemplate.update(addActivityReviewSql, activityReview.getActivity().getId(), activityReview.getEmployee().getId(), activityReview.getDescription(), activityReview.getDateOfReg(), activityReview.getStatus());
-//        if (affectedRows == 0) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
-//        }
-//    }
+    @Override
+    public ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException {
+        if (!isActivityExistWithGivenId(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_NOT_FOUND);
+        }
+
+        ActivityDTO activity = jdbcTemplate.queryForObject(findActivityByActivityIdSql, new Object[]{id, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, new RowMapper<ActivityDTO>() {
+            @Override
+            public ActivityDTO mapRow(ResultSet rs, int i) throws SQLException {
+                ActivityDTO activity1 = new ActivityDTO();
+                activity1.setId(rs.getInt("activity_id"));
+                activity1.setTitle(rs.getString("title"));
+                activity1.setDescription(rs.getString("description"));
+                activity1.setViewCount(rs.getInt("view_count"));
+                activity1.setImgUrl(rs.getString("img_url"));
+
+                LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
+                activity1.setDateOfReg(dateOfReg.format(TimeParserUtil.DATE_FORMATTER));
+
+                activity1.setPositiveCount(rs.getInt("positive"));
+                activity1.setNegativeCount(rs.getInt("negative"));
+
+                Person person = new Person();
+                person.setId(rs.getInt("person_id"));
+                person.setName(rs.getString("name"));
+                person.setSurname(rs.getString("surname"));
+
+                Employee employee = new Employee();
+                employee.setId(rs.getInt("employee_id"));
+                employee.setPerson(person);
+                activity1.setEmployee(employee);
+
+                return activity1;
+            }
+        });
+
+        return activity;
+    }
+
+    @Override
+    public List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException {
+        if (!isActivityExistWithGivenId(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_NOT_FOUND);
+        }
+
+        List<ActivityReview> reviews = jdbcTemplate.query(findReviewsByActivityIdSql, new Object[]{id, ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE}, new ResultSetExtractor<List<ActivityReview>>() {
+            @Override
+            public List<ActivityReview> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                List<ActivityReview> list = new LinkedList<>();
+                while (rs.next()) {
+                    ActivityReview activityReview = new ActivityReview();
+                    activityReview.setId(rs.getInt("activity_review_id"));
+                    activityReview.setDescription(rs.getString("description"));
+
+                    LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
+                    activityReview.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
+
+                    Person person = new Person();
+                    person.setId(rs.getInt("person_id"));
+                    person.setName(rs.getString("name"));
+                    person.setSurname(rs.getString("surname"));
+
+                    Employee employee = new Employee();
+                    employee.setPerson(person);
+                    activityReview.setEmployee(employee);
+
+                    list.add(activityReview);
+                }
+
+                return list;
+            }
+        });
+
+        return reviews;
+    }
+
+    @Override
+    public void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException {
+        int affectedRows = jdbcTemplate.update(addActivityReviewSql, activityReview.getActivity().getId(), activityReview.getEmployee().getId(), activityReview.getDescription(), activityReview.getDateOfReg(), activityReview.getStatus());
+        if (affectedRows == 0) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+        }
+    }
 //
 //    @Override
 //    public void addActivity(Activity activity) throws ActivityCredentialsException {
@@ -464,17 +469,17 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 //        });
 //        return activityList;
 //    }
-//
-//    //private methods
-//    private boolean isActivityExistWithGivenId(int id) {
-//        boolean result = false;
-//        int count = jdbcTemplate.queryForObject(findCountOfActivityByActivityIdSql, new Object[] {id, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
-//        if (count > 0) {
-//            result = true;
-//        }
-//        return result;
-//    }
-//
+
+    //private methods
+    private boolean isActivityExistWithGivenId(int id) {
+        boolean result = false;
+        int count = jdbcTemplate.queryForObject(findCountOfActivityByActivityIdSql, new Object[] {id, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
+        if (count > 0) {
+            result = true;
+        }
+        return result;
+    }
+
 //    private boolean isActivityRespondExistWithGivenActivityIdAndEmployeeId(int activityId, int employeeId) {
 //        boolean result = false;
 //        int count = jdbcTemplate.queryForObject(findCountOfActivityRespondByActivityIdAndEmployeeIdSql, new Object[] {activityId, employeeId, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);

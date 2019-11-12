@@ -9,9 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Role {
+public class ActivityReview {
 
     private Integer id;
-    private String roleType;
+    private Activity activity;
+    private Employee employee;
+    private String description;
+    private String dateOfReg;
+    private String dateOfDel;
+    private Integer status;
 
 }

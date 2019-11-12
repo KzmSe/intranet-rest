@@ -1,21 +1,24 @@
 package az.gov.adra.repository.interfaces;
 
+import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.Activity;
+import az.gov.adra.entity.ActivityReview;
+import az.gov.adra.exception.ActivityCredentialsException;
 
 import java.util.List;
 
 public interface ActivityRepository {
 
 //    List<ActivityDTO> findActiviesByLastAddedTime();
-//
+
     List<Activity> findAllActivities(int offset);
-//
-//    ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException;
-//
-//    List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException;
-//
-//    void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
-//
+
+    ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException;
+
+    List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException;
+
+    void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
+
 //    void addActivity(Activity activity) throws ActivityCredentialsException;
 //
 //    void incrementViewCountByActivityId(int id) throws ActivityCredentialsException;
