@@ -14,19 +14,19 @@ public class ValidationUtil {
     public static boolean isNullOrEmpty(String... fields) {
         for (String field : fields) {
             if (field == null || field.trim().isEmpty()) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static boolean isNull(Object... fields) {
         for (Object field : fields) {
             if (field == null) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static boolean isStartTimeValid(LocalTime startTime) {

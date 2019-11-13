@@ -3,10 +3,7 @@ package az.gov.adra.repository;
 import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
-import az.gov.adra.entity.Activity;
-import az.gov.adra.entity.ActivityReview;
-import az.gov.adra.entity.Employee;
-import az.gov.adra.entity.Person;
+import az.gov.adra.entity.*;
 import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.repository.interfaces.ActivityRepository;
 import az.gov.adra.util.TimeParserUtil;
@@ -206,14 +203,14 @@ public class ActivityRepositoryImpl implements ActivityRepository {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
         }
     }
-//
-//    @Override
-//    public void addActivity(Activity activity) throws ActivityCredentialsException {
-//        int affectedRows = jdbcTemplate.update(addActivitySql, activity.getEmployee().getId(), activity.getTitle(), activity.getDescription(), activity.getViewCount(), activity.getImgUrl(), activity.getDateOfReg(), activity.getStatus());
-//        if (affectedRows == 0) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
-//        }
-//    }
+
+    @Override
+    public void addActivity(Activity activity) throws ActivityCredentialsException {
+        int affectedRows = jdbcTemplate.update(addActivitySql, activity.getEmployee().getId(), activity.getTitle(), activity.getDescription(), activity.getViewCount(), activity.getImgUrl(), activity.getDateOfReg(), activity.getStatus());
+        if (affectedRows == 0) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+        }
+    }
 
 //    @Override
 //    public void incrementViewCountByActivityId(int id) throws ActivityCredentialsException {
@@ -251,54 +248,54 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 //        }
 //    }
 
-//    @Override
-//    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException {
-//        if (!isActivityExistWithGivenId(id)) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_NOT_FOUND);
-//        }
-//
-//        List<ActivityRespond> activityResponds = jdbcTemplate.query(findEmployeesWhoAgreeOrDisagreeWithActivityByActivityIdAndRespondSql, new Object[]{id, respond, ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE}, new ResultSetExtractor<List<ActivityRespond>>() {
-//            @Override
-//            public List<ActivityRespond> extractData(ResultSet rs) throws SQLException, DataAccessException {
-//                List<ActivityRespond> list = new LinkedList<>();
-//
-//                while (rs.next()) {
-//                    ActivityRespond activityRespond = new ActivityRespond();
-//                    Person person = new Person();
-//                    person.setId(rs.getInt("person_id"));
-//                    person.setName(rs.getString("name"));
-//                    person.setSurname(rs.getString("surname"));
-//
-//                    Employee employee = new Employee();
-//                    employee.setPerson(person);
-//                    activityRespond.setEmployee(employee);
-//
-//                    list.add(activityRespond);
-//                }
-//
-//                return list;
-//            }
-//        });
-//
-//        return activityResponds;
-//    }
-//
-//    @Override
-//    public void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException {
-//        if (isActivityRespondExistWithGivenActivityIdAndEmployeeId(activityRespond.getActivity().getId(), activityRespond.getEmployee().getId())) {
-//            int affectedRows = jdbcTemplate.update(updateActivityRespondSql, activityRespond.getRespond(), activityRespond.getActivity().getId(), activityRespond.getEmployee().getId(), activityRespond.getStatus());
-//            if (affectedRows == 0) {
-//                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
-//            }
-//
-//        } else {
-//            int affectedRows = jdbcTemplate.update(addActivityRespondSql, activityRespond.getActivity().getId(), activityRespond.getEmployee().getId(), activityRespond.getRespond(), activityRespond.getDateOfReg(), activityRespond.getStatus());
-//            if (affectedRows == 0) {
-//                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
-//            }
-//        }
-//    }
-//
+    @Override
+    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException {
+        if (!isActivityExistWithGivenId(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_NOT_FOUND);
+        }
+
+        List<ActivityRespond> activityResponds = jdbcTemplate.query(findEmployeesWhoAgreeOrDisagreeWithActivityByActivityIdAndRespondSql, new Object[]{id, respond, ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE}, new ResultSetExtractor<List<ActivityRespond>>() {
+            @Override
+            public List<ActivityRespond> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                List<ActivityRespond> list = new LinkedList<>();
+
+                while (rs.next()) {
+                    ActivityRespond activityRespond = new ActivityRespond();
+                    Person person = new Person();
+                    person.setId(rs.getInt("person_id"));
+                    person.setName(rs.getString("name"));
+                    person.setSurname(rs.getString("surname"));
+
+                    Employee employee = new Employee();
+                    employee.setPerson(person);
+                    activityRespond.setEmployee(employee);
+
+                    list.add(activityRespond);
+                }
+
+                return list;
+            }
+        });
+
+        return activityResponds;
+    }
+
+    @Override
+    public void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException {
+        if (isActivityRespondExistWithGivenActivityIdAndEmployeeId(activityRespond.getActivity().getId(), activityRespond.getEmployee().getId())) {
+            int affectedRows = jdbcTemplate.update(updateActivityRespondSql, activityRespond.getRespond(), activityRespond.getActivity().getId(), activityRespond.getEmployee().getId(), activityRespond.getStatus());
+            if (affectedRows == 0) {
+                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+            }
+
+        } else {
+            int affectedRows = jdbcTemplate.update(addActivityRespondSql, activityRespond.getActivity().getId(), activityRespond.getEmployee().getId(), activityRespond.getRespond(), activityRespond.getDateOfReg(), activityRespond.getStatus());
+            if (affectedRows == 0) {
+                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+            }
+        }
+    }
+
 //    @Override
 //    public Map<Integer, Integer> findRespondedActivitiesByLastAddedTime(int id) {
 //        Map<Integer, Integer> respondedActivities = jdbcTemplate.query(findRespondedActivitiesByLastAddedTimeSql, new Object[]{id, EmployeeConstants.EMPLOYEE_STATUS_ACTIVE}, new ResultSetExtractor<Map<Integer, Integer>>() {
@@ -330,43 +327,43 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 //        });
 //        return respondedActivity;
 //    }
-//
-//    @Override
-//    public List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext) {
-//        List<ActivityDTO> activities = jdbcTemplate.query(findActivitiesByEmployeeIdSql, new Object[]{id, ActivityConstants.ACTIVITY_STATUS_ACTIVE, ActivityConstants.ACTIVITY_OFFSET_NUMBER, fetchNext}, new ResultSetExtractor<List<ActivityDTO>>() {
-//            @Override
-//            public List<ActivityDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
-//                List<ActivityDTO> list = new LinkedList<>();
-//                while (rs.next()) {
-//                    ActivityDTO activity = new ActivityDTO();
-//                    activity.setId(rs.getInt("activity_id"));
-//                    activity.setTitle(rs.getString("title"));
-//                    activity.setViewCount(rs.getInt("view_count"));
-//                    activity.setPositiveCount(rs.getInt("positive"));
-//                    activity.setNegativeCount(rs.getInt("negative"));
-//                    activity.setImgUrl(rs.getString("img_url"));
-//
-//                    LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
-//                    activity.setDateOfReg(dateOfReg.format(TimeParserUtil.DATE_FORMATTER));
-//
-//                    Person person = new Person();
-//                    person.setName(rs.getString("name"));
-//                    person.setSurname(rs.getString("surname"));
-//
-//                    Employee employee = new Employee();
-//                    employee.setId(rs.getInt("employee_id"));
-//                    employee.setPerson(person);
-//
-//                    activity.setEmployee(employee);
-//
-//                    list.add(activity);
-//                }
-//                return list;
-//            }
-//        });
-//        return activities;
-//    }
-//
+
+    @Override
+    public List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext) {
+        List<ActivityDTO> activities = jdbcTemplate.query(findActivitiesByEmployeeIdSql, new Object[]{id, ActivityConstants.ACTIVITY_STATUS_ACTIVE, ActivityConstants.ACTIVITY_OFFSET_NUMBER, fetchNext}, new ResultSetExtractor<List<ActivityDTO>>() {
+            @Override
+            public List<ActivityDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                List<ActivityDTO> list = new LinkedList<>();
+                while (rs.next()) {
+                    ActivityDTO activity = new ActivityDTO();
+                    activity.setId(rs.getInt("activity_id"));
+                    activity.setTitle(rs.getString("title"));
+                    activity.setViewCount(rs.getInt("view_count"));
+                    activity.setPositiveCount(rs.getInt("positive"));
+                    activity.setNegativeCount(rs.getInt("negative"));
+                    activity.setImgUrl(rs.getString("img_url"));
+
+                    LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
+                    activity.setDateOfReg(dateOfReg.format(TimeParserUtil.DATE_FORMATTER));
+
+                    Person person = new Person();
+                    person.setName(rs.getString("name"));
+                    person.setSurname(rs.getString("surname"));
+
+                    Employee employee = new Employee();
+                    employee.setId(rs.getInt("employee_id"));
+                    employee.setPerson(person);
+
+                    activity.setEmployee(employee);
+
+                    list.add(activity);
+                }
+                return list;
+            }
+        });
+        return activities;
+    }
+
 //    @Override
 //    public void updateActivityByActivityId(Activity activity) throws ActivityCredentialsException {
 //        StringBuilder builder = new StringBuilder(updateActivityByActivityIdSql);
@@ -480,12 +477,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return result;
     }
 
-//    private boolean isActivityRespondExistWithGivenActivityIdAndEmployeeId(int activityId, int employeeId) {
-//        boolean result = false;
-//        int count = jdbcTemplate.queryForObject(findCountOfActivityRespondByActivityIdAndEmployeeIdSql, new Object[] {activityId, employeeId, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
-//        if (count > 0) {
-//            result = true;
-//        }
-//        return result;
-//    }
+    private boolean isActivityRespondExistWithGivenActivityIdAndEmployeeId(int activityId, int employeeId) {
+        boolean result = false;
+        int count = jdbcTemplate.queryForObject(findCountOfActivityRespondByActivityIdAndEmployeeIdSql, new Object[] {activityId, employeeId, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
+        if (count > 0) {
+            result = true;
+        }
+        return result;
+    }
 }

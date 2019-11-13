@@ -2,6 +2,7 @@ package az.gov.adra.service;
 
 import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.Activity;
+import az.gov.adra.entity.ActivityRespond;
 import az.gov.adra.entity.ActivityReview;
 import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.repository.interfaces.ActivityRepository;
@@ -46,11 +47,11 @@ public class ActivityServiceImpl implements ActivityService {
         activityRepository.addActivityReview(activityReview);
     }
 
-//    @Override
-//    public void addActivity(Activity activity) throws ActivityCredentialsException {
-//        activityRepository.addActivity(activity);
-//    }
-//
+    @Override
+    public void addActivity(Activity activity) throws ActivityCredentialsException {
+        activityRepository.addActivity(activity);
+    }
+
 //    @Override
 //    public void incrementViewCountByActivityId(int id) throws ActivityCredentialsException {
 //        activityRepository.incrementViewCountByActivityId(id);
@@ -65,17 +66,17 @@ public class ActivityServiceImpl implements ActivityService {
 //    public void incrementNegativeCountByActivityId(int id) throws ActivityCredentialsException {
 //        activityRepository.incrementNegativeCountByActivityId(id);
 //    }
-//
-//    @Override
-//    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException {
-//        return activityRepository.findActivityRespondsByRespond(id, respond);
-//    }
-//
-//    @Override
-//    public void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException {
-//        activityRepository.updateActivityRespond(activityRespond);
-//    }
-//
+
+    @Override
+    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException {
+        return activityRepository.findActivityRespondsByRespond(id, respond);
+    }
+
+    @Override
+    public void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException {
+        activityRepository.updateActivityRespond(activityRespond);
+    }
+
 //    @Override
 //    public Map<Integer, Integer> findRespondedActivitiesByLastAddedTime(int id) {
 //        return activityRepository.findRespondedActivitiesByLastAddedTime(id);
@@ -85,12 +86,12 @@ public class ActivityServiceImpl implements ActivityService {
 //    public Map<Integer, Integer> findRespondedActivity(int employeeId, int activityId) {
 //        return activityRepository.findRespondedActivity(employeeId, activityId);
 //    }
-//
-//    @Override
-//    public List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext) {
-//        return activityRepository.findActivitiesByEmployeeId(id, fetchNext);
-//    }
-//
+
+    @Override
+    public List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext) {
+        return activityRepository.findActivitiesByEmployeeId(id, fetchNext);
+    }
+
 //    @Override
 //    public void updateActivityByActivityId(Activity activity) throws ActivityCredentialsException {
 //        activityRepository.updateActivityByActivityId(activity);

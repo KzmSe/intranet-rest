@@ -2,6 +2,7 @@ package az.gov.adra.service.interfaces;
 
 import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.Activity;
+import az.gov.adra.entity.ActivityRespond;
 import az.gov.adra.entity.ActivityReview;
 import az.gov.adra.exception.ActivityCredentialsException;
 
@@ -19,24 +20,24 @@ public interface ActivityService {
 
     void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
 
-//    void addActivity(Activity activity) throws ActivityCredentialsException;
-//
+    void addActivity(Activity activity) throws ActivityCredentialsException;
+
 //    void incrementViewCountByActivityId(int id) throws ActivityCredentialsException;
 //
 //    void incrementPositiveCountByActivityId(int id) throws ActivityCredentialsException;
 //
 //    void incrementNegativeCountByActivityId(int id) throws ActivityCredentialsException;
-//
-//    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException;
-//
-//    void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
-//
+
+    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException;
+
+    void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
+
 //    Map<Integer, Integer> findRespondedActivitiesByLastAddedTime(int id);
 //
 //    Map<Integer, Integer> findRespondedActivity(int employeeId, int activityId);
-//
-//    List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext);
-//
+
+    List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext);
+
 //    void updateActivityByActivityId(Activity activity) throws ActivityCredentialsException;
 //
 //    List<Activity> findRandomActivities();

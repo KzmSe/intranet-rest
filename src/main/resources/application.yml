@@ -19,3 +19,7 @@ spring:
   app-name: INTRANET
 
 
+file:
+  upload:
+    path:
+      win: C:\\uploads

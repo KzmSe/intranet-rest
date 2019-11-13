@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import java.io.IOException;
 
@@ -68,6 +69,11 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setVerifierKey(getPublicKeyAsString());
         return converter;
+    }
+
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
     }
 
     private String getPublicKeyAsString() {
