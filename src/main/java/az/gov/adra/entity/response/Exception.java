@@ -13,4 +13,6 @@ public class Exception {
     private String message;
     private String errorStack;
 
+
+
 }

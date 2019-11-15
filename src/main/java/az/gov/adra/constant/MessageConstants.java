@@ -5,6 +5,7 @@ public class MessageConstants {
     //error messages
     public static final String ERROR_MESSAGE_POST_NOT_FOUND = "Verilən ID ilə paylaşım tapılmadı!";
     public static final String ERROR_MESSAGE_ACTIVITY_NOT_FOUND = "Verilən ID ilə fəaliyyət tapılmadı!";
+    public static final String ERROR_MESSAGE_ACTIVITY_RESPOND_MUST_BE_1_OR_0 = "Fəaliyyətə verilən cavab 1 və ya 0 olmalıdır!";
     public static final String ERROR_MESSAGE_IDEA_NOT_FOUND = "Verilən ID ilə ideya tapılmadı!";
     public static final String ERROR_MESSAGE_EMPLOYEE_WITH_GIVEN_ID_NOT_FOUND = "Verilən ID ilə istifadəçi tapılmadı!";
     public static final String ERROR_MESSAGE_EMPLOYEE_WITH_GIVEN_EMAIL_NOT_FOUND = "Verilən EMAIL ilə istifadəçi tapılmadı!";

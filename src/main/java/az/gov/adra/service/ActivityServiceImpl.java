@@ -33,12 +33,12 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException {
+    public ActivityDTO findActivityByActivityId(int id) {
         return activityRepository.findActivityByActivityId(id);
     }
 
     @Override
-    public List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException {
+    public List<ActivityReview> findReviewsByActivityId(int id) {
         return activityRepository.findReviewsByActivityId(id);
     }
 
@@ -68,7 +68,7 @@ public class ActivityServiceImpl implements ActivityService {
 //    }
 
     @Override
-    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException {
+    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) {
         return activityRepository.findActivityRespondsByRespond(id, respond);
     }
 
@@ -92,29 +92,34 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.findActivitiesByEmployeeId(id, fetchNext);
     }
 
-//    @Override
-//    public void updateActivityByActivityId(Activity activity) throws ActivityCredentialsException {
-//        activityRepository.updateActivityByActivityId(activity);
-//    }
-//
-//    @Override
-//    public List<Activity> findRandomActivities() {
-//        return activityRepository.findRandomActivities();
-//    }
-//
+    @Override
+    public void isActivityExistWithGivenId(int id) throws ActivityCredentialsException {
+        activityRepository.isActivityExistWithGivenId(id);
+    }
+
+    @Override
+    public void updateActivityById(Activity activity) throws ActivityCredentialsException {
+        activityRepository.updateActivityById(activity);
+    }
+
+    @Override
+    public List<Activity> findActivitiesRandomly() {
+        return activityRepository.findActivitiesRandomly();
+    }
+
 //    @Override
 //    public int findCountOfAllActivities() {
 //        return activityRepository.findCountOfAllActivities();
 //    }
-//
-//    @Override
-//    public void deleteActivityByActivityId(int activityId) throws ActivityCredentialsException {
-//        activityRepository.deleteActivityByActivityId(activityId);
-//    }
-//
-//    @Override
-//    public List<Activity> findActivitiesByKeyword(String keyword) {
-//        return activityRepository.findActivitiesByKeyword(keyword);
-//    }
+
+    @Override
+    public void deleteActivityByActivityIdAndEmployeeId(Activity activity) throws ActivityCredentialsException {
+        activityRepository.deleteActivityByActivityIdAndEmployeeId(activity);
+    }
+
+    @Override
+    public List<Activity> findActivitiesByKeyword(String keyword) {
+        return activityRepository.findActivitiesByKeyword(keyword);
+    }
 
 }

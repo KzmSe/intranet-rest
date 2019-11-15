@@ -3,6 +3,7 @@ package az.gov.adra.exception.handler;
 import az.gov.adra.entity.response.Exception;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
+import az.gov.adra.exception.EmployeeCredentialsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -22,40 +23,35 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public GenericResponse handleDataAccessException(DataAccessException e) {
-        //GenericResponse
-        GenericResponse response = new GenericResponse();
         //Exception
         Exception exception = new Exception();
         exception.setCode("0x0038");
-        exception.setMessage("DataAccessException occured! Please control sql statements and db.");
-        exception.setErrorStack(e.getMessage());
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("DataAccessException.");
 
-        response.setException(exception);
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setDescription("DataAccessException");
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
-
-        return response;
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DataAccessException", exception);
     }
 
     @ExceptionHandler(ActivityCredentialsException.class)
     public GenericResponse handleActivityCredentialsException(ActivityCredentialsException e) {
-        //GenericResponse
-        GenericResponse response = new GenericResponse();
         //Exception
         Exception exception = new Exception();
         exception.setCode("0x0039");
-        exception.setMessage("ActivityCredentialsException occured! Please control id.");
-        exception.setErrorStack(e.getMessage());
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("ActivityCredentialsException.");
 
-        response.setException(exception);
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setDescription("DataAccessException");
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "ActivityCredentialsException", exception);
+    }
 
-        return response;
+    @ExceptionHandler(EmployeeCredentialsException.class)
+    public GenericResponse handleEmployeeCredentialsException(EmployeeCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0040");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("EmployeeCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.BAD_REQUEST, "EmployeeCredentialsException", exception);
     }
 
 }

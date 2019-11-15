@@ -14,9 +14,9 @@ public interface ActivityRepository {
 
     List<Activity> findAllActivities(int offset);
 
-    ActivityDTO findActivityByActivityId(int id) throws ActivityCredentialsException;
+    ActivityDTO findActivityByActivityId(int id);
 
-    List<ActivityReview> findReviewsByActivityId(int id) throws ActivityCredentialsException;
+    List<ActivityReview> findReviewsByActivityId(int id);
 
     void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
 
@@ -28,7 +28,7 @@ public interface ActivityRepository {
 //
 //    void incrementNegativeCountByActivityId(int id) throws ActivityCredentialsException;
 
-    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) throws ActivityCredentialsException;
+    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond);
 
     void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
 
@@ -38,13 +38,16 @@ public interface ActivityRepository {
 
     List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext);
 
-//    void updateActivityByActivityId(Activity activity) throws ActivityCredentialsException;
-//
-//    List<Activity> findRandomActivities();
-//
+    void updateActivityById(Activity activity) throws ActivityCredentialsException;
+
+    List<Activity> findActivitiesRandomly();
+
 //    int findCountOfAllActivities();
-//
-//    void deleteActivityByActivityId(int activityId) throws ActivityCredentialsException;
-//
-//    List<Activity> findActivitiesByKeyword(String keyword);
+
+    void deleteActivityByActivityIdAndEmployeeId(Activity activity) throws ActivityCredentialsException;
+
+    List<Activity> findActivitiesByKeyword(String keyword);
+
+    void isActivityExistWithGivenId(int id) throws ActivityCredentialsException;
+
 }

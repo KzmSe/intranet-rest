@@ -13,7 +13,7 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Principal> get(final Principal principal) {
-        System.out.println("Controller is working!");
+        System.out.println(principal.getName());
         return ResponseEntity.ok(principal);
     }
 

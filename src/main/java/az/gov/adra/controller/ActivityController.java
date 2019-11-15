@@ -9,7 +9,9 @@ import az.gov.adra.entity.ActivityReview;
 import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
+import az.gov.adra.exception.EmployeeCredentialsException;
 import az.gov.adra.service.interfaces.ActivityService;
+import az.gov.adra.service.interfaces.EmployeeService;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +37,8 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
-    @Value("${spring.app-name}")
-    private String appName;
+    @Autowired
+    private EmployeeService employeeService;
     @Value("${file.upload.path.win}")
     private String imageUploadPath;
     private final int rightFileSize = 3145728;
@@ -47,14 +49,7 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findActivities() {
         List<Activity> activities = activityService.findAllActivities(0);
-        //Generic response
-        GenericResponse response = new GenericResponse();
-        response.setStatus(HttpStatus.OK.value());
-        response.setDescription("list of activities");
-        response.setData(activities);
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
-        return response;
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
     }
 
     @GetMapping("/activities/{activityId}")
@@ -64,15 +59,10 @@ public class ActivityController {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
+        activityService.isActivityExistWithGivenId(id);
+
         ActivityDTO activityDTO = activityService.findActivityByActivityId(id);
-        //Generic response
-        GenericResponse response = new GenericResponse();
-        response.setStatus(HttpStatus.OK.value());
-        response.setDescription("activity by id");
-        response.setData(activityDTO);
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
-        return response;
+        return GenericResponse.withSuccess(HttpStatus.OK, "specific activity by id", activityDTO);
     }
 
     @GetMapping("/activities/{activityId}/reviews")
@@ -82,26 +72,22 @@ public class ActivityController {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
+        activityService.isActivityExistWithGivenId(id);
+
         List<ActivityReview> reviews = activityService.findReviewsByActivityId(id);
-        //Generic response
-        GenericResponse response = new GenericResponse();
-        response.setStatus(HttpStatus.OK.value());
-        response.setDescription("reviews by activity id");
-        response.setData(reviews);
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
-        return response;
+        return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific activity", reviews);
     }
 
     @PostMapping("/activities/{activityId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addActivityReview(final Principal principal,
-                                                @PathVariable(value = "activityId") Integer id,
-                                                @RequestParam(value = "description") String description) throws ActivityCredentialsException {
+    public void addActivityReview(@PathVariable(value = "activityId") Integer id,
+                                  @RequestParam(value = "description") String description) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(description)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
+
+        activityService.isActivityExistWithGivenId(id);
 
         //primcipal
         ActivityReview review = new ActivityReview();
@@ -113,7 +99,7 @@ public class ActivityController {
         review.setStatus(ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE);
 
         Employee employee = new Employee();
-        employee.setId(488);
+        employee.setId(484);
         review.setEmployee(employee);
 
         //  URI location = ServletUriComponentsBuilder
@@ -184,31 +170,32 @@ public class ActivityController {
 
     @GetMapping("/activities/{activityId}/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivityResponds(@RequestParam(value = "activityId", required = false) Integer activityId,
+    public GenericResponse findActivityResponds(@PathVariable(value = "activityId", required = false) Integer id,
                                                 @RequestParam(value = "respond", required = false) Integer respond) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(activityId) || ValidationUtil.isNull(respond)) {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        List<ActivityRespond> activityResponds = activityService.findActivityRespondsByRespond(activityId, respond);
-        //Generic response
-        GenericResponse response = new GenericResponse();
-        response.setStatus(HttpStatus.OK.value());
-        response.setDescription("activity responds");
-        response.setData(activityResponds);
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
-        return response;
+        activityService.isActivityExistWithGivenId(id);
+
+        List<ActivityRespond> responds = activityService.findActivityRespondsByRespond(id, respond);
+        return GenericResponse.withSuccess(HttpStatus.OK, "responds of specific activity", responds);
     }
 
     @PutMapping("/activities/{activityId}/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
-    public void updateActivityRespond(@RequestParam(value = "activityId", required = false) Integer activityId,
+    public void updateActivityRespond(@PathVariable(value = "activityId", required = false) Integer id,
                                       @RequestParam(value = "respond", required = false) Integer respond) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(activityId) || ValidationUtil.isNull(respond)) {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
+
+        if (respond.compareTo(ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE) != 0 && respond.compareTo(ActivityConstants.ACTIVITY_RESPOND_STATUS_INACTIVE) != 0) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_RESPOND_MUST_BE_1_OR_0);
+        }
+
+        activityService.isActivityExistWithGivenId(id);
 
         //principal
         Employee employee = new Employee();
@@ -216,7 +203,7 @@ public class ActivityController {
 
         ActivityRespond activityRespond = new ActivityRespond();
         Activity activity = new Activity();
-        activity.setId(activityId);
+        activity.setId(id);
         activityRespond.setActivity(activity);
         activityRespond.setEmployee(employee);
         activityRespond.setRespond(respond);
@@ -228,8 +215,8 @@ public class ActivityController {
 
     @GetMapping("/employees/{employeeId}/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivitiesByEmployeeId(@RequestParam(value = "employeeId",required = false) Integer employeeId,
-                                                      @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException {
+    public GenericResponse findActivitiesByEmployeeId(@PathVariable(value = "employeeId",required = false) Integer employeeId,
+                                                      @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException, EmployeeCredentialsException {
         if (ValidationUtil.isNull(employeeId)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -238,19 +225,104 @@ public class ActivityController {
             fetchNext = 6;
         }
 
-        List<ActivityDTO> activities = activityService.findActivitiesByEmployeeId(employeeId, fetchNext);
-        //Generic response
-        GenericResponse response = new GenericResponse();
-        response.setStatus(HttpStatus.OK.value());
-        response.setDescription("activity responds");
-        response.setData(activities);
-        response.setTimestamp(LocalDateTime.now());
-        response.setAppName(appName);
+        employeeService.isEmployeeExistWithGivenId(employeeId);
 
-        return response;
+        List<ActivityDTO> activities = activityService.findActivitiesByEmployeeId(employeeId, fetchNext);
+        return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific activity", activities);
     }
 
+    @PutMapping("/activity/{activityId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateActivity(@PathVariable(value = "activityId", required = false) Integer id,
+                                          @RequestParam(value = "title", required = false) String title,
+                                          @RequestParam(value = "description", required = false) String description,
+                                          @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
+        //principal
+        Employee employee = new Employee();
+        employee.setId(488);
+        employee.setHId("aminhasanov21@gmail.com");
 
+        Activity activity = new Activity();
+
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(title, description)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        if (ValidationUtil.isNull(multipartFile) || multipartFile.isEmpty()) {
+            activity.setImgUrl("none");
+
+        } else {
+            if (!(multipartFile.getOriginalFilename().endsWith(".jpg")
+                    || multipartFile.getOriginalFilename().endsWith(".jpeg")
+                    || multipartFile.getOriginalFilename().endsWith(".png"))) {
+                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
+            }
+
+            if (multipartFile.getSize() >= rightFileSize) {
+                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
+            }
+
+            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", employee.getHId());
+
+            if (!Files.exists(pathToSaveFile)) {
+                Files.createDirectories(pathToSaveFile);
+            }
+
+            String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
+            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
+            Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+            Path pathToSaveDb = Paths.get("activities", employee.getHId(), fileName);
+
+            activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+        }
+
+        activity.setId(id);
+        activity.setEmployee(employee);
+        activity.setTitle(title);
+        activity.setDescription(description);
+
+        activityService.updateActivityById(activity);
+    }
+
+    @DeleteMapping("/activities/{activityId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteActivity(@PathVariable(value = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        activityService.isActivityExistWithGivenId(id);
+
+        //principal
+        Employee employee = new Employee();
+        employee.setId(484);
+
+        Activity activity = new Activity();
+        activity.setId(id);
+        activity.setEmployee(employee);
+
+        activityService.deleteActivityByActivityIdAndEmployeeId(activity);
+    }
+
+    @GetMapping("/activities/keyword")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findActivitiesByKeyword(@RequestParam(value = "keyword", required = false) String keyword) throws ActivityCredentialsException {
+        if (ValidationUtil.isNullOrEmpty(keyword)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim());
+        return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
+    }
+
+    @GetMapping("/activities/random")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findActivitiesRandomly() {
+        List<Activity> activities = activityService.findActivitiesRandomly();
+        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
+    }
 
 
 
