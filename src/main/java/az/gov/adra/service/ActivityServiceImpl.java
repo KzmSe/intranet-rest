@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ActivityServiceImpl implements ActivityService {
@@ -22,10 +23,10 @@ public class ActivityServiceImpl implements ActivityService {
         this.activityRepository = activityRepository;
     }
 
-//    @Override
-//    public List<ActivityDTO> findActiviesByLastAddedTime() {
-//        return activityRepository.findActiviesByLastAddedTime();
-//    }
+    @Override
+    public List<ActivityDTO> findTopActivitiesByLastAddedTime() {
+        return activityRepository.findTopActivitiesByLastAddedTime();
+    }
 
     @Override
     public List<Activity> findAllActivities(int offset) {
@@ -52,20 +53,10 @@ public class ActivityServiceImpl implements ActivityService {
         activityRepository.addActivity(activity);
     }
 
-//    @Override
-//    public void incrementViewCountByActivityId(int id) throws ActivityCredentialsException {
-//        activityRepository.incrementViewCountByActivityId(id);
-//    }
-//
-//    @Override
-//    public void incrementPositiveCountByActivityId(int id) throws ActivityCredentialsException {
-//        activityRepository.incrementPositiveCountByActivityId(id);
-//    }
-//
-//    @Override
-//    public void incrementNegativeCountByActivityId(int id) throws ActivityCredentialsException {
-//        activityRepository.incrementNegativeCountByActivityId(id);
-//    }
+    @Override
+    public void incrementViewCountOfActivityById(int id) throws ActivityCredentialsException {
+        activityRepository.incrementViewCountOfActivityById(id);
+    }
 
     @Override
     public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) {
@@ -77,15 +68,15 @@ public class ActivityServiceImpl implements ActivityService {
         activityRepository.updateActivityRespond(activityRespond);
     }
 
-//    @Override
-//    public Map<Integer, Integer> findRespondedActivitiesByLastAddedTime(int id) {
-//        return activityRepository.findRespondedActivitiesByLastAddedTime(id);
-//    }
-//
-//    @Override
-//    public Map<Integer, Integer> findRespondedActivity(int employeeId, int activityId) {
-//        return activityRepository.findRespondedActivity(employeeId, activityId);
-//    }
+    @Override
+    public Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(int id) {
+        return activityRepository.findTopThreeActivitiesByLastAddedTime(id);
+    }
+
+    @Override
+    public Map<Integer, Integer> findRespondOfActivity(int employeeId, int activityId) {
+        return activityRepository.findRespondOfActivity(employeeId, activityId);
+    }
 
     @Override
     public List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext) {
@@ -98,8 +89,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public void updateActivityById(Activity activity) throws ActivityCredentialsException {
-        activityRepository.updateActivityById(activity);
+    public void updateActivity(Activity activity) throws ActivityCredentialsException {
+        activityRepository.updateActivity(activity);
     }
 
     @Override
@@ -107,14 +98,14 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.findActivitiesRandomly();
     }
 
-//    @Override
-//    public int findCountOfAllActivities() {
-//        return activityRepository.findCountOfAllActivities();
-//    }
+    @Override
+    public int findCountOfAllActivities() {
+        return activityRepository.findCountOfAllActivities();
+    }
 
     @Override
-    public void deleteActivityByActivityIdAndEmployeeId(Activity activity) throws ActivityCredentialsException {
-        activityRepository.deleteActivityByActivityIdAndEmployeeId(activity);
+    public void deleteActivity(Activity activity) throws ActivityCredentialsException {
+        activityRepository.deleteActivity(activity);
     }
 
     @Override

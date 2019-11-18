@@ -7,10 +7,11 @@ import az.gov.adra.entity.ActivityReview;
 import az.gov.adra.exception.ActivityCredentialsException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ActivityRepository {
 
-//    List<ActivityDTO> findActiviesByLastAddedTime();
+    List<ActivityDTO> findTopActivitiesByLastAddedTime();
 
     List<Activity> findAllActivities(int offset);
 
@@ -22,29 +23,25 @@ public interface ActivityRepository {
 
     void addActivity(Activity activity) throws ActivityCredentialsException;
 
-//    void incrementViewCountByActivityId(int id) throws ActivityCredentialsException;
-//
-//    void incrementPositiveCountByActivityId(int id) throws ActivityCredentialsException;
-//
-//    void incrementNegativeCountByActivityId(int id) throws ActivityCredentialsException;
+    void incrementViewCountOfActivityById(int id) throws ActivityCredentialsException;
 
     List<ActivityRespond> findActivityRespondsByRespond(int id, int respond);
 
     void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
 
-//    Map<Integer, Integer> findRespondedActivitiesByLastAddedTime(int id);
-//
-//    Map<Integer, Integer> findRespondedActivity(int employeeId, int activityId);
+    Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(int id);
+
+    Map<Integer, Integer> findRespondOfActivity(int employeeId, int activityId);
 
     List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext);
 
-    void updateActivityById(Activity activity) throws ActivityCredentialsException;
+    void updateActivity(Activity activity) throws ActivityCredentialsException;
 
     List<Activity> findActivitiesRandomly();
 
-//    int findCountOfAllActivities();
+    int findCountOfAllActivities();
 
-    void deleteActivityByActivityIdAndEmployeeId(Activity activity) throws ActivityCredentialsException;
+    void deleteActivity(Activity activity) throws ActivityCredentialsException;
 
     List<Activity> findActivitiesByKeyword(String keyword);
 

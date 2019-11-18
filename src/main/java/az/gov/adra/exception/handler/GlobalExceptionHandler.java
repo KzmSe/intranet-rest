@@ -4,6 +4,7 @@ import az.gov.adra.entity.response.Exception;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.exception.EmployeeCredentialsException;
+import az.gov.adra.exception.PostCredentialsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,17 @@ public class GlobalExceptionHandler {
         exception.setErrorStack("EmployeeCredentialsException.");
 
         return GenericResponse.withException(HttpStatus.BAD_REQUEST, "EmployeeCredentialsException", exception);
+    }
+
+    @ExceptionHandler(PostCredentialsException.class)
+    public GenericResponse handlePostCredentialsException(PostCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0045");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("PostCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "PostCredentialsException", exception);
     }
 
 }

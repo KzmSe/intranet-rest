@@ -30,6 +30,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -41,7 +42,7 @@ public class ActivityController {
     private EmployeeService employeeService;
     @Value("${file.upload.path.win}")
     private String imageUploadPath;
-    private final int rightFileSize = 3145728;
+    private final int maxFileSize = 3145728;
     private final String defaultActivityHexCode = "616374697669746965735C64656661756C745F61637469766974792E6A7067";
 
 
@@ -130,7 +131,7 @@ public class ActivityController {
                 throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
             }
 
-            if (multipartFile.getSize() >= rightFileSize) {
+            if (multipartFile.getSize() >= maxFileSize) {
                 throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
             }
         }
@@ -228,10 +229,10 @@ public class ActivityController {
         employeeService.isEmployeeExistWithGivenId(employeeId);
 
         List<ActivityDTO> activities = activityService.findActivitiesByEmployeeId(employeeId, fetchNext);
-        return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific activity", activities);
+        return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
 
-    @PutMapping("/activity/{activityId}")
+    @PutMapping("/activities/{activityId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivity(@PathVariable(value = "activityId", required = false) Integer id,
@@ -259,7 +260,7 @@ public class ActivityController {
                 throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
             }
 
-            if (multipartFile.getSize() >= rightFileSize) {
+            if (multipartFile.getSize() >= maxFileSize) {
                 throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
             }
 
@@ -282,7 +283,7 @@ public class ActivityController {
         activity.setTitle(title);
         activity.setDescription(description);
 
-        activityService.updateActivityById(activity);
+        activityService.updateActivity(activity);
     }
 
     @DeleteMapping("/activities/{activityId}")
@@ -303,7 +304,7 @@ public class ActivityController {
         activity.setId(id);
         activity.setEmployee(employee);
 
-        activityService.deleteActivityByActivityIdAndEmployeeId(activity);
+        activityService.deleteActivity(activity);
     }
 
     @GetMapping("/activities/keyword")
@@ -324,6 +325,59 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
     }
 
+    @GetMapping("/activities/last-added")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findActivitiesByLastAddedTime() {
+        List<ActivityDTO> activities = activityService.findTopActivitiesByLastAddedTime();
+        return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
+    }
 
+    @GetMapping("/activities/top-three")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findTopThreeActivitiesByLastAddedTime() {
+        //principal
+        Employee employee = new Employee();
+        employee.setId(484);
+
+        Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(employee.getId());
+        return GenericResponse.withSuccess(HttpStatus.OK, "top three activities by last added time", activities);
+    }
+
+    @GetMapping("/activities/count")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findCountOfAllActivities() {
+        int count = activityService.findCountOfAllActivities();
+        return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", count);
+    }
+
+    @PutMapping("/activities/{activityId}/view-count")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.OK)
+    public void incrementViewCountOfActivityById(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        activityService.isActivityExistWithGivenId(id);
+
+        activityService.incrementViewCountOfActivityById(id);
+    }
+
+    @GetMapping("/activities/{activityId}/respond")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        activityService.isActivityExistWithGivenId(id);
+
+        //principal
+        Employee employee = new Employee();
+        employee.setId(484);
+
+        Map<Integer, Integer> respond = activityService.findRespondOfActivity(employee.getId(), id);
+        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);
+    }
 
 }
