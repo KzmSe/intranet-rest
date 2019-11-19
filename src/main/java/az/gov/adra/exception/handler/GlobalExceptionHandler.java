@@ -97,4 +97,15 @@ public class GlobalExceptionHandler {
         return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "CommandCredentialsException", exception);
     }
 
+    @ExceptionHandler(DocumentCredentialsException.class)
+    public GenericResponse handleDocumentCredentialsException(DocumentCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0080");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("DocumentCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DocumentCredentialsException", exception);
+    }
+
 }
