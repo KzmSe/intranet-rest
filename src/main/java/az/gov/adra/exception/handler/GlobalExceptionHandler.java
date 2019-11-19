@@ -2,10 +2,7 @@ package az.gov.adra.exception.handler;
 
 import az.gov.adra.entity.response.Exception;
 import az.gov.adra.entity.response.GenericResponse;
-import az.gov.adra.exception.ActivityCredentialsException;
-import az.gov.adra.exception.AnnouncementCredentialsException;
-import az.gov.adra.exception.EmployeeCredentialsException;
-import az.gov.adra.exception.PostCredentialsException;
+import az.gov.adra.exception.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -87,6 +84,17 @@ public class GlobalExceptionHandler {
         exception.setErrorStack("AnnouncementCredentialsException.");
 
         return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "AnnouncementCredentialsException", exception);
+    }
+
+    @ExceptionHandler(CommandCredentialsException.class)
+    public GenericResponse handleCommandCredentialsException(CommandCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0070");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("CommandCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "CommandCredentialsException", exception);
     }
 
 }
