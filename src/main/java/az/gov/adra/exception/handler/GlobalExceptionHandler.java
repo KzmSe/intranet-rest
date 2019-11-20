@@ -108,4 +108,15 @@ public class GlobalExceptionHandler {
         return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DocumentCredentialsException", exception);
     }
 
+    @ExceptionHandler(IdeaCredentialsException.class)
+    public GenericResponse handleIdeaCredentialsException(IdeaCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0090");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("IdeaCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "IdeaCredentialsException", exception);
+    }
+
 }

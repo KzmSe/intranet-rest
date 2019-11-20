@@ -8,6 +8,7 @@ public class MessageConstants {
     public static final String ERROR_MESSAGE_ANNOUNCEMENT_NOT_FOUND = "Verilən ID ilə elan tapılmadı!";
     public static final String ERROR_MESSAGE_COMMAND_NOT_FOUND = "Verilən ID ilə əmr tapılmadı!";
     public static final String ERROR_MESSAGE_ACTIVITY_RESPOND_MUST_BE_1_OR_0 = "Fəaliyyətə verilən cavab 1 və ya 0 olmalıdır!";
+    public static final String ERROR_MESSAGE_CHOICE_OF_IDEA_IS_INCORRECT = "Ideya seçimi yanlışdır!";
     public static final String ERROR_MESSAGE_IDEA_NOT_FOUND = "Verilən ID ilə ideya tapılmadı!";
     public static final String ERROR_MESSAGE_EMPLOYEE_WITH_GIVEN_ID_NOT_FOUND = "Verilən ID ilə istifadəçi tapılmadı!";
     public static final String ERROR_MESSAGE_EMPLOYEE_WITH_GIVEN_EMAIL_NOT_FOUND = "Verilən EMAIL ilə istifadəçi tapılmadı!";
@@ -17,13 +18,6 @@ public class MessageConstants {
     public static final String ERROR_MESSAGE_INVALID_FILE_TYPE = "Daxil edilən fayl tipi yanlışdır!";
     public static final String ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB = "Fayl ölçüsü 3 MB-dan çox ola bilməz!";
     public static final String ERROR_MESSAGE_INTERNAL_ERROR = "Daxili server xətası!";
-    public static final String ERROR_MESSAGE_RESERVATION_ALREADY_EXIST = "Bu tarixlərdə rezervasiya mövcuddur!";
-    public static final String ERROR_MESSAGE_PREVIOUS_DAYS = "Əvvəlki tarixlərə rezerv oluna bilməz!";
-    public static final String ERROR_MESSAGE_SATURDAY_AND_SUNDAY_IS_INACCURATE = "Həftə sonuna rezerv oluna bilməz!";
-    public static final String ERROR_MESSAGE_MIN_30MIN = "Rezervasiya ən az 30 dəqiqə olmalıdır!";
-    public static final String ERROR_MESSAGE_RESERVATION_TIME = "Reservasiya vaxtı düzgün deyil!";
-    public static final String ERROR_MESSAGE_DELETE_RESERVATION = "Bu reservasiyanı silmək hüququnuz yoxdur!";
-    public static final String ERROR_MESSAGE_UPDATE_RESERVATION = "Bu reservasiyanı redaktə etmək hüququnuz yoxdur!";
 
     //success messages
     public static final String SUCCESS_MESSAGE_PASSWORD_SUCCESSFULLY_CHANGED = "Şifrə uğurla yeniləndi!";
