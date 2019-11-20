@@ -91,17 +91,18 @@ public class PostController {
         postService.isPostExistWithGivenId(id);
 
         //principal
+        Employee employee = new Employee();
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
+
         PostReview review = new PostReview();
         Post post = new Post();
         post.setId(id);
+        review.setEmployee(employee);
         review.setPost(post);
         review.setDescription(description);
         review.setDateOfReg(LocalDateTime.now().toString());
         review.setStatus(PostConstants.POST_REVIEW_STATUS_ACTIVE);
-
-        Employee employee = new Employee();
-        employee.setId(484);
-        review.setEmployee(employee);
 
         //  URI location = ServletUriComponentsBuilder
         //      .fromCurrentRequest()
@@ -138,7 +139,8 @@ public class PostController {
 
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Post post = new Post();
         post.setEmployee(employee);
@@ -186,7 +188,8 @@ public class PostController {
 
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         PostLd postLd = new PostLd();
         Post post = new Post();
@@ -227,8 +230,8 @@ public class PostController {
                                           @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws PostCredentialsException, IOException {
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
-        employee.setHId("aminhasanov21@gmail.com");
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Post post = new Post();
 
@@ -283,7 +286,8 @@ public class PostController {
 
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Post post = new Post();
         post.setId(id);

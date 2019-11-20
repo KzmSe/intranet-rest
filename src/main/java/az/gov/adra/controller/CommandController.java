@@ -101,6 +101,7 @@ public class CommandController {
         //principal
         Employee employee = new Employee();
         employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Command command = new Command();
         command.setEmployee(employee);

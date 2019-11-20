@@ -75,6 +75,7 @@ public class IdeaController {
         //principal
         Employee employee = new Employee();
         employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Idea idea = new Idea();
         idea.setEmployee(employee);
@@ -82,7 +83,7 @@ public class IdeaController {
         idea.setTitle(title);
         idea.setDescription(description);
         idea.setDateOfReg(LocalDateTime.now().toString());
-        idea.setStatus(IdeaConstants.IDEA_STATUS_ACTIVE);
+        idea.setStatus(IdeaConstants.IDEA_STATUS_INACTIVE);
 
         if (!multipartFile.isEmpty()) {
             Path pathToSaveFile = Paths.get(imageUploadPath, "ideas", employee.getHId());

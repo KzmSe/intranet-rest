@@ -99,8 +99,11 @@ public class ActivityController {
         review.setDateOfReg(LocalDateTime.now().toString());
         review.setStatus(ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE);
 
+        //principal
         Employee employee = new Employee();
         employee.setId(484);
+        employee.setHId("safura@gmail.com");
+
         review.setEmployee(employee);
 
         //  URI location = ServletUriComponentsBuilder
@@ -138,7 +141,8 @@ public class ActivityController {
 
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Activity activity = new Activity();
         activity.setEmployee(employee);
@@ -200,7 +204,8 @@ public class ActivityController {
 
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         ActivityRespond activityRespond = new ActivityRespond();
         Activity activity = new Activity();
@@ -241,8 +246,8 @@ public class ActivityController {
                                           @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
         //principal
         Employee employee = new Employee();
-        employee.setId(488);
-        employee.setHId("aminhasanov21@gmail.com");
+        employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Activity activity = new Activity();
 
@@ -299,6 +304,7 @@ public class ActivityController {
         //principal
         Employee employee = new Employee();
         employee.setId(484);
+        employee.setHId("safura@gmail.com");
 
         Activity activity = new Activity();
         activity.setId(id);
