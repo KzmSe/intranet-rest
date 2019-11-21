@@ -25,11 +25,11 @@ public interface PostRepository {
 
     void incrementViewCountOfPostById(int id) throws PostCredentialsException;
 
-    Map<Integer, Integer> findRespondOfPost(int employeeId, int postId);
+    Map<Integer, Integer> findRespondOfPost(String username, int postId);
 
     void updatePostRespond(PostLd postLd) throws PostCredentialsException;
 
-    List<Post> findPostsByEmployeeId(int id, int fetchNext);
+    List<Post> findPostsByUsername(String username, int fetchNext);
 
     void updatePost(Post post) throws PostCredentialsException;
 

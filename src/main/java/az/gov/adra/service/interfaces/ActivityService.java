@@ -29,11 +29,11 @@ public interface ActivityService {
 
     void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
 
-    Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(int id);
+    Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(String username);
 
-    Map<Integer, Integer> findRespondOfActivity(int employeeId, int activityId);
+    Map<Integer, Integer> findRespondOfActivity(String username, int activityId);
 
-    List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext);
+    List<ActivityDTO> findActivitiesByUsername(String username, int fetchNext);
 
     void updateActivity(Activity activity) throws ActivityCredentialsException;
 

@@ -45,7 +45,7 @@ public class PostController {
     private final int maxFileSize = 3145728;
     private final String defaultPostHexCode = "706F7374735C64656661756C745F706F73742E6A7067";
 
-
+    //+
     @GetMapping("/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPosts() {
@@ -53,6 +53,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
     }
 
+    //-
     @GetMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostById(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
@@ -66,6 +67,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "specific post by id", postDTO);
     }
 
+    //+
     @GetMapping("/posts/{postId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findReviewsByPostId(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
@@ -79,6 +81,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific post", reviews);
     }
 
+    //+
     @PostMapping("/posts/{postId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -91,14 +94,13 @@ public class PostController {
         postService.isPostExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         PostReview review = new PostReview();
         Post post = new Post();
         post.setId(id);
-        review.setEmployee(employee);
+        review.setUser(user);
         review.setPost(post);
         review.setDescription(description);
         review.setDateOfReg(LocalDateTime.now().toString());
@@ -114,6 +116,7 @@ public class PostController {
         postService.addPostReview(review);
     }
 
+    //+
     @PostMapping("/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -138,12 +141,11 @@ public class PostController {
         }
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Post post = new Post();
-        post.setEmployee(employee);
+        post.setUser(user);
         post.setTitle(title);
         post.setDescription(description);
         post.setViewCount(0);
@@ -151,7 +153,7 @@ public class PostController {
         post.setStatus(PostConstants.POST_STATUS_ACTIVE);
 
         if (!multipartFile.isEmpty()) {
-            Path pathToSaveFile = Paths.get(imageUploadPath, "posts", employee.getHId());
+            Path pathToSaveFile = Paths.get(imageUploadPath, "posts", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
                 Files.createDirectories(pathToSaveFile);
@@ -160,7 +162,7 @@ public class PostController {
             String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("posts", employee.getHId(), fileName);
+            Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
 
             post.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
 
@@ -171,6 +173,7 @@ public class PostController {
         postService.addPost(post);
     }
 
+    //+
     @PutMapping("/posts/{postId}/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -187,15 +190,14 @@ public class PostController {
         postService.isPostExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         PostLd postLd = new PostLd();
         Post post = new Post();
         post.setId(id);
         postLd.setPost(post);
-        postLd.setEmployee(employee);
+        postLd.setUser(user);
         postLd.setLikeDislike(respond);
         postLd.setDateOfReg(LocalDateTime.now().toString());
         postLd.setStatus(PostConstants.POSTLD_STATUS_ACTIVE);
@@ -203,11 +205,12 @@ public class PostController {
         postService.updatePostRespond(postLd);
     }
 
-    @GetMapping("/employees/{employeeId}/posts")
+    //+
+    @GetMapping("/employees/{username}/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findPostsByEmployeeId(@PathVariable(value = "employeeId",required = false) Integer employeeId,
+    public GenericResponse findPostsByEmployeeId(@PathVariable(value = "username",required = false) String username,
                                                       @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws PostCredentialsException, EmployeeCredentialsException {
-        if (ValidationUtil.isNull(employeeId)) {
+        if (ValidationUtil.isNull(username)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -215,12 +218,13 @@ public class PostController {
             fetchNext = 6;
         }
 
-        employeeService.isEmployeeExistWithGivenId(employeeId);
+        employeeService.isEmployeeExistWithGivenUsername(username);
 
-        List<Post> posts = postService.findPostsByEmployeeId(employeeId, fetchNext);
+        List<Post> posts = postService.findPostsByUsername(username, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
     }
 
+    //+
     @PutMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -229,9 +233,8 @@ public class PostController {
                                           @RequestParam(value = "description", required = false) String description,
                                           @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws PostCredentialsException, IOException {
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Post post = new Post();
 
@@ -253,7 +256,7 @@ public class PostController {
                 throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
             }
 
-            Path pathToSaveFile = Paths.get(imageUploadPath, "posts", employee.getHId());
+            Path pathToSaveFile = Paths.get(imageUploadPath, "posts", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
                 Files.createDirectories(pathToSaveFile);
@@ -262,18 +265,19 @@ public class PostController {
             String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("posts", employee.getHId(), fileName);
+            Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
             post.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
         }
 
         post.setId(id);
-        post.setEmployee(employee);
+        post.setUser(user);
         post.setTitle(title);
         post.setDescription(description);
 
         postService.updatePost(post);
     }
 
+    //+
     @DeleteMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -285,17 +289,17 @@ public class PostController {
         postService.isPostExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Post post = new Post();
         post.setId(id);
-        post.setEmployee(employee);
+        post.setUser(user);
 
         postService.deletePost(post);
     }
 
+    //+
     @GetMapping("/posts/keyword")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByKeyword(@RequestParam(value = "keyword", required = false) String keyword) throws PostCredentialsException {
@@ -307,6 +311,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
     }
 
+    //+
     @GetMapping("/posts/random")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsRandomly() {
@@ -314,6 +319,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
     }
 
+    //+
     @GetMapping("/posts/last-added")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByLastAddedTime() {
@@ -321,6 +327,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
     }
 
+    //+
     @GetMapping("/posts/count")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findCountOfAllPosts() {
@@ -328,6 +335,7 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "count of all posts", count);
     }
 
+    //+
     @PutMapping("/posts/{postId}/view-count")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -341,6 +349,7 @@ public class PostController {
         postService.incrementViewCountOfPostById(id);
     }
 
+    //+
     @GetMapping("/posts/{postId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findRespondOfPost(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
@@ -351,10 +360,10 @@ public class PostController {
         postService.isPostExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(488);
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
-        Map<Integer, Integer> respond = postService.findRespondOfPost(employee.getId(), id);
+        Map<Integer, Integer> respond = postService.findRespondOfPost(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific post", respond);
     }
 

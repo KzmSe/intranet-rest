@@ -69,18 +69,18 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(int id) {
-        return activityRepository.findTopThreeActivitiesByLastAddedTime(id);
+    public Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(String username) {
+        return activityRepository.findTopThreeActivitiesByLastAddedTime(username);
     }
 
     @Override
-    public Map<Integer, Integer> findRespondOfActivity(int employeeId, int activityId) {
-        return activityRepository.findRespondOfActivity(employeeId, activityId);
+    public Map<Integer, Integer> findRespondOfActivity(String username, int activityId) {
+        return activityRepository.findRespondOfActivity(username, activityId);
     }
 
     @Override
-    public List<ActivityDTO> findActivitiesByEmployeeId(int id, int fetchNext) {
-        return activityRepository.findActivitiesByEmployeeId(id, fetchNext);
+    public List<ActivityDTO> findActivitiesByUsername(String username, int fetchNext) {
+        return activityRepository.findActivitiesByUsername(username, fetchNext);
     }
 
     @Override

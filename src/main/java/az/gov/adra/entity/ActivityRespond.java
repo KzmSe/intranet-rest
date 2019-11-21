@@ -13,7 +13,7 @@ public class ActivityRespond {
 
     private Integer id;
     private Activity activity;
-    private Employee employee;
+    private User user;
     private Integer respond;
     private String dateOfReg;
     private String dateOfDel;

@@ -4,6 +4,6 @@ import az.gov.adra.exception.EmployeeCredentialsException;
 
 public interface EmployeeRepository {
 
-    void isEmployeeExistWithGivenId(int id) throws EmployeeCredentialsException;
+    void isEmployeeExistWithGivenUsername(String username) throws EmployeeCredentialsException;
 
 }

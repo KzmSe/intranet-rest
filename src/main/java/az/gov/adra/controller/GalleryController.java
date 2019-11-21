@@ -20,6 +20,7 @@ public class GalleryController {
     @Autowired
     private GalleryService galleryService;
 
+    //+
     @GetMapping("/galleries")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllGalleries(@RequestParam(value = "page", required = false) Integer page) {

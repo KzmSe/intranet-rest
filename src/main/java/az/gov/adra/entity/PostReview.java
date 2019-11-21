@@ -13,7 +13,7 @@ public class PostReview {
 
     private Integer id;
     private Post post;
-    private Employee employee;
+    private User user;
     private String description;
     private String dateOfReg;
     private String dateOfDel;

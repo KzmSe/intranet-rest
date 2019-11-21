@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Idea {
 
     private Integer id;
-    private Employee employee;
+    private User user;
     private String choice;
     private String title;
     private String description;

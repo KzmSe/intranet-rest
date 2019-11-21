@@ -6,6 +6,7 @@ import az.gov.adra.dataTransferObjects.CommandDTO;
 import az.gov.adra.entity.Command;
 import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.Person;
+import az.gov.adra.entity.User;
 import az.gov.adra.exception.CommandCredentialsException;
 import az.gov.adra.repository.interfaces.CommandRepository;
 import az.gov.adra.util.TimeParserUtil;
@@ -26,10 +27,9 @@ import java.util.List;
 @Repository
 public class CommandRepositoryImpl implements CommandRepository {
 
-    private static final String findAllCommandsSql = "select c.id as command_id, c.title, c.description, c.img_url, c.date_of_reg, p.id as person_id, p.name, p.surname from Command c inner join Employee e on c.employee_id = e.id inner join Person p on e.person_id = p.id where c.status = ? order by date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-    private static final String findCommandByCommandIdSql = "select c.id as command_id, c.title, c.description, c.img_url, c.date_of_reg, p.id as person_id, p.name, p.surname from Command c inner join Employee e on c.employee_id = e.id inner join Person p on e.person_id = p.id where c.id = ? and c.status = ?";
-    private static final String findTopCommandSql = "select top 1 c.id as command_id, c.title, c.description, c.date_of_reg, p.id as person_id, p.name, p.surname from Command c inner join Employee e on c.employee_id = e.id inner join Person p on e.person_id = p.id where c.status = ? order by c.date_of_reg desc";
-    private static final String addCommandSql = "insert into Command(employee_id, title, description, img_url, date_of_reg, status) values(?, ?, ?, ?, ?, ?)";
+    private static final String findAllCommandsSql = "select c.id as command_id, c.title, c.description, c.img_url, c.date_of_reg, u.name, u.surname, u.username from Command c inner join users u on c.username = u.username where c.status = ? order by c.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    private static final String findCommandByCommandIdSql = "select c.id as command_id, c.title, c.description, c.img_url, c.date_of_reg, u.name, u.surname, u.username from Command c inner join users u on c.username = u.username where c.id = ? and c.status = ?";
+    private static final String addCommandSql = "insert into Command(username, title, description, img_url, date_of_reg, status) values(?, ?, ?, ?, ?, ?)";
     private static final String isCommandExistWithGivenIdSql = "select count(*) as count from Command where id = ? and status = ?";
 
     @Autowired
@@ -51,14 +51,12 @@ public class CommandRepositoryImpl implements CommandRepository {
                     LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
                     command.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
 
-                    Person person = new Person();
-                    person.setId(rs.getInt("person_id"));
-                    person.setName(rs.getString("name"));
-                    person.setSurname(rs.getString("surname"));
+                    User user = new User();
+                    user.setName(rs.getString("name"));
+                    user.setSurname(rs.getString("surname"));
+                    user.setUsername(rs.getString("username"));
 
-                    Employee employee = new Employee();
-                    employee.setPerson(person);
-                    command.setEmployee(employee);
+                    command.setUser(user);
 
                     list.add(command);
                 }
@@ -82,14 +80,12 @@ public class CommandRepositoryImpl implements CommandRepository {
                 LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
                 command.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
 
-                Person person = new Person();
-                person.setId(rs.getInt("person_id"));
-                person.setName(rs.getString("name"));
-                person.setSurname(rs.getString("surname"));
+                User user = new User();
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setUsername(rs.getString("username"));
 
-                Employee employee = new Employee();
-                employee.setPerson(person);
-                command.setEmployee(employee);
+                command.setUser(user);
 
                 return command;
             }
@@ -99,7 +95,7 @@ public class CommandRepositoryImpl implements CommandRepository {
 
     @Override
     public void addCommand(Command command) throws CommandCredentialsException {
-        int affectedRows = jdbcTemplate.update(addCommandSql, command.getEmployee().getId(), command.getTitle(), command.getDescription(), command.getImgUrl(), command.getDateOfReg(), command.getStatus());
+        int affectedRows = jdbcTemplate.update(addCommandSql, command.getUser().getUsername(), command.getTitle(), command.getDescription(), command.getImgUrl(), command.getDateOfReg(), command.getStatus());
         if (affectedRows == 0) {
             throw new CommandCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
         }

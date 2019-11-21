@@ -23,6 +23,7 @@ public class AnnouncementController {
     @Autowired
     private AnnouncementService announcementService;
 
+    //+
     @GetMapping("/announcements")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllAnnouncements(@RequestParam(name = "importanceLevel", required = false) String importanceLevel,
@@ -39,6 +40,7 @@ public class AnnouncementController {
         return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
     }
 
+    //+
     @GetMapping("/announcements/{announcementId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAnnouncementByAnnouncementId(@PathVariable(name = "announcementId", required = false) Integer id) throws AnnouncementCredentialsException {
@@ -51,6 +53,7 @@ public class AnnouncementController {
         return GenericResponse.withSuccess(HttpStatus.OK, "specific announcement by id", announcement);
     }
 
+    //+
     @GetMapping("/announcements/necessary")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findTopNecessaryAnnouncement() throws AnnouncementCredentialsException {

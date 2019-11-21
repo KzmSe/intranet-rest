@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Activity {
 
     private Integer id;
-    private Employee employee;
+    private User user;
     private String title;
     private String description;
     private Integer viewCount;

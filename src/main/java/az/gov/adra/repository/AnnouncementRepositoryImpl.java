@@ -5,6 +5,7 @@ import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.entity.Announcement;
 import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.Person;
+import az.gov.adra.entity.User;
 import az.gov.adra.exception.AnnouncementCredentialsException;
 import az.gov.adra.repository.interfaces.AnnouncementRepository;
 import az.gov.adra.util.TimeParserUtil;
@@ -24,9 +25,9 @@ import java.util.List;
 @Repository
 public class AnnouncementRepositoryImpl implements AnnouncementRepository {
 
-    private static final String findAllAnnouncementsByImportanceLevelSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, e.id as employee_id, p.name, p.surname from Announcement a inner join Employee e on a.employee_id = e.id inner join Person p on e.person_id = p.id where a.importance_level = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-    private static final String findAnnouncementByAnnouncementIdSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, p.id as person_id, p.name, p.surname from Announcement a inner join Employee e on a.employee_id = e.id inner join Person p on e.person_id = p.id where a.id = ? and a.status = ?";
-    private static final String findTopAnnouncementByImportanceLevelSql = "select top 1 a.id as announcement_id, a.title, a.description, a.date_of_reg, e.id as employee_id, p.name, p.surname from Announcement a inner join Employee e on a.employee_id = e.id inner join Person p on e.person_id = p.id where a.importance_level = ? and a.status = ? order by a.date_of_reg desc";
+    private static final String findAllAnnouncementsByImportanceLevelSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.importance_level = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    private static final String findAnnouncementByAnnouncementIdSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.id = ? and a.status = ?";
+    private static final String findTopAnnouncementByImportanceLevelSql = "select top 1 a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.importance_level = ? and a.status = ? order by a.date_of_reg desc";
     private static final String isAnnouncementExistWithGivenIdSql = "select count(*) as count from Announcement where id = ? and status = ?";
 
     @Autowired
@@ -47,15 +48,12 @@ public class AnnouncementRepositoryImpl implements AnnouncementRepository {
                     LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
                     announcement.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
 
-                    Employee employee = new Employee();
-                    employee.setId(rs.getInt("employee_id"));
+                    User user = new User();
+                    user.setName(rs.getString("name"));
+                    user.setSurname(rs.getString("surname"));
+                    user.setUsername(rs.getString("username"));
 
-                    Person person = new Person();
-                    person.setName(rs.getString("name"));
-                    person.setSurname(rs.getString("surname"));
-
-                    employee.setPerson(person);
-                    announcement.setEmployee(employee);
+                    announcement.setUser(user);
 
                     list.add(announcement);
                 }
@@ -78,14 +76,12 @@ public class AnnouncementRepositoryImpl implements AnnouncementRepository {
                 LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
                 announcement1.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
 
-                Person person = new Person();
-                person.setId(rs.getInt("person_id"));
-                person.setName(rs.getString("name"));
-                person.setSurname(rs.getString("surname"));
+                User user = new User();
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setUsername(rs.getString("username"));
 
-                Employee employee = new Employee();
-                employee.setPerson(person);
-                announcement1.setEmployee(employee);
+                announcement1.setUser(user);
 
                 return announcement1;
             }
@@ -106,15 +102,12 @@ public class AnnouncementRepositoryImpl implements AnnouncementRepository {
                 LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
                 announcement1.setDateOfReg(dateOfReg.format(TimeParserUtil.DATE_FORMATTER));
 
-                Employee employee = new Employee();
-                employee.setId(rs.getInt("employee_id"));
+                User user = new User();
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setUsername(rs.getString("username"));
 
-                Person person = new Person();
-                person.setName(rs.getString("name"));
-                person.setSurname(rs.getString("surname"));
-
-                employee.setPerson(person);
-                announcement1.setEmployee(employee);
+                announcement1.setUser(user);
 
                 return announcement1;
             }

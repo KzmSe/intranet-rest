@@ -38,6 +38,7 @@ public class DocumentController {
     @Value("${file.upload.path.win}")
     private String imageUploadPath;
 
+    //+
     @GetMapping("/documents")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllDocuments(@RequestParam(value = "page", required = false) Integer page) {
@@ -68,6 +69,7 @@ public class DocumentController {
         return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", documentCount);
     }
 
+    //+
     @GetMapping("/documents/keyword")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findDocumentsByKeyword(@RequestParam(value = "keyword", required = false) String keyword) throws DocumentCredentialsException {

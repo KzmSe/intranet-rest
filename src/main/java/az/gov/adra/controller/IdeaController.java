@@ -4,6 +4,7 @@ import az.gov.adra.constant.IdeaConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.Idea;
+import az.gov.adra.entity.User;
 import az.gov.adra.exception.IdeaCredentialsException;
 import az.gov.adra.service.interfaces.IdeaService;
 import az.gov.adra.util.ValidationUtil;
@@ -37,6 +38,7 @@ public class IdeaController {
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
 
+    //+
     @PostMapping("/ideas")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -73,12 +75,11 @@ public class IdeaController {
         }
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Idea idea = new Idea();
-        idea.setEmployee(employee);
+        idea.setUser(user);
         idea.setChoice(choice);
         idea.setTitle(title);
         idea.setDescription(description);
@@ -86,7 +87,7 @@ public class IdeaController {
         idea.setStatus(IdeaConstants.IDEA_STATUS_INACTIVE);
 
         if (!multipartFile.isEmpty()) {
-            Path pathToSaveFile = Paths.get(imageUploadPath, "ideas", employee.getHId());
+            Path pathToSaveFile = Paths.get(imageUploadPath, "ideas", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
                 Files.createDirectories(pathToSaveFile);
@@ -95,7 +96,7 @@ public class IdeaController {
             String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("ideas", employee.getHId(), fileName);
+            Path pathToSaveDb = Paths.get("ideas", user.getUsername(), fileName);
 
             idea.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
 

@@ -60,8 +60,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Map<Integer, Integer> findRespondOfPost(int employeeId, int postId) {
-        return postRepository.findRespondOfPost(employeeId, postId);
+    public Map<Integer, Integer> findRespondOfPost(String username, int postId) {
+        return postRepository.findRespondOfPost(username, postId);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findPostsByEmployeeId(int id, int fetchNext) {
-        return postRepository.findPostsByEmployeeId(id, fetchNext);
+    public List<Post> findPostsByUsername(String username, int fetchNext) {
+        return postRepository.findPostsByUsername(username, fetchNext);
     }
 
     @Override

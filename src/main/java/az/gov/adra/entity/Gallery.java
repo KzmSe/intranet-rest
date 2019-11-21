@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Gallery {
 
     private Integer id;
-    private Employee employee;
+    private User user;
     private String title;
     private String imgUrl;
     private String dateOfReg;

@@ -13,7 +13,7 @@ public class ActivityReview {
 
     private Integer id;
     private Activity activity;
-    private Employee employee;
+    private User user;
     private String description;
     private String dateOfReg;
     private String dateOfDel;

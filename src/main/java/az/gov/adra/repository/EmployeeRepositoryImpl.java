@@ -14,12 +14,12 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final String findCountOfEmployeesByIdSql = "select count(*) as count from Employee where id = ? and status = ?";
+    private static final String findCountOfEmployeesByIdSql = "select count(*) as count from users where username = ? and enabled = ?";
 
 
     @Override
-    public void isEmployeeExistWithGivenId(int id) throws EmployeeCredentialsException {
-        int count = jdbcTemplate.queryForObject(findCountOfEmployeesByIdSql, new Object[] {id, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
+    public void isEmployeeExistWithGivenUsername(String username) throws EmployeeCredentialsException {
+        int count = jdbcTemplate.queryForObject(findCountOfEmployeesByIdSql, new Object[] {username, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
         if (count <= 0) {
             throw new EmployeeCredentialsException(MessageConstants.ERROR_MESSAGE_EMPLOYEE_WITH_GIVEN_ID_NOT_FOUND);
         }

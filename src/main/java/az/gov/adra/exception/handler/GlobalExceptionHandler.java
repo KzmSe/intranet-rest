@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class GlobalExceptionHandler {
     private String appName;
 
     @ExceptionHandler(DataAccessException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleDataAccessException(DataAccessException e) {
         //Exception
         Exception exception = new Exception();
@@ -32,6 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NumberFormatException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleNumberFormatException(NumberFormatException e) {
         //Exception
         Exception exception = new Exception();
@@ -43,6 +46,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ActivityCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleActivityCredentialsException(ActivityCredentialsException e) {
         //Exception
         Exception exception = new Exception();
@@ -54,6 +58,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmployeeCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleEmployeeCredentialsException(EmployeeCredentialsException e) {
         //Exception
         Exception exception = new Exception();
@@ -65,6 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PostCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handlePostCredentialsException(PostCredentialsException e) {
         //Exception
         Exception exception = new Exception();
@@ -76,6 +82,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AnnouncementCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleAnnouncementCredentialsException(AnnouncementCredentialsException e) {
         //Exception
         Exception exception = new Exception();
@@ -87,6 +94,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CommandCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleCommandCredentialsException(CommandCredentialsException e) {
         //Exception
         Exception exception = new Exception();
@@ -98,6 +106,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DocumentCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleDocumentCredentialsException(DocumentCredentialsException e) {
         //Exception
         Exception exception = new Exception();
@@ -109,6 +118,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IdeaCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleIdeaCredentialsException(IdeaCredentialsException e) {
         //Exception
         Exception exception = new Exception();

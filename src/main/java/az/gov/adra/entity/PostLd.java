@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PostLd {
 
     private Integer id;
-    private Employee employee;
+    private User user;
     private Post post;
     private Integer likeDislike;
     private String dateOfReg;

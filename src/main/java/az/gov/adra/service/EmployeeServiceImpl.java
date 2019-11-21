@@ -17,8 +17,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void isEmployeeExistWithGivenId(int id) throws EmployeeCredentialsException {
-        employeeRepository.isEmployeeExistWithGivenId(id);
+    public void isEmployeeExistWithGivenUsername(String username) throws EmployeeCredentialsException {
+        employeeRepository.isEmployeeExistWithGivenUsername(username);
     }
 
 }

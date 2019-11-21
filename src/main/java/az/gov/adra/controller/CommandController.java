@@ -5,6 +5,7 @@ import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.CommandDTO;
 import az.gov.adra.entity.Command;
 import az.gov.adra.entity.Employee;
+import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.CommandCredentialsException;
 import az.gov.adra.service.interfaces.CommandService;
@@ -36,6 +37,7 @@ public class CommandController {
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
 
+    //+
     @GetMapping("/commands")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllCommands() {
@@ -55,6 +57,7 @@ public class CommandController {
         return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
     }
 
+    //+
     @GetMapping("/commands/{commandId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findCommandById(@PathVariable(name = "commandId", required = false) Integer id) throws CommandCredentialsException {
@@ -78,6 +81,7 @@ public class CommandController {
         return GenericResponse.withSuccess(HttpStatus.OK, "specific command by id", command);
     }
 
+    //+
     @PostMapping("/commands")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -99,19 +103,18 @@ public class CommandController {
         }
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Command command = new Command();
-        command.setEmployee(employee);
+        command.setUser(user);
         command.setTitle(title);
         command.setDescription(description);
         command.setDateOfReg(LocalDateTime.now().toString());
         command.setStatus(CommandConstants.COMMAND_STATUS_ACTIVE);
 
         if (!multipartFile.isEmpty()) {
-            Path pathToSaveFile = Paths.get(imageUploadPath, "commands", employee.getHId());
+            Path pathToSaveFile = Paths.get(imageUploadPath, "commands", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
                 Files.createDirectories(pathToSaveFile);
@@ -120,7 +123,7 @@ public class CommandController {
             String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("commands", employee.getHId(), fileName);
+            Path pathToSaveDb = Paths.get("commands", user.getUsername(), fileName);
 
             command.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
 

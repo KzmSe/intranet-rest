@@ -3,10 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
-import az.gov.adra.entity.Activity;
-import az.gov.adra.entity.ActivityRespond;
-import az.gov.adra.entity.ActivityReview;
-import az.gov.adra.entity.Employee;
+import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.exception.EmployeeCredentialsException;
@@ -100,11 +97,10 @@ public class ActivityController {
         review.setStatus(ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
-        review.setEmployee(employee);
+        review.setUser(user);
 
         //  URI location = ServletUriComponentsBuilder
         //      .fromCurrentRequest()
@@ -140,12 +136,11 @@ public class ActivityController {
         }
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Activity activity = new Activity();
-        activity.setEmployee(employee);
+        activity.setUser(user);
         activity.setTitle(title);
         activity.setDescription(description);
         activity.setViewCount(0);
@@ -153,7 +148,7 @@ public class ActivityController {
         activity.setStatus(ActivityConstants.ACTIVITY_STATUS_ACTIVE);
 
         if (!multipartFile.isEmpty()) {
-            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", employee.getHId());
+            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
                 Files.createDirectories(pathToSaveFile);
@@ -162,7 +157,7 @@ public class ActivityController {
             String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("activities", employee.getHId(), fileName);
+            Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
 
             activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
 
@@ -179,6 +174,10 @@ public class ActivityController {
                                                 @RequestParam(value = "respond", required = false) Integer respond) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        if (respond.compareTo(ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE) != 0 && respond.compareTo(ActivityConstants.ACTIVITY_RESPOND_STATUS_INACTIVE) != 0) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_RESPOND_MUST_BE_1_OR_0);
         }
 
         activityService.isActivityExistWithGivenId(id);
@@ -203,15 +202,14 @@ public class ActivityController {
         activityService.isActivityExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         ActivityRespond activityRespond = new ActivityRespond();
         Activity activity = new Activity();
         activity.setId(id);
         activityRespond.setActivity(activity);
-        activityRespond.setEmployee(employee);
+        activityRespond.setUser(user);
         activityRespond.setRespond(respond);
         activityRespond.setDateOfReg(LocalDateTime.now().toString());
         activityRespond.setStatus(ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE);
@@ -219,11 +217,11 @@ public class ActivityController {
         activityService.updateActivityRespond(activityRespond);
     }
 
-    @GetMapping("/employees/{employeeId}/activities")
+    @GetMapping("/employees/{username}/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivitiesByEmployeeId(@PathVariable(value = "employeeId",required = false) Integer employeeId,
+    public GenericResponse findActivitiesByEmployeeId(@PathVariable(value = "username",required = false) String username,
                                                       @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException, EmployeeCredentialsException {
-        if (ValidationUtil.isNull(employeeId)) {
+        if (ValidationUtil.isNullOrEmpty(username)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -231,9 +229,9 @@ public class ActivityController {
             fetchNext = 6;
         }
 
-        employeeService.isEmployeeExistWithGivenId(employeeId);
+        employeeService.isEmployeeExistWithGivenUsername(username);
 
-        List<ActivityDTO> activities = activityService.findActivitiesByEmployeeId(employeeId, fetchNext);
+        List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
 
@@ -245,9 +243,8 @@ public class ActivityController {
                                           @RequestParam(value = "description", required = false) String description,
                                           @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Activity activity = new Activity();
 
@@ -269,7 +266,7 @@ public class ActivityController {
                 throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
             }
 
-            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", employee.getHId());
+            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
                 Files.createDirectories(pathToSaveFile);
@@ -278,13 +275,13 @@ public class ActivityController {
             String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("activities", employee.getHId(), fileName);
+            Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
 
             activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
         }
 
         activity.setId(id);
-        activity.setEmployee(employee);
+        activity.setUser(user);
         activity.setTitle(title);
         activity.setDescription(description);
 
@@ -302,13 +299,12 @@ public class ActivityController {
         activityService.isActivityExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
-        employee.setHId("safura@gmail.com");
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
         Activity activity = new Activity();
         activity.setId(id);
-        activity.setEmployee(employee);
+        activity.setUser(user);
 
         activityService.deleteActivity(activity);
     }
@@ -338,17 +334,19 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
     }
 
+    //-------------
     @GetMapping("/activities/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findTopThreeActivitiesByLastAddedTime() {
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
-        Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(employee.getId());
+        Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(user.getUsername());
         return GenericResponse.withSuccess(HttpStatus.OK, "top three activities by last added time", activities);
     }
 
+    //++
     @GetMapping("/activities/count")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findCountOfAllActivities() {
@@ -356,6 +354,7 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", count);
     }
 
+    //++
     @PutMapping("/activities/{activityId}/view-count")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -369,6 +368,7 @@ public class ActivityController {
         activityService.incrementViewCountOfActivityById(id);
     }
 
+    //++
     @GetMapping("/activities/{activityId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
@@ -379,10 +379,10 @@ public class ActivityController {
         activityService.isActivityExistWithGivenId(id);
 
         //principal
-        Employee employee = new Employee();
-        employee.setId(484);
+        User user = new User();
+        user.setUsername("safura@gmail.com");
 
-        Map<Integer, Integer> respond = activityService.findRespondOfActivity(employee.getId(), id);
+        Map<Integer, Integer> respond = activityService.findRespondOfActivity(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);
     }
 
