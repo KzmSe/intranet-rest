@@ -13,16 +13,16 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityDTO {
 
-    private int id;
+    private Integer id;
     private User user;
     private String title;
     private String description;
-    private int viewCount;
+    private Integer viewCount;
     private String imgUrl;
-    private int positiveCount;
-    private int negativeCount;
+    private Integer positiveCount;
+    private Integer negativeCount;
     private String dateOfReg;
     private String dateOfDel;
-    private int status;
+    private Integer status;
 
 }

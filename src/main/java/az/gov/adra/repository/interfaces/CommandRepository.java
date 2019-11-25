@@ -8,11 +8,15 @@ import java.util.List;
 
 public interface CommandRepository {
 
-    List<CommandDTO> findAllCommands(int fetchNext);
+    List<CommandDTO> findAllCommands(int offset);
 
     CommandDTO findCommandByCommandId(int id);
 
+    List<CommandDTO> findTopThreeCommandsByLastAddedTime();
+
     void addCommand(Command command) throws CommandCredentialsException;
+
+    int findCountOfAllCommands();
 
     void isCommandExistWithGivenId(int id) throws CommandCredentialsException;
 

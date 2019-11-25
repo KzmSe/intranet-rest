@@ -14,13 +14,13 @@ import java.io.File;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocumentDTO {
 
-    private int id;
+    private Integer id;
     private Employee employee;
     private String title;
     private String fileUrl;
     private File file;
     private String dateOfReg;
     private String dateOfDel;
-    private int status;
+    private Integer status;
 
 }

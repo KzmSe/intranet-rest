@@ -1,20 +1,15 @@
 package az.gov.adra.controller;
 
-import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
-import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.dataTransferObjects.PostDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
-import az.gov.adra.exception.ActivityCredentialsException;
-import az.gov.adra.exception.EmployeeCredentialsException;
+import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.exception.PostCredentialsException;
-import az.gov.adra.service.interfaces.ActivityService;
-import az.gov.adra.service.interfaces.EmployeeService;
+import az.gov.adra.service.interfaces.UserService;
 import az.gov.adra.service.interfaces.PostService;
 import az.gov.adra.util.ValidationUtil;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -39,7 +34,7 @@ public class PostController {
     @Autowired
     private PostService postService;
     @Autowired
-    private EmployeeService employeeService;
+    private UserService userService;
     @Value("${file.upload.path.win}")
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
@@ -209,7 +204,7 @@ public class PostController {
     @GetMapping("/employees/{username}/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByEmployeeId(@PathVariable(value = "username",required = false) String username,
-                                                      @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws PostCredentialsException, EmployeeCredentialsException {
+                                                      @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws PostCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNull(username)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -218,7 +213,7 @@ public class PostController {
             fetchNext = 6;
         }
 
-        employeeService.isEmployeeExistWithGivenUsername(username);
+        userService.isUserExistWithGivenUsername(username);
 
         List<Post> posts = postService.findPostsByUsername(username, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);

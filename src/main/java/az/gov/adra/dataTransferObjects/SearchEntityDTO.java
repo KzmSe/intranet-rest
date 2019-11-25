@@ -15,8 +15,8 @@ public class SearchEntityDTO {
     private Integer departmentId;
     private Integer sectionId;
     private Integer positionId;
-    private int offset;
-    private int fetchSize;
+    private Integer offset;
+    private Integer fetchSize;
 
     public SearchEntityDTO() {
         this.name = "none";

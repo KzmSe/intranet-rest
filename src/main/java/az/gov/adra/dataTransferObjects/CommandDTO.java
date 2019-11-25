@@ -15,7 +15,7 @@ import java.io.File;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommandDTO {
 
-    private int id;
+    private Integer id;
     private User user;
     private String title;
     private String description;
@@ -23,6 +23,6 @@ public class CommandDTO {
     private File file;
     private String dateOfReg;
     private String dateOfDel;
-    private int status;
+    private Integer status;
 
 }

@@ -25,17 +25,18 @@ import java.util.List;
 @Repository
 public class AnnouncementRepositoryImpl implements AnnouncementRepository {
 
-    private static final String findAllAnnouncementsByImportanceLevelSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.importance_level = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    private static final String findAllAnnouncementsSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String findAnnouncementByAnnouncementIdSql = "select a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.id = ? and a.status = ?";
-    private static final String findTopAnnouncementByImportanceLevelSql = "select top 1 a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.importance_level = ? and a.status = ? order by a.date_of_reg desc";
+    private static final String findTopThreeAnnouncementsByLastAddedTimeSql = "select top 3 a.id as announcement_id, a.title, a.description, a.date_of_reg, u.name, u.surname, u.username from Announcement a inner join users u on a.username = u.username where a.status = ? order by a.date_of_reg desc";
+    private static final String findCountOfAllAnnouncementsSql = "select count(*) as count from Announcement where status = ?";
     private static final String isAnnouncementExistWithGivenIdSql = "select count(*) as count from Announcement where id = ? and status = ?";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Announcement> findAllAnnouncementsByImportanceLevel(String importanceLevel, int fetchNext) {
-        List<Announcement> announcements = jdbcTemplate.query(findAllAnnouncementsByImportanceLevelSql, new Object[]{importanceLevel, AnnouncementConstants.ANNOUNCEMENT_STATUS_ACTIVE, AnnouncementConstants.ANNOUNCEMENT_OFFSET_NUMBER, fetchNext}, new ResultSetExtractor<List<Announcement>>() {
+    public List<Announcement> findAllAnnouncements(int offset) {
+        List<Announcement> announcements = jdbcTemplate.query(findAllAnnouncementsSql, new Object[]{AnnouncementConstants.ANNOUNCEMENT_STATUS_ACTIVE, offset, AnnouncementConstants.ANNOUNCEMENT_FETCH_NEXT}, new ResultSetExtractor<List<Announcement>>() {
             @Override
             public List<Announcement> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<Announcement> list = new ArrayList<>();
@@ -90,29 +91,39 @@ public class AnnouncementRepositoryImpl implements AnnouncementRepository {
     }
 
     @Override
-    public Announcement findTopAnnouncementByImportanceLevel(String importanceLevel) {
-        Announcement announcement = jdbcTemplate.queryForObject(findTopAnnouncementByImportanceLevelSql, new Object[] {importanceLevel, AnnouncementConstants.ANNOUNCEMENT_STATUS_ACTIVE}, new RowMapper<Announcement>() {
+    public List<Announcement> findTopThreeAnnouncementsByLastAddedTime() {
+        List<Announcement> announcements = jdbcTemplate.query(findTopThreeAnnouncementsByLastAddedTimeSql, new Object[]{AnnouncementConstants.ANNOUNCEMENT_STATUS_ACTIVE}, new ResultSetExtractor<List<Announcement>>() {
             @Override
-            public Announcement mapRow(ResultSet rs, int i) throws SQLException {
-                Announcement announcement1 = new Announcement();
-                announcement1.setId(rs.getInt("announcement_id"));
-                announcement1.setTitle(rs.getString("title"));
-                announcement1.setDescription(rs.getString("description"));
+            public List<Announcement> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                List<Announcement> list = new ArrayList<>();
+                while (rs.next()) {
+                    Announcement announcement = new Announcement();
+                    announcement.setId(rs.getInt("announcement_id"));
+                    announcement.setTitle(rs.getString("title"));
+                    announcement.setDescription(rs.getString("description"));
 
-                LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
-                announcement1.setDateOfReg(dateOfReg.format(TimeParserUtil.DATE_FORMATTER));
+                    LocalDateTime dateOfReg = TimeParserUtil.parseStringToLocalDateTime(rs.getString("date_of_reg"));
+                    announcement.setDateOfReg(dateOfReg.format(TimeParserUtil.DATETIME_FORMATTER));
 
-                User user = new User();
-                user.setName(rs.getString("name"));
-                user.setSurname(rs.getString("surname"));
-                user.setUsername(rs.getString("username"));
+                    User user = new User();
+                    user.setName(rs.getString("name"));
+                    user.setSurname(rs.getString("surname"));
+                    user.setUsername(rs.getString("username"));
 
-                announcement1.setUser(user);
+                    announcement.setUser(user);
 
-                return announcement1;
+                    list.add(announcement);
+                }
+                return list;
             }
         });
-        return announcement;
+        return announcements;
+    }
+
+    @Override
+    public int findCountOfAllAnnouncements() {
+        int total = jdbcTemplate.queryForObject(findCountOfAllAnnouncementsSql, new Object[]{AnnouncementConstants.ANNOUNCEMENT_STATUS_ACTIVE}, Integer.class);
+        return total;
     }
 
     @Override

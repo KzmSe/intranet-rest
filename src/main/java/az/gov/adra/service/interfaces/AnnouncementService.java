@@ -7,11 +7,13 @@ import java.util.List;
 
 public interface AnnouncementService {
 
-    List<Announcement> findAllAnnouncementsByImportanceLevel(String importanceLevel, int fetchNext);
+    List<Announcement> findAllAnnouncements(int offset);
 
     Announcement findAnnouncementByAnnouncementId(int id);
 
-    Announcement findTopAnnouncementByImportanceLevel(String importanceLevel);
+    List<Announcement> findTopThreeAnnouncementsByLastAddedTime();
+
+    int findCountOfAllAnnouncements();
 
     void isAnnouncementExistWithGivenId(int id) throws AnnouncementCredentialsException;
 

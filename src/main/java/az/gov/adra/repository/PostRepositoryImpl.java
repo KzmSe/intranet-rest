@@ -78,7 +78,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public List<Post> findAllPosts(int offset) {
-        List<Post> postList = jdbcTemplate.query(findAllPostsSql, new Object[]{PostConstants.POST_STATUS_ACTIVE, offset, PostConstants.POST_FETCH_NEXT_NUMBER}, new ResultSetExtractor<List<Post>>() {
+        List<Post> postList = jdbcTemplate.query(findAllPostsSql, new Object[]{PostConstants.POST_STATUS_ACTIVE, offset, PostConstants.POST_FETCH_NEXT}, new ResultSetExtractor<List<Post>>() {
             @Override
             public List<Post> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<Post> list = new LinkedList<>();
@@ -225,7 +225,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public List<Post> findPostsByUsername(String username, int fetchNext) {
-        List<Post> posts = jdbcTemplate.query(findPostsByUsernameSql, new Object[]{username, PostConstants.POST_STATUS_ACTIVE, PostConstants.POST_OFFSET_NUMBER, fetchNext}, new ResultSetExtractor<List<Post>>() {
+        List<Post> posts = jdbcTemplate.query(findPostsByUsernameSql, new Object[]{username, PostConstants.POST_STATUS_ACTIVE, PostConstants.POST_FETCH_NEXT, fetchNext}, new ResultSetExtractor<List<Post>>() {
             @Override
             public List<Post> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<Post> list = new LinkedList<>();

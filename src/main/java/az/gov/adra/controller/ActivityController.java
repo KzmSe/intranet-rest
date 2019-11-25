@@ -6,14 +6,13 @@ import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
-import az.gov.adra.exception.EmployeeCredentialsException;
+import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.service.interfaces.ActivityService;
-import az.gov.adra.service.interfaces.EmployeeService;
+import az.gov.adra.service.interfaces.UserService;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +34,7 @@ public class ActivityController {
     @Autowired
     private ActivityService activityService;
     @Autowired
-    private EmployeeService employeeService;
+    private UserService userService;
     @Value("${file.upload.path.win}")
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
@@ -45,8 +43,24 @@ public class ActivityController {
 
     @GetMapping("/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivities() {
-        List<Activity> activities = activityService.findAllActivities(0);
+    public GenericResponse findActivities(@RequestParam(name = "page", required = false) Integer page) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(page)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        int total = activityService.findCountOfAllActivities();
+        int totalPage = (int) Math.ceil((double) total / 10);
+
+        int offset = 0;
+
+        if (page != null && page >= totalPage) {
+            offset = (totalPage - 1) * 10;
+
+        } else if (page != null && page > 1) {
+            offset = (page - 1) * 10;
+        };
+
+        List<Activity> activities = activityService.findAllActivities(offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
     }
 
@@ -65,14 +79,15 @@ public class ActivityController {
 
     @GetMapping("/activities/{activityId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findReviewsByActivityId(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(id)) {
+    public GenericResponse findReviewsByActivityId(@PathVariable(name = "activityId", required = false) Integer id,
+                                                   @RequestParam(name = "offset", required = false) Integer offset) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(offset)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         activityService.isActivityExistWithGivenId(id);
 
-        List<ActivityReview> reviews = activityService.findReviewsByActivityId(id);
+        List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific activity", reviews);
     }
 
@@ -92,7 +107,7 @@ public class ActivityController {
         Activity activity = new Activity();
         activity.setId(id);
         review.setActivity(activity);
-        review.setDescription(description);
+        review.setDescription(description.trim());
         review.setDateOfReg(LocalDateTime.now().toString());
         review.setStatus(ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE);
 
@@ -119,7 +134,7 @@ public class ActivityController {
                             @RequestParam(value = "description", required = false) String description,
                             @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
 
-        if (!ValidationUtil.isNullOrEmpty(title, description)) {
+        if (ValidationUtil.isNullOrEmpty(title, description)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -141,8 +156,8 @@ public class ActivityController {
 
         Activity activity = new Activity();
         activity.setUser(user);
-        activity.setTitle(title);
-        activity.setDescription(description);
+        activity.setTitle(title.trim());
+        activity.setDescription(description.trim());
         activity.setViewCount(0);
         activity.setDateOfReg(LocalDateTime.now().toString());
         activity.setStatus(ActivityConstants.ACTIVITY_STATUS_ACTIVE);
@@ -171,8 +186,9 @@ public class ActivityController {
     @GetMapping("/activities/{activityId}/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findActivityResponds(@PathVariable(value = "activityId", required = false) Integer id,
-                                                @RequestParam(value = "respond", required = false) Integer respond) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
+                                                @RequestParam(value = "respond", required = false) Integer respond,
+                                                @RequestParam(value = "offset", required = false) Integer offset) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond) || ValidationUtil.isNull(offset)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -182,7 +198,7 @@ public class ActivityController {
 
         activityService.isActivityExistWithGivenId(id);
 
-        List<ActivityRespond> responds = activityService.findActivityRespondsByRespond(id, respond);
+        List<ActivityRespond> responds = activityService.findActivityRespondsByRespond(id, respond, offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "responds of specific activity", responds);
     }
 
@@ -217,21 +233,29 @@ public class ActivityController {
         activityService.updateActivityRespond(activityRespond);
     }
 
-    @GetMapping("/employees/{username}/activities")
+    @GetMapping("/users/{username}/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findActivitiesByEmployeeId(@PathVariable(value = "username",required = false) String username,
-                                                      @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException, EmployeeCredentialsException {
-        if (ValidationUtil.isNullOrEmpty(username)) {
+                                                      @RequestParam(name = "page", required = false) Integer page) throws ActivityCredentialsException, UserCredentialsException {
+        if (ValidationUtil.isNullOrEmpty(username) || ValidationUtil.isNull(page)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        if (fetchNext == null) {
-            fetchNext = 6;
-        }
+        int total = activityService.findCountOfAllActivities();
+        int totalPage = (int) Math.ceil((double) total / 10);
 
-        employeeService.isEmployeeExistWithGivenUsername(username);
+        int offset = 0;
 
-        List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, fetchNext);
+        if (page != null && page >= totalPage) {
+            offset = (totalPage - 1) * 10;
+
+        } else if (page != null && page > 1) {
+            offset = (page - 1) * 10;
+        };
+
+        userService.isUserExistWithGivenUsername(username);
+
+        List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
 
@@ -239,9 +263,9 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivity(@PathVariable(value = "activityId", required = false) Integer id,
-                                          @RequestParam(value = "title", required = false) String title,
-                                          @RequestParam(value = "description", required = false) String description,
-                                          @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
+                               @RequestParam(value = "title", required = false) String title,
+                               @RequestParam(value = "description", required = false) String description,
+                               @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
         //principal
         User user = new User();
         user.setUsername("safura@gmail.com");
@@ -327,26 +351,24 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
     }
 
-    @GetMapping("/activities/last-added")
+    @GetMapping("/activities/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findActivitiesByLastAddedTime() {
         List<ActivityDTO> activities = activityService.findTopActivitiesByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
     }
 
-    //-------------
-    @GetMapping("/activities/top-three")
+    @GetMapping("/activities/top-three/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findTopThreeActivitiesByLastAddedTime() {
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername("aminhasanov21@gmail.com");
 
         Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(user.getUsername());
-        return GenericResponse.withSuccess(HttpStatus.OK, "top three activities by last added time", activities);
+        return GenericResponse.withSuccess(HttpStatus.OK, "responds of top three activities by username and last added time", activities);
     }
 
-    //++
     @GetMapping("/activities/count")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findCountOfAllActivities() {
@@ -354,7 +376,6 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", count);
     }
 
-    //++
     @PutMapping("/activities/{activityId}/view-count")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -368,7 +389,6 @@ public class ActivityController {
         activityService.incrementViewCountOfActivityById(id);
     }
 
-    //++
     @GetMapping("/activities/{activityId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {

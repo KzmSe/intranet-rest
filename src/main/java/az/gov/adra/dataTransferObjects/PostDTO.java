@@ -13,17 +13,17 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostDTO {
 
-    private int id;
+    private Integer id;
     private User user;
     private String title;
     private String description;
-    private int viewCount;
+    private Integer viewCount;
     private String imgUrl;
-    private int likeCount;
-    private int dislikeCount;
+    private Integer likeCount;
+    private Integer dislikeCount;
     private String dateOfReg;
     private String dateOfDel;
-    private int status;
+    private Integer status;
 
 
 }

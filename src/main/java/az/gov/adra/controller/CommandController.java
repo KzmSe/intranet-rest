@@ -37,27 +37,41 @@ public class CommandController {
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
 
-    //+
     @GetMapping("/commands")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findAllCommands() {
-        List<CommandDTO> commands = commandService.findAllCommands(200);
-
-        for (CommandDTO command : commands) {
-            if (command.getImgUrl() != null) {
-                String imgUrl = new String(DatatypeConverter.parseHexBinary(command.getImgUrl()));
-                Path fullFilePath = Paths.get(imageUploadPath, imgUrl);
-                if (Files.exists(fullFilePath)) {
-                    File file = fullFilePath.toFile();
-                    command.setFile(file);
-                }
-            }
+    public GenericResponse findAllCommands(@RequestParam(name = "page", required = false) Integer page) throws CommandCredentialsException {
+        if (ValidationUtil.isNull(page)) {
+            throw new CommandCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
+
+        int total = commandService.findCountOfAllCommands();
+        int totalPage = (int) Math.ceil((double) total / 10);
+
+        int offset = 0;
+
+        if (page != null && page >= totalPage) {
+            offset = (totalPage - 1) * 10;
+
+        } else if (page != null && page > 1) {
+            offset = (page - 1) * 10;
+        };
+
+        List<CommandDTO> commands = commandService.findAllCommands(offset);
+
+//        for (CommandDTO command : commands) {
+//            if (command.getImgUrl() != null) {
+//                String imgUrl = new String(DatatypeConverter.parseHexBinary(command.getImgUrl()));
+//                Path fullFilePath = Paths.get(imageUploadPath, imgUrl);
+//                if (Files.exists(fullFilePath)) {
+//                    File file = fullFilePath.toFile();
+//                    command.setFile(file);
+//                }
+//            }
+//        }
 
         return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
     }
 
-    //+
     @GetMapping("/commands/{commandId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findCommandById(@PathVariable(name = "commandId", required = false) Integer id) throws CommandCredentialsException {
@@ -69,19 +83,18 @@ public class CommandController {
 
         CommandDTO command = commandService.findCommandByCommandId(id);
 
-        if (command.getImgUrl() != null) {
-            String imgUrl = new String(DatatypeConverter.parseHexBinary(command.getImgUrl()));
-            Path fullFilePath = Paths.get(imageUploadPath, imgUrl);
-            if (Files.exists(fullFilePath)) {
-                File file = fullFilePath.toFile();
-                command.setFile(file);
-            }
-        }
+//        if (command.getImgUrl() != null) {
+//            String imgUrl = new String(DatatypeConverter.parseHexBinary(command.getImgUrl()));
+//            Path fullFilePath = Paths.get(imageUploadPath, imgUrl);
+//            if (Files.exists(fullFilePath)) {
+//                File file = fullFilePath.toFile();
+//                command.setFile(file);
+//            }
+//        }
 
         return GenericResponse.withSuccess(HttpStatus.OK, "specific command by id", command);
     }
 
-    //+
     @PostMapping("/commands")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -133,5 +146,14 @@ public class CommandController {
 
         commandService.addCommand(command);
     }
+
+    @GetMapping("/commands/top-three")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findTopThreeCommands() {
+
+        List<CommandDTO> commands = commandService.findTopThreeCommandsByLastAddedTime();
+        return GenericResponse.withSuccess(HttpStatus.OK, "top three commands by last added time", commands);
+    }
+
 
 }

@@ -6,13 +6,10 @@ import az.gov.adra.exception.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
 
 @RestController
 @ControllerAdvice
@@ -57,16 +54,16 @@ public class GlobalExceptionHandler {
         return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "ActivityCredentialsException", exception);
     }
 
-    @ExceptionHandler(EmployeeCredentialsException.class)
+    @ExceptionHandler(UserCredentialsException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public GenericResponse handleEmployeeCredentialsException(EmployeeCredentialsException e) {
+    public GenericResponse handleUserCredentialsException(UserCredentialsException e) {
         //Exception
         Exception exception = new Exception();
         exception.setCode("0x0040");
         exception.setMessage(e.getMessage());
-        exception.setErrorStack("EmployeeCredentialsException.");
+        exception.setErrorStack("UserCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.BAD_REQUEST, "EmployeeCredentialsException", exception);
+        return GenericResponse.withException(HttpStatus.BAD_REQUEST, "UserCredentialsException", exception);
     }
 
     @ExceptionHandler(PostCredentialsException.class)

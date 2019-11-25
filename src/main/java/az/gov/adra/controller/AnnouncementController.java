@@ -1,6 +1,5 @@
 package az.gov.adra.controller;
 
-import az.gov.adra.constant.AnnouncementConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.entity.Announcement;
 import az.gov.adra.entity.response.GenericResponse;
@@ -23,43 +22,48 @@ public class AnnouncementController {
     @Autowired
     private AnnouncementService announcementService;
 
-    //+
     @GetMapping("/announcements")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findAllAnnouncements(@RequestParam(name = "importanceLevel", required = false) String importanceLevel,
-                                                @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws AnnouncementCredentialsException {
-        if (ValidationUtil.isNullOrEmpty(importanceLevel) || (!importanceLevel.equals(AnnouncementConstants.ANNOUNCEMENT_IMPORTANCE_LEVEL_NECESSARY) && !importanceLevel.equals(AnnouncementConstants.ANNOUNCEMENT_IMPORTANCE_LEVEL_UNNECESSARY))) {
+    public GenericResponse findAllAnnouncements(@RequestParam(name = "page", required = false) Integer page) throws AnnouncementCredentialsException {
+        if (ValidationUtil.isNull(page)) {
             throw new AnnouncementCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        if (ValidationUtil.isNull(fetchNext)) {
-            fetchNext = 10;
-        }
+        int total = announcementService.findCountOfAllAnnouncements();
+        int totalPage = (int) Math.ceil((double) total / 10);
 
-        List<Announcement> allAnnouncements = announcementService.findAllAnnouncementsByImportanceLevel(importanceLevel, fetchNext);
+        int offset = 0;
+
+        if (page != null && page >= totalPage) {
+            offset = (totalPage - 1) * 10;
+
+        } else if (page != null && page > 1) {
+            offset = (page - 1) * 10;
+        };
+
+        List<Announcement> allAnnouncements = announcementService.findAllAnnouncements(offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
     }
 
-    //+
     @GetMapping("/announcements/{announcementId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAnnouncementByAnnouncementId(@PathVariable(name = "announcementId", required = false) Integer id) throws AnnouncementCredentialsException {
-        announcementService.isAnnouncementExistWithGivenId(id);
-
         if (ValidationUtil.isNull(id)) {
             throw new AnnouncementCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
+
+        announcementService.isAnnouncementExistWithGivenId(id);
+
         Announcement announcement = announcementService.findAnnouncementByAnnouncementId(id);
         return GenericResponse.withSuccess(HttpStatus.OK, "specific announcement by id", announcement);
     }
 
-    //+
-    @GetMapping("/announcements/necessary")
+    @GetMapping("/announcements/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findTopNecessaryAnnouncement() throws AnnouncementCredentialsException {
-        Announcement announcement = announcementService.findTopAnnouncementByImportanceLevel(AnnouncementConstants.ANNOUNCEMENT_IMPORTANCE_LEVEL_NECESSARY);
+    public GenericResponse findTopThreeAnnouncements() {
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "top necessary announcement", announcement);
+        List<Announcement> announcements = announcementService.findTopThreeAnnouncementsByLastAddedTime();
+        return GenericResponse.withSuccess(HttpStatus.OK, "top three announcements by last added time", announcements);
     }
 
 }

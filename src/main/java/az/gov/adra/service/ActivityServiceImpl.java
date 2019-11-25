@@ -39,8 +39,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityReview> findReviewsByActivityId(int id) {
-        return activityRepository.findReviewsByActivityId(id);
+    public List<ActivityReview> findReviewsByActivityId(int id, int offset) {
+        return activityRepository.findReviewsByActivityId(id, offset);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond) {
-        return activityRepository.findActivityRespondsByRespond(id, respond);
+    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int offset) {
+        return activityRepository.findActivityRespondsByRespond(id, respond, offset);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityDTO> findActivitiesByUsername(String username, int fetchNext) {
-        return activityRepository.findActivitiesByUsername(username, fetchNext);
+    public List<ActivityDTO> findActivitiesByUsername(String username, int offset) {
+        return activityRepository.findActivitiesByUsername(username, offset);
     }
 
     @Override

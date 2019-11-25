@@ -20,8 +20,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public List<Announcement> findAllAnnouncementsByImportanceLevel(String importanceLevel, int fetchNext) {
-        return announcementRepository.findAllAnnouncementsByImportanceLevel(importanceLevel, fetchNext);
+    public List<Announcement> findAllAnnouncements(int offset) {
+        return announcementRepository.findAllAnnouncements(offset);
     }
 
     @Override
@@ -30,8 +30,13 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public Announcement findTopAnnouncementByImportanceLevel(String importanceLevel) {
-        return announcementRepository.findTopAnnouncementByImportanceLevel(importanceLevel);
+    public List<Announcement> findTopThreeAnnouncementsByLastAddedTime() {
+        return announcementRepository.findTopThreeAnnouncementsByLastAddedTime();
+    }
+
+    @Override
+    public int findCountOfAllAnnouncements() {
+        return announcementRepository.findCountOfAllAnnouncements();
     }
 
     @Override

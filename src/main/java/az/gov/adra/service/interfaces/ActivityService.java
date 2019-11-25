@@ -17,7 +17,7 @@ public interface ActivityService {
 
     ActivityDTO findActivityByActivityId(int id);
 
-    List<ActivityReview> findReviewsByActivityId(int id);
+    List<ActivityReview> findReviewsByActivityId(int id, int offset);
 
     void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
 
@@ -25,7 +25,7 @@ public interface ActivityService {
 
     void incrementViewCountOfActivityById(int id) throws ActivityCredentialsException;
 
-    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond);
+    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int offset);
 
     void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
 
@@ -33,7 +33,7 @@ public interface ActivityService {
 
     Map<Integer, Integer> findRespondOfActivity(String username, int activityId);
 
-    List<ActivityDTO> findActivitiesByUsername(String username, int fetchNext);
+    List<ActivityDTO> findActivitiesByUsername(String username, int offset);
 
     void updateActivity(Activity activity) throws ActivityCredentialsException;
 

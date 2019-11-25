@@ -21,8 +21,8 @@ public class CommandServiceImpl implements CommandService {
     }
 
     @Override
-    public List<CommandDTO> findAllCommands(int fetchNext) {
-        return commandRepository.findAllCommands(fetchNext);
+    public List<CommandDTO> findAllCommands(int offset) {
+        return commandRepository.findAllCommands(offset);
     }
 
     @Override
@@ -31,8 +31,18 @@ public class CommandServiceImpl implements CommandService {
     }
 
     @Override
+    public List<CommandDTO> findTopThreeCommandsByLastAddedTime() {
+        return commandRepository.findTopThreeCommandsByLastAddedTime();
+    }
+
+    @Override
     public void addCommand(Command command) throws CommandCredentialsException {
         commandRepository.addCommand(command);
+    }
+
+    @Override
+    public int findCountOfAllCommands() {
+        return commandRepository.findCountOfAllCommands();
     }
 
     @Override
