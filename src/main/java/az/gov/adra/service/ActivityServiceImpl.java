@@ -104,13 +104,18 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public int findCountOfAllActivitiesByKeyword(String keyword) {
+        return activityRepository.findCountOfAllActivitiesByKeyword(keyword);
+    }
+
+    @Override
     public void deleteActivity(Activity activity) throws ActivityCredentialsException {
         activityRepository.deleteActivity(activity);
     }
 
     @Override
-    public List<Activity> findActivitiesByKeyword(String keyword) {
-        return activityRepository.findActivitiesByKeyword(keyword);
+    public List<Activity> findActivitiesByKeyword(String keyword, int offset) {
+        return activityRepository.findActivitiesByKeyword(keyword, offset);
     }
 
 }

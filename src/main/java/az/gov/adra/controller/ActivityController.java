@@ -49,16 +49,18 @@ public class ActivityController {
         }
 
         int total = activityService.findCountOfAllActivities();
-        int totalPage = (int) Math.ceil((double) total / 10);
-
         int offset = 0;
 
-        if (page != null && page >= totalPage) {
-            offset = (totalPage - 1) * 10;
+        if (total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
 
-        } else if (page != null && page > 1) {
-            offset = (page - 1) * 10;
-        };
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
 
         List<Activity> activities = activityService.findAllActivities(offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
@@ -242,16 +244,18 @@ public class ActivityController {
         }
 
         int total = activityService.findCountOfAllActivities();
-        int totalPage = (int) Math.ceil((double) total / 10);
-
         int offset = 0;
 
-        if (page != null && page >= totalPage) {
-            offset = (totalPage - 1) * 10;
+        if(total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
 
-        } else if (page != null && page > 1) {
-            offset = (page - 1) * 10;
-        };
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
 
         userService.isUserExistWithGivenUsername(username);
 
@@ -335,12 +339,27 @@ public class ActivityController {
 
     @GetMapping("/activities/keyword")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivitiesByKeyword(@RequestParam(value = "keyword", required = false) String keyword) throws ActivityCredentialsException {
-        if (ValidationUtil.isNullOrEmpty(keyword)) {
+    public GenericResponse findActivitiesByKeyword(@RequestParam(value = "page", required = false) Integer page,
+                                                   @RequestParam(value = "keyword", required = false) String keyword) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(page) || ValidationUtil.isNullOrEmpty(keyword)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim());
+        int total = activityService.findCountOfAllActivitiesByKeyword(keyword.trim());
+        int offset = 0;
+
+        if (total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
+
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
+
+        List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim(), offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
     }
 

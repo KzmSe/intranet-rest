@@ -24,12 +24,22 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public List<DocumentDTO> findTopDocumentsByLastAddedTime() {
+        return documentRepository.findTopDocumentsByLastAddedTime();
+    }
+
+    @Override
     public int findCountOfAllDocuments() {
         return documentRepository.findCountOfAllDocuments();
     }
 
     @Override
-    public List<DocumentDTO> findDocumentsByKeyword(String keyword) {
-        return documentRepository.findDocumentsByKeyword(keyword);
+    public int findCountOfAllDocumentsByKeyword(String keyword) {
+        return documentRepository.findCountOfAllDocumentsByKeyword(keyword);
+    }
+
+    @Override
+    public List<DocumentDTO> findDocumentsByKeyword(String keyword, int offset) {
+        return documentRepository.findDocumentsByKeyword(keyword, offset);
     }
 }

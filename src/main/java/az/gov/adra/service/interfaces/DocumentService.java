@@ -8,8 +8,12 @@ public interface DocumentService {
 
     List<DocumentDTO> findAllDocuments(int offset);
 
+    List<DocumentDTO> findTopDocumentsByLastAddedTime();
+
     int findCountOfAllDocuments();
 
-    List<DocumentDTO> findDocumentsByKeyword(String keyword);
+    int findCountOfAllDocumentsByKeyword(String keyword);
+
+    List<DocumentDTO> findDocumentsByKeyword(String keyword, int offset);
 
 }

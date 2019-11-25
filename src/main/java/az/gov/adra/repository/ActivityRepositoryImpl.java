@@ -42,8 +42,9 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String updateActivitySql = "update Activity set title = ?, description = ?";
     private static final String findActivitiesRandomlySql = "select top 4 a.id activity_id,a.title,a.img_url,a.date_of_reg,a.username,u.name,u.surname from Activity a  inner join users u on u.username=a.username  where a.id in (SELECT TOP (select count(*) from Activity where status = ?) id FROM Activity where status = ? ORDER BY NEWID())";
     private static final String findCountOfAllActivitiesSql = "select count(*) as count from Activity where status = ?";
+    private static final String findCountOfAllActivitiesByKeywordSql = "select count(*) as count from Activity where status = ? and title like ?";
     private static final String deleteActivitySql = "update Activity set status = ? where id = ? and username = ?";
-    private static final String findActivitiesByKeywordSql = "select a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url,u.username, u.name,u.surname from Activity a inner join users u on u.username = a.username  where a.title like ? and a.status = ? order by a.date_of_reg desc";
+    private static final String findActivitiesByKeywordSql = "select a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url,u.username, u.name,u.surname from Activity a inner join users u on u.username = a.username  where a.title like ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String isActivityExistWithGivenIdSql = "select count(*) as count from Activity where id = ? and status = ?";
     private static final String findCountOfActivityRespondsByActivityIdAndEmployeeIdSql = "select COUNT(*) as count from Activity_Respond where activity_id = ? and username = ? and status = ?";
 
@@ -377,6 +378,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
     @Override
+    public int findCountOfAllActivitiesByKeyword(String keyword) {
+        int totalCount = jdbcTemplate.queryForObject(findCountOfAllActivitiesByKeywordSql, new Object[] {ActivityConstants.ACTIVITY_STATUS_ACTIVE, "%" + keyword + "%"}, Integer.class);
+        return totalCount;
+    }
+
+    @Override
     public void deleteActivity(Activity activity) throws ActivityCredentialsException {
         int affectedRows = jdbcTemplate.update(deleteActivitySql, ActivityConstants.ACTIVITY_STATUS_INACTIVE, activity.getId(), activity.getUser().getUsername());
         if (affectedRows == 0) {
@@ -385,8 +392,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
     @Override
-    public List<Activity> findActivitiesByKeyword(String keyword) {
-        List<Activity> activityList = jdbcTemplate.query(findActivitiesByKeywordSql, new Object[]{"%" + keyword + "%" ,ActivityConstants.ACTIVITY_STATUS_ACTIVE}, new ResultSetExtractor<List<Activity>>() {
+    public List<Activity> findActivitiesByKeyword(String keyword, int offset) {
+        List<Activity> activityList = jdbcTemplate.query(findActivitiesByKeywordSql, new Object[]{"%" + keyword + "%" ,ActivityConstants.ACTIVITY_STATUS_ACTIVE, offset, ActivityConstants.ACTIVITY_FETCH_NEXT}, new ResultSetExtractor<List<Activity>>() {
             @Override
             public List<Activity> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<Activity> list = new LinkedList<>();

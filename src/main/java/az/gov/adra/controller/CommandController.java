@@ -45,16 +45,18 @@ public class CommandController {
         }
 
         int total = commandService.findCountOfAllCommands();
-        int totalPage = (int) Math.ceil((double) total / 10);
-
         int offset = 0;
 
-        if (page != null && page >= totalPage) {
-            offset = (totalPage - 1) * 10;
+        if (total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
 
-        } else if (page != null && page > 1) {
-            offset = (page - 1) * 10;
-        };
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
 
         List<CommandDTO> commands = commandService.findAllCommands(offset);
 
