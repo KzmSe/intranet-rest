@@ -3,6 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.CommandConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.CommandDTO;
+import az.gov.adra.dataTransferObjects.PaginationForCommandDTO;
 import az.gov.adra.entity.Command;
 import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.User;
@@ -45,10 +46,11 @@ public class CommandController {
         }
 
         int total = commandService.findCountOfAllCommands();
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -59,6 +61,9 @@ public class CommandController {
         }
 
         List<CommandDTO> commands = commandService.findAllCommands(offset);
+        PaginationForCommandDTO dto = new PaginationForCommandDTO();
+        dto.setTotalPages(totalPage);
+        dto.setCommandDTOS(commands);
 
 //        for (CommandDTO command : commands) {
 //            if (command.getImgUrl() != null) {
@@ -71,7 +76,7 @@ public class CommandController {
 //            }
 //        }
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", dto);
     }
 
     @GetMapping("/commands/{commandId}")

@@ -3,6 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
+import az.gov.adra.dataTransferObjects.PaginationForActivityDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
@@ -49,10 +50,11 @@ public class ActivityController {
         }
 
         int total = activityService.findCountOfAllActivities();
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -63,7 +65,11 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findAllActivities(offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
+        PaginationForActivityDTO dto = new PaginationForActivityDTO();
+        dto.setTotalPages(totalPage);
+        dto.setActivities(activities);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", dto);
     }
 
     @GetMapping("/activities/{activityId}")
@@ -244,10 +250,11 @@ public class ActivityController {
         }
 
         int total = activityService.findCountOfAllActivitiesByUsername(username);
+        int totalPage = 0;
         int offset = 0;
 
         if(total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 3);
+            totalPage = (int) Math.ceil((double) total / 3);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 3;
@@ -260,7 +267,11 @@ public class ActivityController {
         userService.isUserExistWithGivenUsername(username);
 
         List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
+        PaginationForActivityDTO dto = new PaginationForActivityDTO();
+        dto.setTotalPages(totalPage);
+        dto.setActivityDTOS(activities);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", dto);
     }
 
     @PutMapping("/activities/{activityId}")
@@ -346,10 +357,11 @@ public class ActivityController {
         }
 
         int total = activityService.findCountOfAllActivitiesByKeyword(keyword.trim());
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -360,7 +372,11 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim(), offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
+        PaginationForActivityDTO dto = new PaginationForActivityDTO();
+        dto.setTotalPages(totalPage);
+        dto.setActivities(activities);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", dto);
     }
 
 //    @GetMapping("/activities/random")

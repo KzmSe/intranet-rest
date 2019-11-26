@@ -1,5 +1,6 @@
 package az.gov.adra.controller;
 
+import az.gov.adra.dataTransferObjects.PaginationForGalleryDTO;
 import az.gov.adra.entity.Gallery;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.service.interfaces.GalleryService;
@@ -24,10 +25,11 @@ public class GalleryController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllGalleries(@RequestParam(value = "page", required = false) Integer page) {
         int total = galleryService.findCountOfAllGalleries();
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -38,7 +40,11 @@ public class GalleryController {
         }
 
         List<Gallery> galleries = galleryService.findAllGalleries(offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of galleries", galleries);
+        PaginationForGalleryDTO dto = new PaginationForGalleryDTO();
+        dto.setTotalPages(totalPage);
+        dto.setGalleries(galleries);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of galleries", dto);
     }
 
 }

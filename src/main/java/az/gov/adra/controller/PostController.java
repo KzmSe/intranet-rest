@@ -2,6 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
+import az.gov.adra.dataTransferObjects.PaginationForPostDTO;
 import az.gov.adra.dataTransferObjects.PostDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
@@ -49,10 +50,11 @@ public class PostController {
         }
 
         int total = postService.findCountOfAllPosts();
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -63,7 +65,11 @@ public class PostController {
         }
 
         List<Post> posts = postService.findAllPosts(offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
+        PaginationForPostDTO dto = new PaginationForPostDTO();
+        dto.setTotalPages(totalPage);
+        dto.setPosts(posts);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", dto);
     }
 
     @GetMapping("/posts/{postId}")
@@ -223,10 +229,11 @@ public class PostController {
         }
 
         int total = postService.findCountOfAllPostsByUsername(username);
+        int totalPage = 0;
         int offset = 0;
 
         if(total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 3);
+            totalPage = (int) Math.ceil((double) total / 3);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 3;
@@ -239,7 +246,11 @@ public class PostController {
         userService.isUserExistWithGivenUsername(username);
 
         List<Post> posts = postService.findPostsByUsername(username, offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
+        PaginationForPostDTO dto = new PaginationForPostDTO();
+        dto.setTotalPages(totalPage);
+        dto.setPosts(posts);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", dto);
     }
 
     @PutMapping("/posts/{postId}")
@@ -324,10 +335,11 @@ public class PostController {
         }
 
         int total = postService.findCountOfAllPostsByKeyword(keyword.trim());
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -338,7 +350,11 @@ public class PostController {
         }
 
         List<Post> posts = postService.findPostsByKeyword(keyword.trim(), offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
+        PaginationForPostDTO dto = new PaginationForPostDTO();
+        dto.setTotalPages(totalPage);
+        dto.setPosts(posts);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", dto);
     }
 
 //    @GetMapping("/posts/random")

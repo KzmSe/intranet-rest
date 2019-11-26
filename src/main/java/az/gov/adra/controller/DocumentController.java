@@ -2,6 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.DocumentDTO;
+import az.gov.adra.dataTransferObjects.PaginationForDocumentDTO;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.DocumentCredentialsException;
 import az.gov.adra.service.interfaces.DocumentService;
@@ -36,10 +37,11 @@ public class DocumentController {
         }
 
         int total = documentService.findCountOfAllDocuments();
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -50,6 +52,9 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findAllDocuments(offset);
+        PaginationForDocumentDTO dto = new PaginationForDocumentDTO();
+        dto.setTotalPages(totalPage);
+        dto.setDocumentDTOS(documents);
 
 //        for (DocumentDTO document : documents) {
 //            if (document.getFileUrl() != null) {
@@ -62,7 +67,7 @@ public class DocumentController {
 //            }
 //        }
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", documents);
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", dto);
     }
 
     @GetMapping("/documents/keyword")
@@ -74,10 +79,11 @@ public class DocumentController {
         }
 
         int total = documentService.findCountOfAllDocumentsByKeyword(keyword.trim());
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -88,8 +94,11 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findDocumentsByKeyword(keyword.trim(), offset);
+        PaginationForDocumentDTO dto = new PaginationForDocumentDTO();
+        dto.setTotalPages(totalPage);
+        dto.setDocumentDTOS(documents);
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "documents by keyword", documents);
+        return GenericResponse.withSuccess(HttpStatus.OK, "documents by keyword", dto);
     }
 
     @GetMapping("/documents/top-three")

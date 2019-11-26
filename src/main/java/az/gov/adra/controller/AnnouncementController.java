@@ -1,6 +1,7 @@
 package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
+import az.gov.adra.dataTransferObjects.PaginationForAnnouncementDTO;
 import az.gov.adra.entity.Announcement;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.AnnouncementCredentialsException;
@@ -30,10 +31,11 @@ public class AnnouncementController {
         }
 
         int total = announcementService.findCountOfAllAnnouncements();
+        int totalPage = 0;
         int offset = 0;
 
         if (total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            totalPage = (int) Math.ceil((double) total / 10);
 
             if (page != null && page >= totalPage) {
                 offset = (totalPage - 1) * 10;
@@ -44,7 +46,11 @@ public class AnnouncementController {
         }
 
         List<Announcement> allAnnouncements = announcementService.findAllAnnouncements(offset);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
+        PaginationForAnnouncementDTO dto = new PaginationForAnnouncementDTO();
+        dto.setTotalPages(totalPage);
+        dto.setAnnouncements(allAnnouncements);
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", dto);
     }
 
     @GetMapping("/announcements/{announcementId}")
