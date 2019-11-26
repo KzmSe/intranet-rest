@@ -17,7 +17,7 @@ public interface PostService {
 
     PostDTO findPostByPostId(int id);
 
-    List<PostReview> findReviewsByPostId(int id);
+    List<PostReview> findReviewsByPostId(int id, int offset);
 
     void addPostReview(PostReview postReview) throws PostCredentialsException;
 
@@ -29,7 +29,7 @@ public interface PostService {
 
     void updatePostRespond(PostLd postLd) throws PostCredentialsException;
 
-    List<Post> findPostsByUsername(String username, int fetchNext);
+    List<Post> findPostsByUsername(String username, int offset);
 
     void updatePost(Post post) throws PostCredentialsException;
 
@@ -37,9 +37,13 @@ public interface PostService {
 
     int findCountOfAllPosts();
 
+    int findCountOfAllPostsByKeyword(String keyword);
+
+    int findCountOfAllPostsByUsername(String username);
+
     void deletePost(Post post) throws PostCredentialsException;
 
-    List<Post> findPostsByKeyword(String keyword);
+    List<Post> findPostsByKeyword(String keyword, int offset);
 
     void isPostExistWithGivenId(int id) throws PostCredentialsException;
 

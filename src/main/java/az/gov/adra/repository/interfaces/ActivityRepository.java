@@ -43,6 +43,8 @@ public interface ActivityRepository {
 
     int findCountOfAllActivitiesByKeyword(String keyword);
 
+    int findCountOfAllActivitiesByUsername(String username);
+
     void deleteActivity(Activity activity) throws ActivityCredentialsException;
 
     List<Activity> findActivitiesByKeyword(String keyword, int offset);

@@ -109,6 +109,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public int findCountOfAllActivitiesByUsername(String username) {
+        return activityRepository.findCountOfAllActivitiesByUsername(username);
+    }
+
+    @Override
     public void deleteActivity(Activity activity) throws ActivityCredentialsException {
         activityRepository.deleteActivity(activity);
     }

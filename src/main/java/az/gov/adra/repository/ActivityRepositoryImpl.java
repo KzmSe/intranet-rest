@@ -43,6 +43,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String findActivitiesRandomlySql = "select top 4 a.id activity_id,a.title,a.img_url,a.date_of_reg,a.username,u.name,u.surname from Activity a  inner join users u on u.username=a.username  where a.id in (SELECT TOP (select count(*) from Activity where status = ?) id FROM Activity where status = ? ORDER BY NEWID())";
     private static final String findCountOfAllActivitiesSql = "select count(*) as count from Activity where status = ?";
     private static final String findCountOfAllActivitiesByKeywordSql = "select count(*) as count from Activity where status = ? and title like ?";
+    private static final String findCountOfAllActivitiesByUsernameSql = "select count(*) as count from Activity where status = ? and username = ?";
     private static final String deleteActivitySql = "update Activity set status = ? where id = ? and username = ?";
     private static final String findActivitiesByKeywordSql = "select a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url,u.username, u.name,u.surname from Activity a inner join users u on u.username = a.username  where a.title like ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String isActivityExistWithGivenIdSql = "select count(*) as count from Activity where id = ? and status = ?";
@@ -280,7 +281,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     @Override
     public List<ActivityDTO> findActivitiesByUsername(String username, int offset) {
-        List<ActivityDTO> activities = jdbcTemplate.query(findActivitiesByUsernameSql, new Object[]{username, ActivityConstants.ACTIVITY_STATUS_ACTIVE, offset, ActivityConstants.ACTIVITY_FETCH_NEXT}, new ResultSetExtractor<List<ActivityDTO>>() {
+        List<ActivityDTO> activities = jdbcTemplate.query(findActivitiesByUsernameSql, new Object[]{username, ActivityConstants.ACTIVITY_STATUS_ACTIVE, offset, ActivityConstants.ACTIVITY_FETCH_NEXT_BY_USERNAME}, new ResultSetExtractor<List<ActivityDTO>>() {
             @Override
             public List<ActivityDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<ActivityDTO> list = new LinkedList<>();
@@ -380,6 +381,12 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     @Override
     public int findCountOfAllActivitiesByKeyword(String keyword) {
         int totalCount = jdbcTemplate.queryForObject(findCountOfAllActivitiesByKeywordSql, new Object[] {ActivityConstants.ACTIVITY_STATUS_ACTIVE, "%" + keyword + "%"}, Integer.class);
+        return totalCount;
+    }
+
+    @Override
+    public int findCountOfAllActivitiesByUsername(String username) {
+        int totalCount = jdbcTemplate.queryForObject(findCountOfAllActivitiesByUsernameSql, new Object[] {ActivityConstants.ACTIVITY_STATUS_ACTIVE, username}, Integer.class);
         return totalCount;
     }
 

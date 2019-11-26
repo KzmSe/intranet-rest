@@ -40,8 +40,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostReview> findReviewsByPostId(int id) {
-        return postRepository.findReviewsByPostId(id);
+    public List<PostReview> findReviewsByPostId(int id, int offset) {
+        return postRepository.findReviewsByPostId(id, offset);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findPostsByUsername(String username, int fetchNext) {
-        return postRepository.findPostsByUsername(username, fetchNext);
+    public List<Post> findPostsByUsername(String username, int offset) {
+        return postRepository.findPostsByUsername(username, offset);
     }
 
     @Override
@@ -90,13 +90,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public int findCountOfAllPostsByKeyword(String keyword) {
+        return postRepository.findCountOfAllPostsByKeyword(keyword);
+    }
+
+    @Override
+    public int findCountOfAllPostsByUsername(String username) {
+        return postRepository.findCountOfAllPostsByUsername(username);
+    }
+
+    @Override
     public void deletePost(Post post) throws PostCredentialsException {
         postRepository.deletePost(post);
     }
 
     @Override
-    public List<Post> findPostsByKeyword(String keyword) {
-        return postRepository.findPostsByKeyword(keyword);
+    public List<Post> findPostsByKeyword(String keyword, int offset) {
+        return postRepository.findPostsByKeyword(keyword, offset);
     }
 
     @Override

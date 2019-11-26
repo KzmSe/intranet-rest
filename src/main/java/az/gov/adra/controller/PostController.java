@@ -40,15 +40,32 @@ public class PostController {
     private final int maxFileSize = 3145728;
     private final String defaultPostHexCode = "706F7374735C64656661756C745F706F73742E6A7067";
 
-    //+
+
     @GetMapping("/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findPosts() {
-        List<Post> posts = postService.findAllPosts(0);
+    public GenericResponse findPosts(@RequestParam(name = "page", required = false) Integer page) throws PostCredentialsException {
+        if (ValidationUtil.isNull(page)) {
+            throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        int total = postService.findCountOfAllPosts();
+        int offset = 0;
+
+        if (total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
+
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
+
+        List<Post> posts = postService.findAllPosts(offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
     }
 
-    //-
     @GetMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostById(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
@@ -62,21 +79,20 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "specific post by id", postDTO);
     }
 
-    //+
     @GetMapping("/posts/{postId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findReviewsByPostId(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
-        if (ValidationUtil.isNull(id)) {
+    public GenericResponse findReviewsByPostId(@PathVariable(name = "postId", required = false) Integer id,
+                                               @RequestParam(name = "offset", required = false) Integer offset) throws PostCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(offset)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         postService.isPostExistWithGivenId(id);
 
-        List<PostReview> reviews = postService.findReviewsByPostId(id);
+        List<PostReview> reviews = postService.findReviewsByPostId(id, offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific post", reviews);
     }
 
-    //+
     @PostMapping("/posts/{postId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -111,7 +127,6 @@ public class PostController {
         postService.addPostReview(review);
     }
 
-    //+
     @PostMapping("/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -119,7 +134,7 @@ public class PostController {
                             @RequestParam(value = "description", required = false) String description,
                             @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws PostCredentialsException, IOException {
 
-        if (!ValidationUtil.isNullOrEmpty(title, description)) {
+        if (ValidationUtil.isNullOrEmpty(title, description)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -168,12 +183,11 @@ public class PostController {
         postService.addPost(post);
     }
 
-    //+
     @PutMapping("/posts/{postId}/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePostRespond(@PathVariable(value = "postId", required = false) Integer id,
-                                      @RequestParam(value = "respond", required = false) Integer respond) throws PostCredentialsException {
+                                  @RequestParam(value = "respond", required = false) Integer respond) throws PostCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -200,26 +214,34 @@ public class PostController {
         postService.updatePostRespond(postLd);
     }
 
-    //+
-    @GetMapping("/employees/{username}/posts")
+    @GetMapping("/users/{username}/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findPostsByEmployeeId(@PathVariable(value = "username",required = false) String username,
-                                                      @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws PostCredentialsException, UserCredentialsException {
-        if (ValidationUtil.isNull(username)) {
+    public GenericResponse findPostsByUsername(@PathVariable(value = "username",required = false) String username,
+                                               @RequestParam(name = "page", required = false) Integer page) throws PostCredentialsException, UserCredentialsException {
+        if (ValidationUtil.isNull(username) || ValidationUtil.isNull(page)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        if (fetchNext == null) {
-            fetchNext = 6;
+        int total = postService.findCountOfAllPostsByUsername(username);
+        int offset = 0;
+
+        if(total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 3);
+
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 3;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 3;
+            };
         }
 
         userService.isUserExistWithGivenUsername(username);
 
-        List<Post> posts = postService.findPostsByUsername(username, fetchNext);
+        List<Post> posts = postService.findPostsByUsername(username, offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
     }
 
-    //+
     @PutMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -272,7 +294,6 @@ public class PostController {
         postService.updatePost(post);
     }
 
-    //+
     @DeleteMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -294,43 +315,53 @@ public class PostController {
         postService.deletePost(post);
     }
 
-    //+
     @GetMapping("/posts/keyword")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findPostsByKeyword(@RequestParam(value = "keyword", required = false) String keyword) throws PostCredentialsException {
-        if (ValidationUtil.isNullOrEmpty(keyword)) {
+    public GenericResponse findPostsByKeyword(@RequestParam(value = "page", required = false) Integer page,
+                                              @RequestParam(value = "keyword", required = false) String keyword) throws PostCredentialsException {
+        if (ValidationUtil.isNull(page) || ValidationUtil.isNullOrEmpty(keyword)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        List<Post> posts = postService.findPostsByKeyword(keyword.trim());
+        int total = postService.findCountOfAllPostsByKeyword(keyword.trim());
+        int offset = 0;
+
+        if (total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
+
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
+
+        List<Post> posts = postService.findPostsByKeyword(keyword.trim(), offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
     }
 
-    //+
-    @GetMapping("/posts/random")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findPostsRandomly() {
-        List<Post> posts = postService.findPostsRandomly();
-        return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
-    }
+//    @GetMapping("/posts/random")
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    public GenericResponse findPostsRandomly() {
+//        List<Post> posts = postService.findPostsRandomly();
+//        return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
+//    }
 
-    //+
-    @GetMapping("/posts/last-added")
+    @GetMapping("/posts/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByLastAddedTime() {
         List<Post> posts = postService.findTopPostsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
     }
 
-    //+
-    @GetMapping("/posts/count")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findCountOfAllPosts() {
-        int count = postService.findCountOfAllPosts();
-        return GenericResponse.withSuccess(HttpStatus.OK, "count of all posts", count);
-    }
+//    @GetMapping("/posts/count")
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    public GenericResponse findCountOfAllPosts() {
+//        int count = postService.findCountOfAllPosts();
+//        return GenericResponse.withSuccess(HttpStatus.OK, "count of all posts", count);
+//    }
 
-    //+
     @PutMapping("/posts/{postId}/view-count")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -344,7 +375,6 @@ public class PostController {
         postService.incrementViewCountOfPostById(id);
     }
 
-    //+
     @GetMapping("/posts/{postId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findRespondOfPost(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {

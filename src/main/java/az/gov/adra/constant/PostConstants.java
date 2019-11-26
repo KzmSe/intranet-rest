@@ -12,6 +12,7 @@ public class PostConstants {
     public static final Integer POSTLD_STATUS_INACTIVE = 0;
 
     public static final Integer POST_FETCH_NEXT = 10;
+    public static final Integer POST_FETCH_NEXT_BY_USERNAME = 3;
     public static final Integer POST_OFFSET = 10;
 
 }

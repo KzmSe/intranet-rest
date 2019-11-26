@@ -237,23 +237,23 @@ public class ActivityController {
 
     @GetMapping("/users/{username}/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivitiesByEmployeeId(@PathVariable(value = "username",required = false) String username,
-                                                      @RequestParam(name = "page", required = false) Integer page) throws ActivityCredentialsException, UserCredentialsException {
+    public GenericResponse findActivitiesByUsername(@PathVariable(value = "username",required = false) String username,
+                                                    @RequestParam(name = "page", required = false) Integer page) throws ActivityCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNullOrEmpty(username) || ValidationUtil.isNull(page)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        int total = activityService.findCountOfAllActivities();
+        int total = activityService.findCountOfAllActivitiesByUsername(username);
         int offset = 0;
 
         if(total != 0) {
-            int totalPage = (int) Math.ceil((double) total / 10);
+            int totalPage = (int) Math.ceil((double) total / 3);
 
             if (page != null && page >= totalPage) {
-                offset = (totalPage - 1) * 10;
+                offset = (totalPage - 1) * 3;
 
             } else if (page != null && page > 1) {
-                offset = (page - 1) * 10;
+                offset = (page - 1) * 3;
             };
         }
 
@@ -363,12 +363,12 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
     }
 
-    @GetMapping("/activities/random")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivitiesRandomly() {
-        List<Activity> activities = activityService.findActivitiesRandomly();
-        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
-    }
+//    @GetMapping("/activities/random")
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    public GenericResponse findActivitiesRandomly() {
+//        List<Activity> activities = activityService.findActivitiesRandomly();
+//        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
+//    }
 
     @GetMapping("/activities/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -388,12 +388,12 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "responds of top three activities by username and last added time", activities);
     }
 
-    @GetMapping("/activities/count")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findCountOfAllActivities() {
-        int count = activityService.findCountOfAllActivities();
-        return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", count);
-    }
+//    @GetMapping("/activities/count")
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    public GenericResponse findCountOfAllActivities() {
+//        int count = activityService.findCountOfAllActivities();
+//        return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", count);
+//    }
 
     @PutMapping("/activities/{activityId}/view-count")
     @PreAuthorize("hasRole('ROLE_USER')")
