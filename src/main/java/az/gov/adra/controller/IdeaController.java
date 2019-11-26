@@ -38,7 +38,6 @@ public class IdeaController {
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
 
-    //+
     @PostMapping("/ideas")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,7 +49,7 @@ public class IdeaController {
             throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        if (!choice.equals("idea") && !choice.equals("complaint")) {
+        if (!choice.equals(IdeaConstants.IDEA_CHOICE_IDEA) && !choice.equals(IdeaConstants.IDEA_CHOICE_COMPLAINT)) {
             throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_CHOICE_OF_IDEA_IS_INCORRECT);
         }
 

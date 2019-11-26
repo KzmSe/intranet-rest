@@ -27,7 +27,7 @@ public class GalleryRepositoryImpl implements GalleryRepository {
 
     @Override
     public List<Gallery> findAllGalleries(int offset) {
-        List<Gallery> galleries = jdbcTemplate.query(findAllGalleriesSql, new Object[]{GalleryConstants.GALLERY_STATUS_ACTIVE, offset, GalleryConstants.GALLERY_FETCH_NEXT_NUMBER}, new ResultSetExtractor<List<Gallery>>() {
+        List<Gallery> galleries = jdbcTemplate.query(findAllGalleriesSql, new Object[]{GalleryConstants.GALLERY_STATUS_ACTIVE, offset, GalleryConstants.GALLERY_FETCH_NEXT}, new ResultSetExtractor<List<Gallery>>() {
             @Override
             public List<Gallery> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<Gallery> list = new LinkedList<>();

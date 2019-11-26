@@ -20,20 +20,22 @@ public class GalleryController {
     @Autowired
     private GalleryService galleryService;
 
-    //+
     @GetMapping("/galleries")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllGalleries(@RequestParam(value = "page", required = false) Integer page) {
-        int galleryCount = galleryService.findCountOfAllGalleries();
-        int totalPage = (int) Math.ceil((double) galleryCount / 12);
+        int total = galleryService.findCountOfAllGalleries();
         int offset = 0;
 
-        if (page != null && page >= totalPage) {
-            offset = (totalPage - 1) * 12;
+        if (total != 0) {
+            int totalPage = (int) Math.ceil((double) total / 10);
 
-        } else if (page != null && page > 1) {
-            offset = (page - 1) * 12;
-        };
+            if (page != null && page >= totalPage) {
+                offset = (totalPage - 1) * 10;
+
+            } else if (page != null && page > 1) {
+                offset = (page - 1) * 10;
+            };
+        }
 
         List<Gallery> galleries = galleryService.findAllGalleries(offset);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of galleries", galleries);
