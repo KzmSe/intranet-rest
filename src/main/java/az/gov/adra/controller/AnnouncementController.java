@@ -1,7 +1,7 @@
 package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
-import az.gov.adra.dataTransferObjects.PaginationForAnnouncementDTO;
+import az.gov.adra.dataTransferObjects.AnnouncementDTOForPagination;
 import az.gov.adra.entity.Announcement;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.AnnouncementCredentialsException;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -25,20 +26,21 @@ public class AnnouncementController {
 
     @GetMapping("/announcements")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findAllAnnouncements(@RequestParam(name = "page", required = false) Integer page) throws AnnouncementCredentialsException {
+    public GenericResponse findAllAnnouncements(@RequestParam(name = "page", required = false) Integer page,
+                                                HttpServletResponse response) throws AnnouncementCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new AnnouncementCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         int total = announcementService.findCountOfAllAnnouncements();
-        int totalPage = 0;
+        int totalPages = 0;
         int offset = 0;
 
         if (total != 0) {
-            totalPage = (int) Math.ceil((double) total / 10);
+            totalPages = (int) Math.ceil((double) total / 10);
 
-            if (page != null && page >= totalPage) {
-                offset = (totalPage - 1) * 10;
+            if (page != null && page >= totalPages) {
+                offset = (totalPages - 1) * 10;
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 10;
@@ -46,11 +48,9 @@ public class AnnouncementController {
         }
 
         List<Announcement> allAnnouncements = announcementService.findAllAnnouncements(offset);
-        PaginationForAnnouncementDTO dto = new PaginationForAnnouncementDTO();
-        dto.setTotalPages(totalPage);
-        dto.setAnnouncements(allAnnouncements);
+        response.setIntHeader("Total-Pages", totalPages);
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", dto);
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
     }
 
     @GetMapping("/announcements/{announcementId}")

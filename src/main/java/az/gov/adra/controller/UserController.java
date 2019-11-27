@@ -1,0 +1,10 @@
+package az.gov.adra.controller;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class UserController {
+
+
+
+}

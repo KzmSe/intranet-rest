@@ -2,7 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
-import az.gov.adra.dataTransferObjects.PaginationForPostDTO;
+import az.gov.adra.dataTransferObjects.PostDTOForPagination;
 import az.gov.adra.dataTransferObjects.PostDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,20 +45,21 @@ public class PostController {
 
     @GetMapping("/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findPosts(@RequestParam(name = "page", required = false) Integer page) throws PostCredentialsException {
+    public GenericResponse findPosts(@RequestParam(name = "page", required = false) Integer page,
+                                     HttpServletResponse response) throws PostCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         int total = postService.findCountOfAllPosts();
-        int totalPage = 0;
+        int totalPages = 0;
         int offset = 0;
 
         if (total != 0) {
-            totalPage = (int) Math.ceil((double) total / 10);
+            totalPages = (int) Math.ceil((double) total / 10);
 
-            if (page != null && page >= totalPage) {
-                offset = (totalPage - 1) * 10;
+            if (page != null && page >= totalPages) {
+                offset = (totalPages - 1) * 10;
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 10;
@@ -65,11 +67,9 @@ public class PostController {
         }
 
         List<Post> posts = postService.findAllPosts(offset);
-        PaginationForPostDTO dto = new PaginationForPostDTO();
-        dto.setTotalPages(totalPage);
-        dto.setPosts(posts);
+        response.setIntHeader("Total-Pages", totalPages);
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", dto);
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
     }
 
     @GetMapping("/posts/{postId}")
@@ -223,20 +223,21 @@ public class PostController {
     @GetMapping("/users/{username}/posts")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByUsername(@PathVariable(value = "username",required = false) String username,
-                                               @RequestParam(name = "page", required = false) Integer page) throws PostCredentialsException, UserCredentialsException {
+                                               @RequestParam(name = "page", required = false) Integer page,
+                                               HttpServletResponse response) throws PostCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNull(username) || ValidationUtil.isNull(page)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         int total = postService.findCountOfAllPostsByUsername(username);
-        int totalPage = 0;
+        int totalPages = 0;
         int offset = 0;
 
         if(total != 0) {
-            totalPage = (int) Math.ceil((double) total / 3);
+            totalPages = (int) Math.ceil((double) total / 3);
 
-            if (page != null && page >= totalPage) {
-                offset = (totalPage - 1) * 3;
+            if (page != null && page >= totalPages) {
+                offset = (totalPages - 1) * 3;
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 3;
@@ -246,11 +247,9 @@ public class PostController {
         userService.isUserExistWithGivenUsername(username);
 
         List<Post> posts = postService.findPostsByUsername(username, offset);
-        PaginationForPostDTO dto = new PaginationForPostDTO();
-        dto.setTotalPages(totalPage);
-        dto.setPosts(posts);
+        response.setIntHeader("Total-Pages", totalPages);
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", dto);
+        return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
     }
 
     @PutMapping("/posts/{postId}")
@@ -329,20 +328,21 @@ public class PostController {
     @GetMapping("/posts/keyword")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByKeyword(@RequestParam(value = "page", required = false) Integer page,
-                                              @RequestParam(value = "keyword", required = false) String keyword) throws PostCredentialsException {
+                                              @RequestParam(value = "keyword", required = false) String keyword,
+                                              HttpServletResponse response) throws PostCredentialsException {
         if (ValidationUtil.isNull(page) || ValidationUtil.isNullOrEmpty(keyword)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         int total = postService.findCountOfAllPostsByKeyword(keyword.trim());
-        int totalPage = 0;
+        int totalPages = 0;
         int offset = 0;
 
         if (total != 0) {
-            totalPage = (int) Math.ceil((double) total / 10);
+            totalPages = (int) Math.ceil((double) total / 10);
 
-            if (page != null && page >= totalPage) {
-                offset = (totalPage - 1) * 10;
+            if (page != null && page >= totalPages) {
+                offset = (totalPages - 1) * 10;
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 10;
@@ -350,11 +350,9 @@ public class PostController {
         }
 
         List<Post> posts = postService.findPostsByKeyword(keyword.trim(), offset);
-        PaginationForPostDTO dto = new PaginationForPostDTO();
-        dto.setTotalPages(totalPage);
-        dto.setPosts(posts);
+        response.setIntHeader("Total-Pages", totalPages);
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", dto);
+        return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
     }
 
 //    @GetMapping("/posts/random")

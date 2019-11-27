@@ -3,9 +3,8 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.CommandConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.CommandDTO;
-import az.gov.adra.dataTransferObjects.PaginationForCommandDTO;
+import az.gov.adra.dataTransferObjects.CommandDTOForPagination;
 import az.gov.adra.entity.Command;
-import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.CommandCredentialsException;
@@ -18,8 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,20 +39,21 @@ public class CommandController {
 
     @GetMapping("/commands")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findAllCommands(@RequestParam(name = "page", required = false) Integer page) throws CommandCredentialsException {
+    public GenericResponse findAllCommands(@RequestParam(name = "page", required = false) Integer page,
+                                           HttpServletResponse response) throws CommandCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new CommandCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         int total = commandService.findCountOfAllCommands();
-        int totalPage = 0;
+        int totalPages = 0;
         int offset = 0;
 
         if (total != 0) {
-            totalPage = (int) Math.ceil((double) total / 10);
+            totalPages = (int) Math.ceil((double) total / 10);
 
-            if (page != null && page >= totalPage) {
-                offset = (totalPage - 1) * 10;
+            if (page != null && page >= totalPages) {
+                offset = (totalPages - 1) * 10;
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 10;
@@ -61,9 +61,7 @@ public class CommandController {
         }
 
         List<CommandDTO> commands = commandService.findAllCommands(offset);
-        PaginationForCommandDTO dto = new PaginationForCommandDTO();
-        dto.setTotalPages(totalPage);
-        dto.setCommandDTOS(commands);
+        response.setIntHeader("Total-Pages", totalPages);
 
 //        for (CommandDTO command : commands) {
 //            if (command.getImgUrl() != null) {
@@ -76,7 +74,7 @@ public class CommandController {
 //            }
 //        }
 
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", dto);
+        return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
     }
 
     @GetMapping("/commands/{commandId}")

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SearchEntityDTO {
+public class UserDTOForAdvancedSearch {
 
     private String name;
     private String surname;
@@ -18,7 +18,7 @@ public class SearchEntityDTO {
     private Integer offset;
     private Integer fetchSize;
 
-    public SearchEntityDTO() {
+    public UserDTOForAdvancedSearch() {
         this.name = "none";
         this.surname = "none";
         this.regionId = 0;

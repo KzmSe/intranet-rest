@@ -1,6 +1,5 @@
 package az.gov.adra.dataTransferObjects;
 
-import az.gov.adra.entity.Activity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,10 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PaginationForActivityDTO {
+public class DocumentDTOForPagination {
 
     private Integer totalPages;
-    private List<Activity> activities;
-    private List<ActivityDTO> activityDTOS;
+    private List<DocumentDTO> documentDTOS;
 
 }
