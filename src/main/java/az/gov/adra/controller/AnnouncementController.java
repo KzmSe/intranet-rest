@@ -1,7 +1,6 @@
 package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
-import az.gov.adra.dataTransferObjects.AnnouncementDTOForPagination;
 import az.gov.adra.entity.Announcement;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.AnnouncementCredentialsException;

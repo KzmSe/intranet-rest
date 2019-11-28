@@ -2,7 +2,6 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.DocumentDTO;
-import az.gov.adra.dataTransferObjects.DocumentDTOForPagination;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.DocumentCredentialsException;
 import az.gov.adra.service.interfaces.DocumentService;

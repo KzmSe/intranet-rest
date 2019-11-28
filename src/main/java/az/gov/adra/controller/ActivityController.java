@@ -3,7 +3,6 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
-import az.gov.adra.dataTransferObjects.ActivityDTOForPagination;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;

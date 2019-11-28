@@ -2,7 +2,6 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
-import az.gov.adra.dataTransferObjects.PostDTOForPagination;
 import az.gov.adra.dataTransferObjects.PostDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;

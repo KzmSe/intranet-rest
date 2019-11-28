@@ -23,3 +23,8 @@ file:
   upload:
     path:
       win: C:\\uploads
+
+auth:
+  server:
+    paths:
+      count-of-all-users: http://172.16.60.51/adra/users/count

@@ -126,4 +126,28 @@ public class GlobalExceptionHandler {
         return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "IdeaCredentialsException", exception);
     }
 
+    @ExceptionHandler(DepartmentCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public GenericResponse handleDepartmentCredentialsException(DepartmentCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0100");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("DepartmentCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DepartmentCredentialsException", exception);
+    }
+
+    @ExceptionHandler(SectionCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public GenericResponse handleSectionCredentialsException(SectionCredentialsException e) {
+        //Exception
+        Exception exception = new Exception();
+        exception.setCode("0x0110");
+        exception.setMessage(e.getMessage());
+        exception.setErrorStack("SectionCredentialsException.");
+
+        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "SectionCredentialsException", exception);
+    }
+
 }

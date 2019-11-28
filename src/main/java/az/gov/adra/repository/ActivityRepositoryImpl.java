@@ -1,8 +1,8 @@
 package az.gov.adra.repository;
 
 import az.gov.adra.constant.ActivityConstants;
-import az.gov.adra.constant.EmployeeConstants;
 import az.gov.adra.constant.MessageConstants;
+import az.gov.adra.constant.UserConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.exception.ActivityCredentialsException;
@@ -249,7 +249,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     @Override
     public Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(String username) {
-        Map<Integer, Integer> respondedActivities = jdbcTemplate.query(findTopThreeActivitiesByLastAddedTimeSql, new Object[]{username, EmployeeConstants.EMPLOYEE_STATUS_ACTIVE}, new ResultSetExtractor<Map<Integer, Integer>>() {
+        Map<Integer, Integer> respondedActivities = jdbcTemplate.query(findTopThreeActivitiesByLastAddedTimeSql, new Object[]{username, UserConstants.USER_STATUS_ENABLED}, new ResultSetExtractor<Map<Integer, Integer>>() {
             @Override
             public Map<Integer, Integer> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 Map<Integer, Integer> map = new HashMap<>();

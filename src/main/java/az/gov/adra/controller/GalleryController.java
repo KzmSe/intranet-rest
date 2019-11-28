@@ -1,6 +1,5 @@
 package az.gov.adra.controller;
 
-import az.gov.adra.dataTransferObjects.GalleryDTOForPagination;
 import az.gov.adra.entity.Gallery;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.service.interfaces.GalleryService;

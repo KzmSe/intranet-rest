@@ -1,6 +1,6 @@
 package az.gov.adra.dataTransferObjects;
 
-import az.gov.adra.entity.Employee;
+import az.gov.adra.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.io.File;
 public class DocumentDTO {
 
     private Integer id;
-    private Employee employee;
+    private User user;
     private String title;
     private String fileUrl;
     private File file;

@@ -1,6 +1,5 @@
 package az.gov.adra.dataTransferObjects;
 
-import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

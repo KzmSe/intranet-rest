@@ -4,8 +4,6 @@ import az.gov.adra.constant.CommandConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.CommandDTO;
 import az.gov.adra.entity.Command;
-import az.gov.adra.entity.Employee;
-import az.gov.adra.entity.Person;
 import az.gov.adra.entity.User;
 import az.gov.adra.exception.CommandCredentialsException;
 import az.gov.adra.repository.interfaces.CommandRepository;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 

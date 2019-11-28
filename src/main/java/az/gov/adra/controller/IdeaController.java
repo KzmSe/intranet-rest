@@ -2,7 +2,6 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.IdeaConstants;
 import az.gov.adra.constant.MessageConstants;
-import az.gov.adra.entity.Employee;
 import az.gov.adra.entity.Idea;
 import az.gov.adra.entity.User;
 import az.gov.adra.exception.IdeaCredentialsException;
@@ -11,7 +10,6 @@ import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

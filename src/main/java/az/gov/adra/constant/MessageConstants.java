@@ -7,6 +7,7 @@ public class MessageConstants {
     public static final String ERROR_MESSAGE_ACTIVITY_NOT_FOUND = "Verilən ID ilə fəaliyyət tapılmadı!";
     public static final String ERROR_MESSAGE_ANNOUNCEMENT_NOT_FOUND = "Verilən ID ilə elan tapılmadı!";
     public static final String ERROR_MESSAGE_COMMAND_NOT_FOUND = "Verilən ID ilə əmr tapılmadı!";
+    public static final String ERROR_MESSAGE_DEPARTMENT_NOT_FOUND = "Verilən ID ilə şöbə tapılmadı!";
     public static final String ERROR_MESSAGE_ACTIVITY_RESPOND_MUST_BE_1_OR_0 = "Fəaliyyətə verilən cavab 1 və ya 0 olmalıdır!";
     public static final String ERROR_MESSAGE_CHOICE_OF_IDEA_IS_INCORRECT = "Ideya seçimi yanlışdır!";
     public static final String ERROR_MESSAGE_IDEA_NOT_FOUND = "Verilən ID ilə ideya tapılmadı!";

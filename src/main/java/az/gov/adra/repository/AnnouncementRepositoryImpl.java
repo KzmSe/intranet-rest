@@ -3,8 +3,6 @@ package az.gov.adra.repository;
 import az.gov.adra.constant.AnnouncementConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.entity.Announcement;
-import az.gov.adra.entity.Employee;
-import az.gov.adra.entity.Person;
 import az.gov.adra.entity.User;
 import az.gov.adra.exception.AnnouncementCredentialsException;
 import az.gov.adra.repository.interfaces.AnnouncementRepository;

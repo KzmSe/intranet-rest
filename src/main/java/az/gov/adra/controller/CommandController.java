@@ -3,7 +3,6 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.CommandConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.CommandDTO;
-import az.gov.adra.dataTransferObjects.CommandDTOForPagination;
 import az.gov.adra.entity.Command;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
