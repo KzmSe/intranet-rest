@@ -22,8 +22,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    RestTemplate restTemplate;
     @Value("${auth.server.paths.count-of-all-users}")
     private String countOfAllUsersUrl;
 

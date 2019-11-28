@@ -86,9 +86,4 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         }
     }
 
-    @Bean
-    public RestTemplate getRestTemplate() {
-        return new RestTemplate();
-    }
-
 }
