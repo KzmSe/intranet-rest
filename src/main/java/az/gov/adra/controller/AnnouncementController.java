@@ -47,8 +47,8 @@ public class AnnouncementController {
         }
 
         List<Announcement> allAnnouncements = announcementService.findAllAnnouncements(offset);
-        response.setIntHeader("Total-Pages", totalPages);
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
     }
 
@@ -68,7 +68,6 @@ public class AnnouncementController {
     @GetMapping("/announcements/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findTopThreeAnnouncements() {
-
         List<Announcement> announcements = announcementService.findTopThreeAnnouncementsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "top three announcements by last added time", announcements);
     }

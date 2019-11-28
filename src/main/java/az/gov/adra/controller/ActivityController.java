@@ -9,6 +9,7 @@ import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.service.interfaces.ActivityService;
 import az.gov.adra.service.interfaces.UserService;
+import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,8 +67,14 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findAllActivities(offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (Activity activity : activities) {
+            if (activity.getImgUrl() == null) {
+                continue;
+            }
+            activity.setImgUrl(ResourceUtil.convertToString(activity.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
     }
 
@@ -81,6 +88,8 @@ public class ActivityController {
         activityService.isActivityExistWithGivenId(id);
 
         ActivityDTO activityDTO = activityService.findActivityByActivityId(id);
+        activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
+
         return GenericResponse.withSuccess(HttpStatus.OK, "specific activity by id", activityDTO);
     }
 
@@ -267,8 +276,14 @@ public class ActivityController {
         userService.isUserExistWithGivenUsername(username);
 
         List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (ActivityDTO activityDTO : activities) {
+            if (activityDTO.getImgUrl() == null) {
+                continue;
+            }
+            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
 
@@ -371,8 +386,14 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim(), offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (Activity activity : activities) {
+            if (activity.getImgUrl() == null) {
+                continue;
+            }
+            activity.setImgUrl(ResourceUtil.convertToString(activity.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
     }
 
@@ -387,6 +408,13 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findActivitiesByLastAddedTime() {
         List<ActivityDTO> activities = activityService.findTopActivitiesByLastAddedTime();
+        for (ActivityDTO activityDTO : activities) {
+            if (activityDTO.getImgUrl() == null) {
+                continue;
+            }
+            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
+        }
+
         return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
     }
 
@@ -415,9 +443,7 @@ public class ActivityController {
         if (ValidationUtil.isNull(id)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
-
         activityService.isActivityExistWithGivenId(id);
-
         activityService.incrementViewCountOfActivityById(id);
     }
 

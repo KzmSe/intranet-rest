@@ -5,6 +5,7 @@ import az.gov.adra.dataTransferObjects.DocumentDTO;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.DocumentCredentialsException;
 import az.gov.adra.service.interfaces.DocumentService;
+import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,19 +49,14 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findAllDocuments(offset);
+        for (DocumentDTO documentDTO : documents) {
+            if (documentDTO.getFileUrl() == null) {
+                continue;
+            }
+            documentDTO.setFileUrl(ResourceUtil.convertToString(documentDTO.getFileUrl()));
+        }
+
         response.setIntHeader("Total-Pages", totalPages);
-
-//        for (DocumentDTO document : documents) {
-//            if (document.getFileUrl() != null) {
-//                String fileUrl = new String(DatatypeConverter.parseHexBinary(document.getFileUrl()));
-//                Path fullFilePath = Paths.get(imageUploadPath, fileUrl);
-//                if (Files.exists(fullFilePath)) {
-//                    File file = fullFilePath.toFile();
-//                    document.setFile(file);
-//                }
-//            }
-//        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", documents);
     }
 
@@ -89,8 +85,14 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findDocumentsByKeyword(keyword.trim(), offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (DocumentDTO documentDTO : documents) {
+            if (documentDTO.getFileUrl() == null) {
+                continue;
+            }
+            documentDTO.setFileUrl(ResourceUtil.convertToString(documentDTO.getFileUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "documents by keyword", documents);
     }
 
@@ -98,6 +100,13 @@ public class DocumentController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findDocumentsByLastAddedTime() {
         List<DocumentDTO> documents = documentService.findTopDocumentsByLastAddedTime();
+        for (DocumentDTO documentDTO : documents) {
+            if (documentDTO.getFileUrl() == null) {
+                continue;
+            }
+            documentDTO.setFileUrl(ResourceUtil.convertToString(documentDTO.getFileUrl()));
+        }
+
         return GenericResponse.withSuccess(HttpStatus.OK, "last added documents", documents);
     }
 

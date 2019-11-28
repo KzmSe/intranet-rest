@@ -9,6 +9,7 @@ import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.exception.PostCredentialsException;
 import az.gov.adra.service.interfaces.UserService;
 import az.gov.adra.service.interfaces.PostService;
+import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,8 +67,14 @@ public class PostController {
         }
 
         List<Post> posts = postService.findAllPosts(offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (Post post : posts) {
+            if (post.getImgUrl() == null) {
+                continue;
+            }
+            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
     }
 
@@ -81,6 +88,8 @@ public class PostController {
         postService.isPostExistWithGivenId(id);
 
         PostDTO postDTO = postService.findPostByPostId(id);
+        postDTO.setImgUrl(ResourceUtil.convertToString(postDTO.getImgUrl()));
+
         return GenericResponse.withSuccess(HttpStatus.OK, "specific post by id", postDTO);
     }
 
@@ -246,8 +255,14 @@ public class PostController {
         userService.isUserExistWithGivenUsername(username);
 
         List<Post> posts = postService.findPostsByUsername(username, offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (Post post : posts) {
+            if (post.getImgUrl() == null) {
+                continue;
+            }
+            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
     }
 
@@ -349,8 +364,14 @@ public class PostController {
         }
 
         List<Post> posts = postService.findPostsByKeyword(keyword.trim(), offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (Post post : posts) {
+            if (post.getImgUrl() == null) {
+                continue;
+            }
+            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
     }
 
@@ -365,6 +386,12 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByLastAddedTime() {
         List<Post> posts = postService.findTopPostsByLastAddedTime();
+        for (Post post : posts) {
+            if (post.getImgUrl() == null) {
+                continue;
+            }
+            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
+        }
         return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
     }
 

@@ -4,6 +4,7 @@ import az.gov.adra.dataTransferObjects.UserDTOForAdvancedSearch;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.service.interfaces.UserService;
+import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +47,14 @@ public class UserController {
         dto.setOffset(offset);
 
         List<User> users = userService.findUsersByMultipleParameters(dto);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (User user : users) {
+            if (user.getImgUrl() == null) {
+                continue;
+            }
+            user.setImgUrl(ResourceUtil.convertToString(user.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of users by multiple parameters", users);
     }
 

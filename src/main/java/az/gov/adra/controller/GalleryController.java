@@ -3,6 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.entity.Gallery;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.service.interfaces.GalleryService;
+import az.gov.adra.util.ResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,8 +40,14 @@ public class GalleryController {
         }
 
         List<Gallery> galleries = galleryService.findAllGalleries(offset);
-        response.setIntHeader("Total-Pages", totalPages);
+        for (Gallery gallery : galleries) {
+            if (gallery.getImgUrl() == null) {
+                continue;
+            }
+            gallery.setImgUrl(ResourceUtil.convertToString(gallery.getImgUrl()));
+        }
 
+        response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of galleries", galleries);
     }
 

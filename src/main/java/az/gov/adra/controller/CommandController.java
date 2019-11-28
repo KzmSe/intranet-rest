@@ -8,6 +8,7 @@ import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.CommandCredentialsException;
 import az.gov.adra.service.interfaces.CommandService;
+import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,19 +61,14 @@ public class CommandController {
         }
 
         List<CommandDTO> commands = commandService.findAllCommands(offset);
+        for (CommandDTO commandDTO : commands) {
+            if (commandDTO.getImgUrl() == null) {
+                continue;
+            }
+            commandDTO.setImgUrl(ResourceUtil.convertToString(commandDTO.getImgUrl()));
+        }
+
         response.setIntHeader("Total-Pages", totalPages);
-
-//        for (CommandDTO command : commands) {
-//            if (command.getImgUrl() != null) {
-//                String imgUrl = new String(DatatypeConverter.parseHexBinary(command.getImgUrl()));
-//                Path fullFilePath = Paths.get(imageUploadPath, imgUrl);
-//                if (Files.exists(fullFilePath)) {
-//                    File file = fullFilePath.toFile();
-//                    command.setFile(file);
-//                }
-//            }
-//        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
     }
 
@@ -86,15 +82,7 @@ public class CommandController {
         commandService.isCommandExistWithGivenId(id);
 
         CommandDTO command = commandService.findCommandByCommandId(id);
-
-//        if (command.getImgUrl() != null) {
-//            String imgUrl = new String(DatatypeConverter.parseHexBinary(command.getImgUrl()));
-//            Path fullFilePath = Paths.get(imageUploadPath, imgUrl);
-//            if (Files.exists(fullFilePath)) {
-//                File file = fullFilePath.toFile();
-//                command.setFile(file);
-//            }
-//        }
+        command.setImgUrl(ResourceUtil.convertToString(command.getImgUrl()));
 
         return GenericResponse.withSuccess(HttpStatus.OK, "specific command by id", command);
     }
@@ -154,8 +142,14 @@ public class CommandController {
     @GetMapping("/commands/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findTopThreeCommands() {
-
         List<CommandDTO> commands = commandService.findTopThreeCommandsByLastAddedTime();
+        for (CommandDTO commandDTO : commands) {
+            if (commandDTO.getImgUrl() == null) {
+                continue;
+            }
+            commandDTO.setImgUrl(ResourceUtil.convertToString(commandDTO.getImgUrl()));
+        }
+
         return GenericResponse.withSuccess(HttpStatus.OK, "top three commands by last added time", commands);
     }
 
