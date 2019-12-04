@@ -12,6 +12,12 @@
       "sourceMethod": "getJwt()"
     }
   ],
-  "properties": [],
+  "properties": [
+    {
+      "name": "security.jwt.public-key",
+      "type": "org.springframework.core.io.Resource",
+      "sourceType": "az.gov.adra.config.SecurityProperties$JwtProperties"
+    }
+  ],
   "hints": []
 }
