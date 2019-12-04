@@ -176,7 +176,7 @@ public class ActivityController {
         activity.setDescription(description.trim());
         activity.setViewCount(0);
         activity.setDateOfReg(LocalDateTime.now().toString());
-        activity.setStatus(ActivityConstants.ACTIVITY_STATUS_ACTIVE);
+        activity.setStatus(ActivityConstants.ACTIVITY_STATUS_WAITING);
 
         if (!multipartFile.isEmpty()) {
             Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());

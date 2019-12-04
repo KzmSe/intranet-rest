@@ -4,6 +4,7 @@ public class IdeaConstants {
 
     public static final Integer IDEA_STATUS_ACTIVE = 1;
     public static final Integer IDEA_STATUS_INACTIVE = 0;
+    public static final Integer IDEA_STATUS_WAITING = 2;
 
     public static final Integer IDEA_REVIEW_STATUS_ACTIVE = 1;
     public static final Integer IDEA_REVIEW_STATUS_INACTIVE = 0;

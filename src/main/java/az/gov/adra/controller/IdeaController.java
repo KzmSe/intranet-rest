@@ -80,7 +80,7 @@ public class IdeaController {
         idea.setTitle(title);
         idea.setDescription(description);
         idea.setDateOfReg(LocalDateTime.now().toString());
-        idea.setStatus(IdeaConstants.IDEA_STATUS_INACTIVE);
+        idea.setStatus(IdeaConstants.IDEA_STATUS_WAITING);
 
         if (!multipartFile.isEmpty()) {
             Path pathToSaveFile = Paths.get(imageUploadPath, "ideas", user.getUsername());
