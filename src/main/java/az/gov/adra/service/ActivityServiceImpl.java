@@ -84,6 +84,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public List<ActivityDTO> findTopThreeActivitiesByUsername(String username) {
+        return activityRepository.findTopThreeActivitiesByUsername(username);
+    }
+
+    @Override
     public void isActivityExistWithGivenId(int id) throws ActivityCredentialsException {
         activityRepository.isActivityExistWithGivenId(id);
     }

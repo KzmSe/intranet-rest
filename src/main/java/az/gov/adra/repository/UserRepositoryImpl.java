@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private static final String FIND_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select u.name, u.surname, u.email, u.img_url, p.name as position_name from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
     private static final String FIND_COUNT_OF_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select count(*) as count from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
-    private static final String IS_USER_EXIST_WITH_GIVEN_USERNAME_SQL = "select count(*) as count from users where and enabled = ?";
+    private static final String IS_USER_EXIST_WITH_GIVEN_USERNAME_SQL = "select count(*) as count from users where username = ? and enabled = ?";
 
 
     @Override
@@ -157,7 +157,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void isUserExistWithGivenUsername(String username) throws UserCredentialsException {
-        int count = jdbcTemplate.queryForObject(IS_USER_EXIST_WITH_GIVEN_USERNAME_SQL, new Object[] {username, ActivityConstants.ACTIVITY_STATUS_ACTIVE}, Integer.class);
+        int count = jdbcTemplate.queryForObject(IS_USER_EXIST_WITH_GIVEN_USERNAME_SQL, new Object[] {username, UserConstants.USER_STATUS_ENABLED}, Integer.class);
         if (count <= 0) {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_EMPLOYEE_WITH_GIVEN_ID_NOT_FOUND);
         }

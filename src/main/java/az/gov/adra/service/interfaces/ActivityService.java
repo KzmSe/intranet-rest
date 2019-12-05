@@ -35,6 +35,8 @@ public interface ActivityService {
 
     List<ActivityDTO> findActivitiesByUsername(String username, int offset);
 
+    List<ActivityDTO> findTopThreeActivitiesByUsername(String username);
+
     void updateActivity(Activity activity) throws ActivityCredentialsException;
 
     List<Activity> findActivitiesRandomly();

@@ -287,6 +287,26 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
 
+    @GetMapping("/users/{username}/activities/top-three")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findTopThreeActivitiesByUsername(@PathVariable(value = "username",required = false) String username) throws ActivityCredentialsException, UserCredentialsException {
+        if (ValidationUtil.isNullOrEmpty(username)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        userService.isUserExistWithGivenUsername(username);
+
+        List<ActivityDTO> activities = activityService.findTopThreeActivitiesByUsername(username);
+        for (ActivityDTO activityDTO : activities) {
+            if (activityDTO.getImgUrl() == null) {
+                continue;
+            }
+            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
+        }
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "top three activities of specific employee", activities);
+    }
+
     @PutMapping("/activities/{activityId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
@@ -357,6 +377,7 @@ public class ActivityController {
         Activity activity = new Activity();
         activity.setId(id);
         activity.setUser(user);
+        activity.setDateOfDel(LocalDateTime.now().toString());
 
         activityService.deleteActivity(activity);
     }
