@@ -31,6 +31,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String findActivityByActivityIdSql = "select a.id as activity_id, a.title, a.description, a.view_count, a.img_url, a.date_of_reg, u.username , u.name, u.surname, act1.respond positive,act0.respond negative from Activity a inner join users u on u.username = a.username  full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where a.id = ? and a.status = ?";
     private static final String findReviewsByActivityIdSql = "select ar.id as activity_review_id, ar.description, ar.date_of_reg, u.name, u.surname, u.username from Activity_Review ar inner join users u on ar.username = u.username where ar.activity_id = ? and ar.status = ? order by ar.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String addActivityReviewSql = "insert into Activity_Review(activity_id, username, description, date_of_reg, status) values(?, ?, ?, ?, ?)";
+    private static final String deleteActivityReviewSql = "update Activity_Review set status = ? where id = ? and username = ? and status = ?";
     private static final String addActivitySql = "insert into Activity(username, title, description, view_count, img_url, date_of_reg, status) values(?, ?, ?, ?, ?, ?, ?)";
     private static final String incrementViewCountOfActivityByIdSql = "update Activity set view_count = view_count + 1 where id = ?";
     private static final String findActivityRespondsByRespondSql = "select ar.id as acrivity_respond_id, u.name, u.surname, u.username from Activity_Respond ar inner join users u on ar.username = u.username where ar.activity_id = ? and ar.respond = ? and ar.status = ? order by ar.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
@@ -48,6 +49,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String deleteActivitySql = "update Activity set status = ?, date_of_del = ? where id = ? and username = ?";
     private static final String findActivitiesByKeywordSql = "select a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url,u.username, u.name,u.surname from Activity a inner join users u on u.username = a.username  where a.title like ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String isActivityExistWithGivenIdSql = "select count(*) as count from Activity where id = ? and status = ?";
+    private static final String isActivityReviewExistWithGivenIdSql = "select count(*) as count from Activity_Review where id = ? and status = ?";
     private static final String findCountOfActivityRespondsByActivityIdAndEmployeeIdSql = "select COUNT(*) as count from Activity_Respond where activity_id = ? and username = ? and status = ?";
 
     @Autowired
@@ -184,6 +186,14 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     @Override
     public void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException {
         int affectedRows = jdbcTemplate.update(addActivityReviewSql, activityReview.getActivity().getId(), activityReview.getUser().getUsername(), activityReview.getDescription(), activityReview.getDateOfReg(), activityReview.getStatus());
+        if (affectedRows == 0) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteActivityReview(ActivityReview review) throws ActivityCredentialsException {
+        int affectedRows = jdbcTemplate.update(deleteActivityReviewSql, ActivityConstants.ACTIVITY_REVIEW_STATUS_INACTIVE, review.getId(), review.getUser().getUsername(), ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE);
         if (affectedRows == 0) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
         }
@@ -357,6 +367,14 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
     @Override
+    public void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException {
+        int count = jdbcTemplate.queryForObject(isActivityReviewExistWithGivenIdSql, new Object[] {id, ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE}, Integer.class);
+        if (count <= 0) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ACTIVITY_REVIEW_NOT_FOUND);
+        }
+    }
+
+    @Override
     public void updateActivity(Activity activity) throws ActivityCredentialsException {
         StringBuilder builder = new StringBuilder(updateActivitySql);
         Object[] parameters = null;
@@ -464,7 +482,6 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         });
         return activityList;
     }
-
 
     private boolean isActivityRespondExistWithGivenActivityIdAndEmployeeId(int activityId, String username) {
         boolean result = false;

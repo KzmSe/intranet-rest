@@ -21,6 +21,8 @@ public interface ActivityService {
 
     void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
 
+    void deleteActivityReview(ActivityReview review) throws ActivityCredentialsException;
+
     void addActivity(Activity activity) throws ActivityCredentialsException;
 
     void incrementViewCountOfActivityById(int id) throws ActivityCredentialsException;
@@ -52,5 +54,7 @@ public interface ActivityService {
     List<Activity> findActivitiesByKeyword(String keyword, int offset);
 
     void isActivityExistWithGivenId(int id) throws ActivityCredentialsException;
+
+    void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException;
 
 }

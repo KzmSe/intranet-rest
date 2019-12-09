@@ -2,6 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.UserDTOForAdvancedSearch;
+import az.gov.adra.dataTransferObjects.UserDTOForSendEmail;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.UserCredentialsException;
@@ -70,13 +71,13 @@ public class UserController {
 
     @PostMapping("/users/email")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void sendEmail(@RequestParam(value = "email", required = false) String email) throws UserCredentialsException {
-        if (ValidationUtil.isNullOrEmpty(email)) {
+    public void sendEmail(@RequestBody UserDTOForSendEmail dto) throws UserCredentialsException {
+        if (ValidationUtil.isNullOrEmpty(dto.getEmail())) {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
-        User user = userService.findUserByEmail(email.trim());
+        User user = userService.findUserByEmail(dto.getEmail().trim());
         //TODO: add thread to send email!
-        emailSenderUtil.sendEmailMessage(email, subject, String.format(body, user.getToken()));
+        emailSenderUtil.sendEmailMessage(dto.getEmail(), subject, String.format(body, user.getToken()));
     }
 
 }

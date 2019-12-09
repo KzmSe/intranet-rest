@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +142,28 @@ public class ActivityController {
         //  return ResponseEntity.created(location).build();        return type --->ResponseEntity<Object>
 
         activityService.addActivityReview(review);
+    }
+
+    @DeleteMapping("activity/reviews/{reviewId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteActivityReview(@PathVariable(value = "reviewId") Integer id,
+                                     Principal principal) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        activityService.isActivityReviewExistWithGivenId(id);
+
+        //principal
+        User user = new User();
+        user.setUsername(principal.getName());
+
+        ActivityReview review = new ActivityReview();
+        review.setId(id);
+        review.setUser(user);
+
+        activityService.deleteActivityReview(review);
     }
 
     @PostMapping("/activities")
@@ -418,12 +441,12 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
     }
 
-//    @GetMapping("/activities/random")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    public GenericResponse findActivitiesRandomly() {
-//        List<Activity> activities = activityService.findActivitiesRandomly();
-//        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
-//    }
+    @GetMapping("/activities/random")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findActivitiesRandomly() {
+        List<Activity> activities = activityService.findActivitiesRandomly();
+        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
+    }
 
     @GetMapping("/activities/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")

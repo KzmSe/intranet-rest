@@ -49,6 +49,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public void deleteActivityReview(ActivityReview review) throws ActivityCredentialsException {
+        activityRepository.deleteActivityReview(review);
+    }
+
+    @Override
     public void addActivity(Activity activity) throws ActivityCredentialsException {
         activityRepository.addActivity(activity);
     }
@@ -91,6 +96,11 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void isActivityExistWithGivenId(int id) throws ActivityCredentialsException {
         activityRepository.isActivityExistWithGivenId(id);
+    }
+
+    @Override
+    public void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException {
+        activityRepository.isActivityReviewExistWithGivenId(id);
     }
 
     @Override
