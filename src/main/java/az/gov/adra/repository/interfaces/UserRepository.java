@@ -12,6 +12,8 @@ public interface UserRepository {
 
     int findCountOfUsersByMultipleParameters(UserDTOForAdvancedSearch dto);
 
+    User findUserByEmail(String email) throws UserCredentialsException;
+
     void isUserExistWithGivenUsername(String username) throws UserCredentialsException;
 
 }

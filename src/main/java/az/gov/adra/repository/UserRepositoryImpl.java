@@ -1,6 +1,5 @@
 package az.gov.adra.repository;
 
-import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.UserConstants;
 import az.gov.adra.dataTransferObjects.UserDTOForAdvancedSearch;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -30,6 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private static final String FIND_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select u.name, u.surname, u.email, u.img_url, p.name as position_name from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
     private static final String FIND_COUNT_OF_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select count(*) as count from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
+    private static final String FIND_USER_BY_EMAIL_SQL = "select token from users where email = ? and enabled = ?";
     private static final String IS_USER_EXIST_WITH_GIVEN_USERNAME_SQL = "select count(*) as count from users where username = ? and enabled = ?";
 
 
@@ -153,6 +154,19 @@ public class UserRepositoryImpl implements UserRepository {
 
         int totalCount = jdbcTemplate.queryForObject(builder.toString(), parameters, Integer.class);
         return totalCount;
+    }
+
+    @Override
+    public User findUserByEmail(String email) throws UserCredentialsException {
+        User user = jdbcTemplate.queryForObject(FIND_USER_BY_EMAIL_SQL, new Object[]{email, UserConstants.USER_STATUS_ENABLED}, new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int i) throws SQLException {
+                User user1 = new User();
+                user1.setToken(rs.getString("token"));
+                return user1;
+            }
+        });
+        return user;
     }
 
     @Override

@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findUserByEmail(String email) throws UserCredentialsException {
+        return userRepository.findUserByEmail(email);
+    }
+
+    @Override
     public void isUserExistWithGivenUsername(String username) throws UserCredentialsException {
         userRepository.isUserExistWithGivenUsername(username);
     }
