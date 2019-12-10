@@ -39,8 +39,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityReview> findReviewsByActivityId(int id, int offset) {
-        return activityRepository.findReviewsByActivityId(id, offset);
+    public List<ActivityReview> findReviewsByActivityId(int id, int fetchNext) {
+        return activityRepository.findReviewsByActivityId(id, fetchNext);
     }
 
     @Override

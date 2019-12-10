@@ -97,14 +97,14 @@ public class ActivityController {
     @GetMapping("/activities/{activityId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findReviewsByActivityId(@PathVariable(name = "activityId", required = false) Integer id,
-                                                   @RequestParam(name = "offset", required = false) Integer offset) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(offset)) {
+                                                   @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(fetchNext)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         activityService.isActivityExistWithGivenId(id);
 
-        List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, offset);
+        List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific activity", reviews);
     }
 
@@ -112,14 +112,14 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivityReview(@PathVariable(value = "activityId") Integer id,
-                                  @RequestParam(value = "description") String description) throws ActivityCredentialsException {
+                                  @RequestParam(value = "description") String description,
+                                  Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(description)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         activityService.isActivityExistWithGivenId(id);
 
-        //primcipal
         ActivityReview review = new ActivityReview();
         Activity activity = new Activity();
         activity.setId(id);
@@ -130,7 +130,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         review.setUser(user);
 
@@ -171,7 +171,8 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivity(@RequestParam(value = "title", required = false) String title,
                             @RequestParam(value = "description", required = false) String description,
-                            @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
+                            @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+                            Principal principal) throws ActivityCredentialsException, IOException {
 
         if (ValidationUtil.isNullOrEmpty(title, description)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -191,7 +192,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Activity activity = new Activity();
         activity.setUser(user);
@@ -245,7 +246,8 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivityRespond(@PathVariable(value = "activityId", required = false) Integer id,
-                                      @RequestParam(value = "respond", required = false) Integer respond) throws ActivityCredentialsException {
+                                      @RequestParam(value = "respond", required = false) Integer respond,
+                                      Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -258,7 +260,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         ActivityRespond activityRespond = new ActivityRespond();
         Activity activity = new Activity();
@@ -336,10 +338,11 @@ public class ActivityController {
     public void updateActivity(@PathVariable(value = "activityId", required = false) Integer id,
                                @RequestParam(value = "title", required = false) String title,
                                @RequestParam(value = "description", required = false) String description,
-                               @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
+                               @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+                               Principal principal) throws ActivityCredentialsException, IOException {
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Activity activity = new Activity();
 
@@ -386,7 +389,8 @@ public class ActivityController {
     @DeleteMapping("/activities/{activityId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteActivity(@PathVariable(value = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+    public void deleteActivity(@PathVariable(value = "activityId", required = false) Integer id,
+                               Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -395,7 +399,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Activity activity = new Activity();
         activity.setId(id);
@@ -464,10 +468,10 @@ public class ActivityController {
 
     @GetMapping("/activities/top-three/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findTopThreeActivitiesByLastAddedTime() {
+    public GenericResponse findTopThreeActivitiesByLastAddedTime(Principal principal) {
         //principal
         User user = new User();
-        user.setUsername("aminhasanov21@gmail.com");
+        user.setUsername(principal.getName());
 
         Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(user.getUsername());
         return GenericResponse.withSuccess(HttpStatus.OK, "responds of top three activities by username and last added time", activities);
@@ -493,7 +497,8 @@ public class ActivityController {
 
     @GetMapping("/activities/{activityId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+    public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id,
+                                                 Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -502,7 +507,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Map<Integer, Integer> respond = activityService.findRespondOfActivity(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);

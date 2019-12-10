@@ -17,7 +17,7 @@ public interface ActivityRepository {
 
     ActivityDTO findActivityByActivityId(int id);
 
-    List<ActivityReview> findReviewsByActivityId(int id, int offset);
+    List<ActivityReview> findReviewsByActivityId(int id, int fetchNext);
 
     void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
 

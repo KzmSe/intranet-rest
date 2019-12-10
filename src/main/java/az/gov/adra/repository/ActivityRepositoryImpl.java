@@ -42,7 +42,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String findActivitiesByUsernameSql = "select a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String findTopThreeActivitiesByUsernameSql = "select top 3 a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status IN (?, ?, ?)";
     private static final String updateActivitySql = "update Activity set title = ?, description = ?";
-    private static final String findActivitiesRandomlySql = "select top 4 a.id activity_id,a.title,a.img_url,a.date_of_reg,a.username,u.name,u.surname from Activity a  inner join users u on u.username=a.username  where a.id in (SELECT TOP (select count(*) from Activity where status = ?) id FROM Activity where status = ? ORDER BY NEWID())";
+    private static final String findActivitiesRandomlySql = "select top 3 a.id activity_id,a.title,a.img_url,a.date_of_reg,a.username,u.name,u.surname from Activity a  inner join users u on u.username=a.username  where a.id in (SELECT TOP (select count(*) from Activity where status = ?) id FROM Activity where status = ? ORDER BY NEWID())";
     private static final String findCountOfAllActivitiesSql = "select count(*) as count from Activity where status = ?";
     private static final String findCountOfAllActivitiesByKeywordSql = "select count(*) as count from Activity where status = ? and title like ?";
     private static final String findCountOfAllActivitiesByUsernameSql = "select count(*) as count from Activity where status = ? and username = ?";
@@ -153,8 +153,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
     @Override
-    public List<ActivityReview> findReviewsByActivityId(int id, int offset) {
-        List<ActivityReview> reviews = jdbcTemplate.query(findReviewsByActivityIdSql, new Object[]{id, ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE, offset, ActivityConstants.ACTIVITY_FETCH_NEXT}, new ResultSetExtractor<List<ActivityReview>>() {
+    public List<ActivityReview> findReviewsByActivityId(int id, int fetchNext) {
+        List<ActivityReview> reviews = jdbcTemplate.query(findReviewsByActivityIdSql, new Object[]{id, ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE, ActivityConstants.ACTIVITY_REVIEW_OFFSET, fetchNext}, new ResultSetExtractor<List<ActivityReview>>() {
             @Override
             public List<ActivityReview> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<ActivityReview> list = new LinkedList<>();
