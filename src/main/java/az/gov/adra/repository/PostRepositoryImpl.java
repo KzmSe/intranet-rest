@@ -140,8 +140,8 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<PostReview> findReviewsByPostId(int id, int offset) {
-        List<PostReview> reviews = jdbcTemplate.query(findReviewsByPostIdSql, new Object[]{id, PostConstants.POST_REVIEW_STATUS_ACTIVE, offset, PostConstants.POST_FETCH_NEXT}, new ResultSetExtractor<List<PostReview>>() {
+    public List<PostReview> findReviewsByPostId(int id, int fetchNext) {
+        List<PostReview> reviews = jdbcTemplate.query(findReviewsByPostIdSql, new Object[]{id, PostConstants.POST_REVIEW_STATUS_ACTIVE, PostConstants.POST_REVIEW_OFFSET, fetchNext}, new ResultSetExtractor<List<PostReview>>() {
             @Override
             public List<PostReview> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<PostReview> list = new LinkedList<>();

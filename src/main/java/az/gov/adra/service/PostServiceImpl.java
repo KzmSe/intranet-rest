@@ -40,8 +40,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostReview> findReviewsByPostId(int id, int offset) {
-        return postRepository.findReviewsByPostId(id, offset);
+    public List<PostReview> findReviewsByPostId(int id, int fetchNext) {
+        return postRepository.findReviewsByPostId(id, fetchNext);
     }
 
     @Override

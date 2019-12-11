@@ -17,7 +17,7 @@ public interface PostRepository {
 
     PostDTO findPostByPostId(int id);
 
-    List<PostReview> findReviewsByPostId(int id, int offset);
+    List<PostReview> findReviewsByPostId(int id, int fetchNext);
 
     void addPostReview(PostReview postReview) throws PostCredentialsException;
 
