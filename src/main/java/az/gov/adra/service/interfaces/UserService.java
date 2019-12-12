@@ -14,6 +14,10 @@ public interface UserService {
 
     User findUserByEmail(String email) throws UserCredentialsException;
 
+    void updatePassword(String password, String token) throws UserCredentialsException;
+
+    void updateToken(String newToken, String oldToken) throws UserCredentialsException;
+
     void isUserExistWithGivenUsername(String username) throws UserCredentialsException;
 
 }
