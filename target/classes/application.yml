@@ -16,6 +16,11 @@ spring:
   jackson:
     serialization:
       INDENT_OUTPUT: true
+  email:
+    changePassword:
+      subject: Azerbaycan Dovlet Reklam Agentliyi
+      body: Shifreni deyishmek ucun linke daxil olun http://localhost:4200/sigin/forgetpassword/changepassword?token=%s
+#      body: Shifreni deyishmek ucun linke daxil olun http://intranet.adra.local:80/INTANET-ANGULAR/PAGE-URL?token=%s
   app-name: INTRANET
 
 

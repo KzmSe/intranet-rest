@@ -39,7 +39,7 @@ public class PostRepositoryImpl implements PostRepository {
     private static final String addPostRespondSql = "insert into Post_ld(post_id, username, like_dislike, date_of_reg, status) values(?, ?, ?, ?, ?)";
     private static final String findPostsByUsernameSql = "select p.id as post_id, p.title, p.view_count, p.date_of_reg, p.img_url, u.name, u.surname, u.username from Post p inner join users u on p.username = u.username where u.username = ? and p.status = ? order by p.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String updatePostSql = "update Post set title = ?, description = ?";
-    private static final String findPostsRandomlySql = "select top 4 p.id post_id, p.title, p.img_url, p.date_of_reg, u.name, u.surname, u.username from post p inner join users u on p.username=u.username where p.id in (SELECT TOP (select count(*) FROM Post where status = ?) id from Post where status = ? ORDER BY NEWID())";
+    private static final String findPostsRandomlySql = "select top 3 p.id post_id, p.title, p.img_url, p.date_of_reg, u.name, u.surname, u.username from post p inner join users u on p.username=u.username where p.id in (SELECT TOP (select count(*) FROM Post where status = ?) id from Post where status = ? ORDER BY NEWID())";
     private static final String findCountOfAllPostsSql = "select count(*) as count from Post where status = ?";
     private static final String findCountOfAllPostsByKeywordSql = "select count(*) as count from Post where status = ? and title like ?";
     private static final String findCountOfAllPostsByUsernameSql = "select count(*) as count from Post where status = ? and username = ?";
@@ -140,8 +140,8 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<PostReview> findReviewsByPostId(int id, int offset) {
-        List<PostReview> reviews = jdbcTemplate.query(findReviewsByPostIdSql, new Object[]{id, PostConstants.POST_REVIEW_STATUS_ACTIVE, offset, PostConstants.POST_FETCH_NEXT}, new ResultSetExtractor<List<PostReview>>() {
+    public List<PostReview> findReviewsByPostId(int id, int fetchNext) {
+        List<PostReview> reviews = jdbcTemplate.query(findReviewsByPostIdSql, new Object[]{id, PostConstants.POST_REVIEW_STATUS_ACTIVE, PostConstants.POST_REVIEW_OFFSET, fetchNext}, new ResultSetExtractor<List<PostReview>>() {
             @Override
             public List<PostReview> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<PostReview> list = new LinkedList<>();

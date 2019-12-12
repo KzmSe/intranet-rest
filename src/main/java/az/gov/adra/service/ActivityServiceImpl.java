@@ -39,13 +39,18 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityReview> findReviewsByActivityId(int id, int offset) {
-        return activityRepository.findReviewsByActivityId(id, offset);
+    public List<ActivityReview> findReviewsByActivityId(int id, int fetchNext) {
+        return activityRepository.findReviewsByActivityId(id, fetchNext);
     }
 
     @Override
     public void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException {
         activityRepository.addActivityReview(activityReview);
+    }
+
+    @Override
+    public void deleteActivityReview(ActivityReview review) throws ActivityCredentialsException {
+        activityRepository.deleteActivityReview(review);
     }
 
     @Override
@@ -84,8 +89,18 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public List<ActivityDTO> findTopThreeActivitiesByUsername(String username) {
+        return activityRepository.findTopThreeActivitiesByUsername(username);
+    }
+
+    @Override
     public void isActivityExistWithGivenId(int id) throws ActivityCredentialsException {
         activityRepository.isActivityExistWithGivenId(id);
+    }
+
+    @Override
+    public void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException {
+        activityRepository.isActivityReviewExistWithGivenId(id);
     }
 
     @Override

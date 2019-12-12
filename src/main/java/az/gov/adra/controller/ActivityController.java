@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -96,14 +97,14 @@ public class ActivityController {
     @GetMapping("/activities/{activityId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findReviewsByActivityId(@PathVariable(name = "activityId", required = false) Integer id,
-                                                   @RequestParam(name = "offset", required = false) Integer offset) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(offset)) {
+                                                   @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(fetchNext)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         activityService.isActivityExistWithGivenId(id);
 
-        List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, offset);
+        List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific activity", reviews);
     }
 
@@ -111,14 +112,14 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivityReview(@PathVariable(value = "activityId") Integer id,
-                                  @RequestParam(value = "description") String description) throws ActivityCredentialsException {
+                                  @RequestParam(value = "description") String description,
+                                  Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(description)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         activityService.isActivityExistWithGivenId(id);
 
-        //primcipal
         ActivityReview review = new ActivityReview();
         Activity activity = new Activity();
         activity.setId(id);
@@ -129,7 +130,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         review.setUser(user);
 
@@ -143,12 +144,35 @@ public class ActivityController {
         activityService.addActivityReview(review);
     }
 
+    @DeleteMapping("activity/reviews/{reviewId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteActivityReview(@PathVariable(value = "reviewId") Integer id,
+                                     Principal principal) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        activityService.isActivityReviewExistWithGivenId(id);
+
+        //principal
+        User user = new User();
+        user.setUsername(principal.getName());
+
+        ActivityReview review = new ActivityReview();
+        review.setId(id);
+        review.setUser(user);
+
+        activityService.deleteActivityReview(review);
+    }
+
     @PostMapping("/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivity(@RequestParam(value = "title", required = false) String title,
                             @RequestParam(value = "description", required = false) String description,
-                            @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
+                            @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+                            Principal principal) throws ActivityCredentialsException, IOException {
 
         if (ValidationUtil.isNullOrEmpty(title, description)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -168,7 +192,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Activity activity = new Activity();
         activity.setUser(user);
@@ -176,7 +200,7 @@ public class ActivityController {
         activity.setDescription(description.trim());
         activity.setViewCount(0);
         activity.setDateOfReg(LocalDateTime.now().toString());
-        activity.setStatus(ActivityConstants.ACTIVITY_STATUS_ACTIVE);
+        activity.setStatus(ActivityConstants.ACTIVITY_STATUS_WAITING);
 
         if (!multipartFile.isEmpty()) {
             Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
@@ -222,7 +246,8 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivityRespond(@PathVariable(value = "activityId", required = false) Integer id,
-                                      @RequestParam(value = "respond", required = false) Integer respond) throws ActivityCredentialsException {
+                                      @RequestParam(value = "respond", required = false) Integer respond,
+                                      Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -235,7 +260,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         ActivityRespond activityRespond = new ActivityRespond();
         Activity activity = new Activity();
@@ -287,16 +312,37 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
 
+    @GetMapping("/users/{username}/activities/top-three")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findTopThreeActivitiesByUsername(@PathVariable(value = "username",required = false) String username) throws ActivityCredentialsException, UserCredentialsException {
+        if (ValidationUtil.isNullOrEmpty(username)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        userService.isUserExistWithGivenUsername(username);
+
+        List<ActivityDTO> activities = activityService.findTopThreeActivitiesByUsername(username);
+        for (ActivityDTO activityDTO : activities) {
+            if (activityDTO.getImgUrl() == null) {
+                continue;
+            }
+            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
+        }
+
+        return GenericResponse.withSuccess(HttpStatus.OK, "top three activities of specific employee", activities);
+    }
+
     @PutMapping("/activities/{activityId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivity(@PathVariable(value = "activityId", required = false) Integer id,
                                @RequestParam(value = "title", required = false) String title,
                                @RequestParam(value = "description", required = false) String description,
-                               @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws ActivityCredentialsException, IOException {
+                               @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+                               Principal principal) throws ActivityCredentialsException, IOException {
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Activity activity = new Activity();
 
@@ -343,7 +389,8 @@ public class ActivityController {
     @DeleteMapping("/activities/{activityId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteActivity(@PathVariable(value = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+    public void deleteActivity(@PathVariable(value = "activityId", required = false) Integer id,
+                               Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -352,11 +399,12 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Activity activity = new Activity();
         activity.setId(id);
         activity.setUser(user);
+        activity.setDateOfDel(LocalDateTime.now().toString());
 
         activityService.deleteActivity(activity);
     }
@@ -397,12 +445,12 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
     }
 
-//    @GetMapping("/activities/random")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    public GenericResponse findActivitiesRandomly() {
-//        List<Activity> activities = activityService.findActivitiesRandomly();
-//        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
-//    }
+    @GetMapping("/activities/random")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findActivitiesRandomly() {
+        List<Activity> activities = activityService.findActivitiesRandomly();
+        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
+    }
 
     @GetMapping("/activities/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -420,10 +468,10 @@ public class ActivityController {
 
     @GetMapping("/activities/top-three/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findTopThreeActivitiesByLastAddedTime() {
+    public GenericResponse findTopThreeActivitiesByLastAddedTime(Principal principal) {
         //principal
         User user = new User();
-        user.setUsername("aminhasanov21@gmail.com");
+        user.setUsername(principal.getName());
 
         Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(user.getUsername());
         return GenericResponse.withSuccess(HttpStatus.OK, "responds of top three activities by username and last added time", activities);
@@ -449,7 +497,8 @@ public class ActivityController {
 
     @GetMapping("/activities/{activityId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
+    public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id,
+                                                 Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -458,7 +507,7 @@ public class ActivityController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Map<Integer, Integer> respond = activityService.findRespondOfActivity(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);

@@ -17,9 +17,11 @@ public interface ActivityService {
 
     ActivityDTO findActivityByActivityId(int id);
 
-    List<ActivityReview> findReviewsByActivityId(int id, int offset);
+    List<ActivityReview> findReviewsByActivityId(int id, int fetchNext);
 
     void addActivityReview(ActivityReview activityReview) throws ActivityCredentialsException;
+
+    void deleteActivityReview(ActivityReview review) throws ActivityCredentialsException;
 
     void addActivity(Activity activity) throws ActivityCredentialsException;
 
@@ -34,6 +36,8 @@ public interface ActivityService {
     Map<Integer, Integer> findRespondOfActivity(String username, int activityId);
 
     List<ActivityDTO> findActivitiesByUsername(String username, int offset);
+
+    List<ActivityDTO> findTopThreeActivitiesByUsername(String username);
 
     void updateActivity(Activity activity) throws ActivityCredentialsException;
 
@@ -50,5 +54,7 @@ public interface ActivityService {
     List<Activity> findActivitiesByKeyword(String keyword, int offset);
 
     void isActivityExistWithGivenId(int id) throws ActivityCredentialsException;
+
+    void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException;
 
 }

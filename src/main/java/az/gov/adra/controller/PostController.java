@@ -96,14 +96,14 @@ public class PostController {
     @GetMapping("/posts/{postId}/reviews")
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findReviewsByPostId(@PathVariable(name = "postId", required = false) Integer id,
-                                               @RequestParam(name = "offset", required = false) Integer offset) throws PostCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(offset)) {
+                                               @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws PostCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(fetchNext)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
         postService.isPostExistWithGivenId(id);
 
-        List<PostReview> reviews = postService.findReviewsByPostId(id, offset);
+        List<PostReview> reviews = postService.findReviewsByPostId(id, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific post", reviews);
     }
 
@@ -375,12 +375,12 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
     }
 
-//    @GetMapping("/posts/random")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    public GenericResponse findPostsRandomly() {
-//        List<Post> posts = postService.findPostsRandomly();
-//        return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
-//    }
+    @GetMapping("/posts/random")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public GenericResponse findPostsRandomly() {
+        List<Post> posts = postService.findPostsRandomly();
+        return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
+    }
 
     @GetMapping("/posts/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")

@@ -32,6 +32,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findUserByEmail(String email) throws UserCredentialsException {
+        return userRepository.findUserByEmail(email);
+    }
+
+    @Override
+    public void updatePassword(String password, String token) throws UserCredentialsException {
+        userRepository.updatePassword(password, token);
+    }
+
+    @Override
+    public void updateToken(String newToken, String oldToken) throws UserCredentialsException {
+        userRepository.updateToken(newToken, oldToken);
+    }
+
+    @Override
     public void isUserExistWithGivenUsername(String username) throws UserCredentialsException {
         userRepository.isUserExistWithGivenUsername(username);
     }
