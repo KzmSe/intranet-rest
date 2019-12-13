@@ -38,6 +38,8 @@ public class IdeaController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addIdea(@RequestBody IdeaDTOForAddIdea dto,
                         Principal principal) throws IdeaCredentialsException, IOException {
+        boolean fileIsExist = false;
+
         if (ValidationUtil.isNullOrEmpty(dto.getChoice(), dto.getTitle(), dto.getDescription())) {
             throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -46,7 +48,11 @@ public class IdeaController {
             throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_CHOICE_OF_IDEA_IS_INCORRECT);
         }
 
-        if (!dto.getFile().isEmpty()) {
+        if (!ValidationUtil.isNull(dto.getFile()) && !dto.getFile().isEmpty()) {
+            fileIsExist = true;
+        }
+
+        if (fileIsExist) {
             if (!(dto.getFile().getOriginalFilename().endsWith(".jpg")
                     || dto.getFile().getOriginalFilename().endsWith(".jpeg")
                     || dto.getFile().getOriginalFilename().endsWith(".png")
@@ -78,7 +84,7 @@ public class IdeaController {
         idea.setDateOfReg(LocalDateTime.now().toString());
         idea.setStatus(IdeaConstants.IDEA_STATUS_WAITING);
 
-        if (!dto.getFile().isEmpty()) {
+        if (fileIsExist) {
             Path pathToSaveFile = Paths.get(imageUploadPath, "ideas", user.getUsername());
 
             if (!Files.exists(pathToSaveFile)) {
