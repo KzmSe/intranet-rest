@@ -37,8 +37,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String password, String token) throws UserCredentialsException {
-        userRepository.updatePassword(password, token);
+    public void updatePasswordByToken(String password, String token) throws UserCredentialsException {
+        userRepository.updatePasswordByToken(password, token);
+    }
+
+    @Override
+    public void updatePasswordByUsername(String password, String username) throws UserCredentialsException {
+        userRepository.updatePasswordByUsername(password, username);
     }
 
     @Override

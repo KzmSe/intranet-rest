@@ -31,7 +31,8 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String FIND_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select u.name, u.surname, u.email, u.img_url, p.name as position_name from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
     private static final String FIND_COUNT_OF_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select count(*) as count from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
     private static final String FIND_USER_BY_EMAIL_SQL = "select token from users where email = ? and enabled = ?";
-    private static final String CHANGE_PASSWORD_SQL = "update users set password = ? where token = ? and enabled = ?";
+    private static final String UPDATE_PASSWORD_BY_TOKEN_SQL = "update users set password = ? where token = ? and enabled = ?";
+    private static final String UPDATE_PASSWORD_BY_USERNAME_SQL = "update users set password = ? where username = ? and enabled = ?";
     private static final String UPDATE_TOKEN_SQL = "update users set token = ? where token = ?";
     private static final String IS_USER_EXIST_WITH_GIVEN_USERNAME_SQL = "select count(*) as count from users where username = ? and enabled = ?";
 
@@ -172,9 +173,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void updatePassword(String password, String token) throws UserCredentialsException {
-        int affectedRows = jdbcTemplate.update(CHANGE_PASSWORD_SQL, password, token, UserConstants.USER_STATUS_ENABLED);
+    public void updatePasswordByToken(String password, String token) throws UserCredentialsException {
+        int affectedRows = jdbcTemplate.update(UPDATE_PASSWORD_BY_TOKEN_SQL, password, token, UserConstants.USER_STATUS_ENABLED);
+        if (affectedRows == 0) {
+            throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+        }
+    }
 
+    @Override
+    public void updatePasswordByUsername(String password, String username) throws UserCredentialsException {
+        int affectedRows = jdbcTemplate.update(UPDATE_PASSWORD_BY_USERNAME_SQL, password, username, UserConstants.USER_STATUS_ENABLED);
         if (affectedRows == 0) {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
         }

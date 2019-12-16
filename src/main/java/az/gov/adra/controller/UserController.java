@@ -86,9 +86,9 @@ public class UserController {
         emailSenderUtil.sendEmailMessage(dto.getEmail(), subject, String.format(body, user.getToken()));
     }
 
-    @PutMapping("/users/password")
+    @PutMapping("/users/password/token")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updatePassword(@RequestBody UserDTOForUpdateUser dto) throws UserCredentialsException {
+    public void updatePasswordByToken(@RequestBody UserDTOForUpdateUser dto) throws UserCredentialsException {
         if (ValidationUtil.isNullOrEmpty(dto.getToken(), dto.getPassword(), dto.getConfirmPassword())) {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -96,9 +96,34 @@ public class UserController {
         if (dto.getPassword().trim().length() >= 8 && dto.getConfirmPassword().trim().length() >= 8) {
             if (dto.getPassword().equals(dto.getConfirmPassword())) {
                 try {
-                    userService.updatePassword(encoder.encode(dto.getPassword()), dto.getToken());
+                    userService.updatePasswordByToken(encoder.encode(dto.getPassword()), dto.getToken());
                     String newToken = UUID.randomUUID().toString();
                     userService.updateToken(newToken, dto.getToken());
+
+                } catch (UserCredentialsException e) {
+                    throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);
+                }
+            } else {
+                throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_NEWPASSWORD_AND_CONFIRMPASSWORD_MUST_BE_SAME);
+            }
+        } else {
+            throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_PASSWORD_MUST_CONTAINS_MINIMUM_8_CHARACTERS);
+        }
+    }
+
+    @PutMapping("/users/password")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updatePasswordByUsername(@RequestBody UserDTOForUpdateUser dto,
+                                         Principal principal) throws UserCredentialsException {
+        if (ValidationUtil.isNullOrEmpty(dto.getPassword(), dto.getConfirmPassword())) {
+            throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        if (dto.getPassword().trim().length() >= 8 && dto.getConfirmPassword().trim().length() >= 8) {
+            if (dto.getPassword().equals(dto.getConfirmPassword())) {
+                try {
+                    userService.updatePasswordByUsername(encoder.encode(dto.getPassword()), principal.getName());
 
                 } catch (UserCredentialsException e) {
                     throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_INTERNAL_ERROR);

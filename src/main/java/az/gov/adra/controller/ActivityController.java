@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -517,5 +518,31 @@ public class ActivityController {
         Map<Integer, Integer> respond = activityService.findRespondOfActivity(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);
     }
+
+
+
+//    //TODO: delete it
+//    @PostMapping("/activities")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public void addActivity111() throws ActivityCredentialsException, IOException {
+//        File folder = new File("/Users/you/folder/");
+//        File[] listOfFiles = folder.listFiles();
+//
+//        for (File file : listOfFiles) {
+//            if (file.isFile()) {
+//                System.out.println(file.getName());
+//
+//                Path pathToSaveFile = Paths.get(imageUploadPath, "profiles", user.getUsername());
+//                if (!Files.exists(pathToSaveFile)) {
+//                    Files.createDirectories(pathToSaveFile);
+//                }
+//                String fileName = UUID.randomUUID() + "##" + file.getOriginalFilename();
+//                Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
+//                Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+//                Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
+//                activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+//            }
+//        }
+//    }
 
 }

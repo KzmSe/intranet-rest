@@ -12,11 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTOForUpdateUser {
 
-    private MultipartFile multipartFile;
     private String mobile;
     private String home;
     private String token;
     private String password;
     private String confirmPassword;
+    private MultipartFile multipartFile;
 
 }

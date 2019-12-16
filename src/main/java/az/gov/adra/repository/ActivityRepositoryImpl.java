@@ -39,8 +39,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String findTopThreeActivitiesByLastAddedTimeSql = "select a_r.id,a_r.activity_id, a_r.username, a_r.respond, a_r.status, t_3_a.date_of_reg from Activity_Respond a_r inner join top_3_activity t_3_a on a_r.activity_id=t_3_a.id where a_r.username = ? and a_r.status = ? order by t_3_a.date_of_reg desc";
     private static final String updateActivityRespondSql = "update Activity_Respond set respond = ? where activity_id = ? and username = ? and status = ?";
     private static final String findRespondOfActivitySql = "select ar.activity_id,ar.respond from Activity_Respond ar where ar.username = ? and ar.activity_id = ?";
-    private static final String findActivitiesByUsernameSql = "select a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-    private static final String findTopThreeActivitiesByUsernameSql = "select top 3 a.id as activity_id, a.title, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status IN (?, ?, ?)";
+    private static final String findActivitiesByUsernameSql = "select a.id as activity_id, a.title, a.description, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    private static final String findTopThreeActivitiesByUsernameSql = "select top 3 a.id as activity_id, a.title, a.description, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status = ? order by a.date_of_reg desc";
     private static final String updateActivitySql = "update Activity set title = ?, description = ?";
     private static final String findActivitiesRandomlySql = "select top 3 a.id activity_id,a.title,a.img_url,a.date_of_reg,a.username,u.name,u.surname from Activity a  inner join users u on u.username=a.username  where a.id in (SELECT TOP (select count(*) from Activity where status = ?) id FROM Activity where status = ? ORDER BY NEWID())";
     private static final String findCountOfAllActivitiesSql = "select count(*) as count from Activity where status = ?";
@@ -300,6 +300,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                     ActivityDTO activity = new ActivityDTO();
                     activity.setId(rs.getInt("activity_id"));
                     activity.setTitle(rs.getString("title"));
+                    activity.setDescription(rs.getString("description"));
                     activity.setViewCount(rs.getInt("view_count"));
                     activity.setStatus(rs.getInt("status"));
                     activity.setPositiveCount(rs.getInt("positive"));
@@ -326,7 +327,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     @Override
     public List<ActivityDTO> findTopThreeActivitiesByUsername(String username) {
-        List<ActivityDTO> activities = jdbcTemplate.query(findTopThreeActivitiesByUsernameSql, new Object[]{username, ActivityConstants.ACTIVITY_STATUS_CONFIRMED, ActivityConstants.ACTIVITY_STATUS_UNCONFIRMED, ActivityConstants.ACTIVITY_STATUS_WAITING}, new ResultSetExtractor<List<ActivityDTO>>() {
+        List<ActivityDTO> activities = jdbcTemplate.query(findTopThreeActivitiesByUsernameSql, new Object[]{username, ActivityConstants.ACTIVITY_STATUS_CONFIRMED}, new ResultSetExtractor<List<ActivityDTO>>() {
             @Override
             public List<ActivityDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<ActivityDTO> list = new LinkedList<>();
@@ -334,6 +335,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                     ActivityDTO activity = new ActivityDTO();
                     activity.setId(rs.getInt("activity_id"));
                     activity.setTitle(rs.getString("title"));
+                    activity.setDescription(rs.getString("description"));
                     activity.setViewCount(rs.getInt("view_count"));
                     activity.setStatus(rs.getInt("status"));
                     activity.setPositiveCount(rs.getInt("positive"));
