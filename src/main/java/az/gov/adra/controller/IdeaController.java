@@ -2,7 +2,6 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.IdeaConstants;
 import az.gov.adra.constant.MessageConstants;
-import az.gov.adra.dataTransferObjects.IdeaDTOForAddIdea;
 import az.gov.adra.entity.Idea;
 import az.gov.adra.entity.User;
 import az.gov.adra.exception.IdeaCredentialsException;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -36,38 +36,41 @@ public class IdeaController {
     @PostMapping("/ideas")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addIdea(@RequestBody IdeaDTOForAddIdea dto,
+    public void addIdea(@RequestParam(value = "title", required = false) String title,
+                        @RequestParam(value = "description", required = false) String description,
+                        @RequestParam(value = "choice", required = false) String choice,
+                        @RequestParam(value = "file", required = false) MultipartFile file,
                         Principal principal) throws IdeaCredentialsException, IOException {
         boolean fileIsExist = false;
 
-        if (ValidationUtil.isNullOrEmpty(dto.getChoice(), dto.getTitle(), dto.getDescription())) {
+        if (ValidationUtil.isNullOrEmpty(choice, title, description)) {
             throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
-        if (!dto.getChoice().equals(IdeaConstants.IDEA_CHOICE_IDEA) && !dto.getChoice().equals(IdeaConstants.IDEA_CHOICE_COMPLAINT)) {
+        if (!choice.equals(IdeaConstants.IDEA_CHOICE_IDEA) && !choice.equals(IdeaConstants.IDEA_CHOICE_COMPLAINT)) {
             throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_CHOICE_OF_IDEA_IS_INCORRECT);
         }
 
-        if (!ValidationUtil.isNull(dto.getFile()) && !dto.getFile().isEmpty()) {
+        if (!ValidationUtil.isNull(file) && !file.isEmpty()) {
             fileIsExist = true;
         }
 
         if (fileIsExist) {
-            if (!(dto.getFile().getOriginalFilename().endsWith(".jpg")
-                    || dto.getFile().getOriginalFilename().endsWith(".jpeg")
-                    || dto.getFile().getOriginalFilename().endsWith(".png")
-                    || dto.getFile().getOriginalFilename().endsWith(".doc")
-                    || dto.getFile().getOriginalFilename().endsWith(".docx")
-                    || dto.getFile().getOriginalFilename().endsWith(".xls")
-                    || dto.getFile().getOriginalFilename().endsWith(".xlsx")
-                    || dto.getFile().getOriginalFilename().endsWith(".ppt")
-                    || dto.getFile().getOriginalFilename().endsWith(".pptx")
-                    || dto.getFile().getOriginalFilename().endsWith(".pdf")
-                    || dto.getFile().getOriginalFilename().endsWith(".txt"))) {
+            if (!(file.getOriginalFilename().endsWith(".jpg")
+                    || file.getOriginalFilename().endsWith(".jpeg")
+                    || file.getOriginalFilename().endsWith(".png")
+                    || file.getOriginalFilename().endsWith(".doc")
+                    || file.getOriginalFilename().endsWith(".docx")
+                    || file.getOriginalFilename().endsWith(".xls")
+                    || file.getOriginalFilename().endsWith(".xlsx")
+                    || file.getOriginalFilename().endsWith(".ppt")
+                    || file.getOriginalFilename().endsWith(".pptx")
+                    || file.getOriginalFilename().endsWith(".pdf")
+                    || file.getOriginalFilename().endsWith(".txt"))) {
                 throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
             }
 
-            if (dto.getFile().getSize() >= maxFileSize) {
+            if (file.getSize() >= maxFileSize) {
                 throw new IdeaCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
             }
         }
@@ -78,9 +81,9 @@ public class IdeaController {
 
         Idea idea = new Idea();
         idea.setUser(user);
-        idea.setChoice(dto.getChoice());
-        idea.setTitle(dto.getTitle());
-        idea.setDescription(dto.getDescription());
+        idea.setChoice(choice);
+        idea.setTitle(title);
+        idea.setDescription(description);
         idea.setDateOfReg(LocalDateTime.now().toString());
         idea.setStatus(IdeaConstants.IDEA_STATUS_WAITING);
 
@@ -91,9 +94,9 @@ public class IdeaController {
                 Files.createDirectories(pathToSaveFile);
             }
 
-            String fileName = UUID.randomUUID() + "##" + dto.getFile().getOriginalFilename();
+            String fileName = UUID.randomUUID() + "##" + file.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-            Files.copy(dto.getFile().getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("ideas", user.getUsername(), fileName);
 
             idea.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
