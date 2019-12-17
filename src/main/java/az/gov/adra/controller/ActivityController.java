@@ -3,6 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
+import az.gov.adra.dataTransferObjects.ActivityReviewDTOForAddReview;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
@@ -117,9 +118,9 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivityReview(@PathVariable(value = "activityId") Integer id,
-                                  @RequestParam(value = "description") String description,
+                                  @RequestBody ActivityReviewDTOForAddReview dto,
                                   Principal principal) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(description)) {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(dto.getDescription())) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -129,7 +130,7 @@ public class ActivityController {
         Activity activity = new Activity();
         activity.setId(id);
         review.setActivity(activity);
-        review.setDescription(description.trim());
+        review.setDescription(dto.getDescription().trim());
         review.setDateOfReg(LocalDateTime.now().toString());
         review.setStatus(ActivityConstants.ACTIVITY_REVIEW_STATUS_ACTIVE);
 
@@ -530,14 +531,6 @@ public class ActivityController {
     @GetMapping("/test")
     @ResponseStatus(HttpStatus.OK)
     public void addActivity111() throws IOException {
-//        File source = new File("C:\\pictures");
-//        File dest = new File("C:\\updated");
-//
-//        try {
-//            FileUtils.copyDirectory(source, dest);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         File source = new File("C:\\source");
         Path destination = Paths.get("C:\\destination");

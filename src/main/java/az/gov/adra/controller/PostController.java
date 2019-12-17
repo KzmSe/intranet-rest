@@ -3,6 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
 import az.gov.adra.dataTransferObjects.PostDTO;
+import az.gov.adra.dataTransferObjects.PostReviewDTOForAddReview;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.UserCredentialsException;
@@ -112,8 +113,9 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addPostReview(@PathVariable(value = "postId") Integer id,
-                              @RequestParam(value = "description") String description) throws PostCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(description)) {
+                              @RequestBody PostReviewDTOForAddReview dto,
+                              Principal principal) throws PostCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNullOrEmpty(dto.getDescription())) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -121,14 +123,14 @@ public class PostController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         PostReview review = new PostReview();
         Post post = new Post();
         post.setId(id);
         review.setUser(user);
         review.setPost(post);
-        review.setDescription(description);
+        review.setDescription(dto.getDescription());
         review.setDateOfReg(LocalDateTime.now().toString());
         review.setStatus(PostConstants.POST_REVIEW_STATUS_ACTIVE);
 
