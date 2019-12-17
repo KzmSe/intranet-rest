@@ -11,6 +11,7 @@ import az.gov.adra.service.interfaces.ActivityService;
 import az.gov.adra.service.interfaces.UserService;
 import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +68,8 @@ public class ActivityController {
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 10;
-            };
+            }
+            ;
         }
 
         List<Activity> activities = activityService.findAllActivities(offset);
@@ -282,7 +286,7 @@ public class ActivityController {
 
     @GetMapping("/users/{username}/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findActivitiesByUsername(@PathVariable(value = "username",required = false) String username,
+    public GenericResponse findActivitiesByUsername(@PathVariable(value = "username", required = false) String username,
                                                     @RequestParam(name = "page", required = false) Integer page,
                                                     HttpServletResponse response) throws ActivityCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNullOrEmpty(username) || ValidationUtil.isNull(page)) {
@@ -293,7 +297,7 @@ public class ActivityController {
         int totalPages = 0;
         int offset = 0;
 
-        if(total != 0) {
+        if (total != 0) {
             totalPages = (int) Math.ceil((double) total / 3);
 
             if (page != null && page >= totalPages) {
@@ -301,7 +305,8 @@ public class ActivityController {
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 3;
-            };
+            }
+            ;
         }
 
         userService.isUserExistWithGivenUsername(username);
@@ -320,7 +325,7 @@ public class ActivityController {
 
     @GetMapping("/users/{username}/activities/top-three")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findTopThreeActivitiesByUsername(@PathVariable(value = "username",required = false) String username) throws ActivityCredentialsException, UserCredentialsException {
+    public GenericResponse findTopThreeActivitiesByUsername(@PathVariable(value = "username", required = false) String username) throws ActivityCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNullOrEmpty(username)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -436,7 +441,8 @@ public class ActivityController {
 
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 10;
-            };
+            }
+            ;
         }
 
         List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim(), offset);
@@ -520,29 +526,35 @@ public class ActivityController {
     }
 
 
-
-//    //TODO: delete it
-//    @PostMapping("/activities")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public void addActivity111() throws ActivityCredentialsException, IOException {
-//        File folder = new File("/Users/you/folder/");
-//        File[] listOfFiles = folder.listFiles();
+    //TODO: delete it
+    @GetMapping("/test")
+    @ResponseStatus(HttpStatus.OK)
+    public void addActivity111() throws IOException {
+//        File source = new File("C:\\pictures");
+//        File dest = new File("C:\\updated");
 //
-//        for (File file : listOfFiles) {
-//            if (file.isFile()) {
-//                System.out.println(file.getName());
-//
-//                Path pathToSaveFile = Paths.get(imageUploadPath, "profiles", user.getUsername());
-//                if (!Files.exists(pathToSaveFile)) {
-//                    Files.createDirectories(pathToSaveFile);
-//                }
-//                String fileName = UUID.randomUUID() + "##" + file.getOriginalFilename();
-//                Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-//                Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-//                Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
-//                activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
-//            }
+//        try {
+//            FileUtils.copyDirectory(source, dest);
+//        } catch (IOException e) {
+//            e.printStackTrace();
 //        }
-//    }
+
+        File source = new File("C:\\source");
+        Path destination = Paths.get("C:\\destination");
+        File[] listOfFiles = source.listFiles();
+
+        for (File file : listOfFiles) {
+            String fileName = UUID.randomUUID() + "##" + file.getName();
+            System.out.println(fileName);
+//
+//            InputStream targetStream = new FileInputStream(file);
+//
+//            Path fullFilePath = Paths.get(destination.toString(), fileName);
+
+//            Files.copy(targetStream), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+//            Path pathToSaveDb = Paths.get("profiles", user.getUsername(), fileName);
+//            activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+        }
+    }
 
 }
