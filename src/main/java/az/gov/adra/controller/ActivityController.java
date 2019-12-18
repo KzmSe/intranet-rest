@@ -538,7 +538,18 @@ public class ActivityController {
 
         for (File file : listOfFiles) {
             String fileName = UUID.randomUUID() + "##" + file.getName();
-            System.out.println(fileName);
+
+            Path sourceFile = Paths.get("C:\\source" + file.getName());
+            Path targetFile = Paths.get("C:\\destination" + fileName);
+
+            try {
+
+                Files.copy(sourceFile, targetFile,
+                        StandardCopyOption.REPLACE_EXISTING);
+
+            } catch (IOException ex) {
+                System.err.format("I/O Error when copying file");
+            }
 //
 //            InputStream targetStream = new FileInputStream(file);
 //
