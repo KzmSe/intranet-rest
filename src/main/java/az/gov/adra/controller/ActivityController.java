@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -555,8 +556,9 @@ public class ActivityController {
             }
 
             //IN ORDER TO SAVE DB
-            String[] array = file.getName().split(".");
-            String fin = array[2];
+            String[] array = file.getName().split("\\.");
+            System.out.println(Arrays.toString(array));
+            String fin = array[0];
             String pathToSaveDb = DatatypeConverter.printHexBinary(Paths.get("profiles", fileName).toString().getBytes());
             activityService.savePhoto(pathToSaveDb, fin);
             counter++;
