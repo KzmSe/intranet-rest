@@ -57,4 +57,6 @@ public interface ActivityService {
 
     void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException;
 
+    void savePhoto(String pathToSaveDb, String fin);
+
 }

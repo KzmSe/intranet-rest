@@ -138,4 +138,9 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRepository.findActivitiesByKeyword(keyword, offset);
     }
 
+    @Override
+    public void savePhoto(String pathToSaveDb, String fin) {
+        activityRepository.savePhoto(pathToSaveDb, fin);
+    }
+
 }

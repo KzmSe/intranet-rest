@@ -493,4 +493,9 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         }
         return result;
     }
+
+    @Override
+    public void savePhoto(String pathToSaveDb, String fin) {
+        int affectedRows = jdbcTemplate.update("update users set img_url = ? where fin = ? and enabled = 1", pathToSaveDb, fin);
+    }
 }

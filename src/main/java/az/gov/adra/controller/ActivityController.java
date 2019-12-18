@@ -532,9 +532,12 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.OK)
     public void addActivity111() throws IOException {
 
+        //IN ORDER TO COPY FILES
         File source = new File("C:\\source");
         Path destination = Paths.get("C:\\destination");
         File[] listOfFiles = source.listFiles();
+
+        int counter = 0;
 
         for (File file : listOfFiles) {
             String fileName = UUID.randomUUID() + "##" + file.getName();
@@ -550,15 +553,16 @@ public class ActivityController {
             } catch (IOException ex) {
                 System.err.format("I/O Error when copying file");
             }
-//
-//            InputStream targetStream = new FileInputStream(file);
-//
-//            Path fullFilePath = Paths.get(destination.toString(), fileName);
 
-//            Files.copy(targetStream), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-//            Path pathToSaveDb = Paths.get("profiles", user.getUsername(), fileName);
-//            activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+            //IN ORDER TO SAVE DB
+            String[] array = file.getName().split(".");
+            String fin = array[2];
+            String pathToSaveDb = DatatypeConverter.printHexBinary(Paths.get("profiles", fileName).toString().getBytes());
+            activityService.savePhoto(pathToSaveDb, fin);
+            counter++;
         }
+
+        System.out.println(counter + " rows updated");
     }
 
 }
