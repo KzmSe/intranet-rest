@@ -133,7 +133,7 @@ public class CommandController {
                 Files.createDirectories(pathToSaveFile);
             }
 
-            String fileName = UUID.randomUUID() + "##" + file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("commands", user.getUsername(), fileName);

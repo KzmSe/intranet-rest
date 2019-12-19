@@ -192,7 +192,7 @@ public class PostController {
                 Files.createDirectories(pathToSaveFile);
             }
 
-            String fileName = UUID.randomUUID() + "##" + file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
@@ -210,7 +210,8 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePostRespond(@PathVariable(value = "postId", required = false) Integer id,
-                                  @RequestParam(value = "respond", required = false) Integer respond) throws PostCredentialsException {
+                                  @RequestParam(value = "respond", required = false) Integer respond,
+                                  Principal principal) throws PostCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -223,7 +224,7 @@ public class PostController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         PostLd postLd = new PostLd();
         Post post = new Post();
@@ -279,12 +280,13 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePost(@PathVariable(value = "postId", required = false) Integer id,
-                                          @RequestParam(value = "title", required = false) String title,
-                                          @RequestParam(value = "description", required = false) String description,
-                                          @RequestParam(value = "file", required = false) MultipartFile multipartFile) throws PostCredentialsException, IOException {
+                           @RequestParam(value = "title", required = false) String title,
+                           @RequestParam(value = "description", required = false) String description,
+                           @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+                           Principal principal) throws PostCredentialsException, IOException {
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Post post = new Post();
 
@@ -312,7 +314,7 @@ public class PostController {
                 Files.createDirectories(pathToSaveFile);
             }
 
-            String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "&&" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
@@ -330,7 +332,8 @@ public class PostController {
     @DeleteMapping("/posts/{postId}")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
-    public void deletePost(@PathVariable(value = "postId", required = false) Integer id) throws PostCredentialsException {
+    public void deletePost(@PathVariable(value = "postId", required = false) Integer id,
+                           Principal principal) throws PostCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -339,7 +342,7 @@ public class PostController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Post post = new Post();
         post.setId(id);
@@ -426,7 +429,8 @@ public class PostController {
 
     @GetMapping("/posts/{postId}/respond")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public GenericResponse findRespondOfPost(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
+    public GenericResponse findRespondOfPost(@PathVariable(name = "postId", required = false) Integer id,
+                                             Principal principal) throws PostCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -435,7 +439,7 @@ public class PostController {
 
         //principal
         User user = new User();
-        user.setUsername("safura@gmail.com");
+        user.setUsername(principal.getName());
 
         Map<Integer, Integer> respond = postService.findRespondOfPost(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific post", respond);

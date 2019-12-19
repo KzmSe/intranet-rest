@@ -221,7 +221,7 @@ public class ActivityController {
                 Files.createDirectories(pathToSaveFile);
             }
 
-            String fileName = UUID.randomUUID() + "##" + file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
@@ -383,7 +383,7 @@ public class ActivityController {
                 Files.createDirectories(pathToSaveFile);
             }
 
-            String fileName = UUID.randomUUID() + "##" + multipartFile.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "&&" + multipartFile.getOriginalFilename();
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
@@ -528,43 +528,42 @@ public class ActivityController {
     }
 
 
-    //TODO: delete it
-    @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public void addActivity111() throws IOException {
-
-        //IN ORDER TO COPY FILES
-        File source = new File("C:\\source");
-        Path destination = Paths.get("C:\\destination");
-        File[] listOfFiles = source.listFiles();
-
-        int counter = 0;
-
-        for (File file : listOfFiles) {
-            String fileName = UUID.randomUUID() + "##" + file.getName();
-
-            Path sourceFile = Paths.get("C:\\source\\" + file.getName());
-            Path targetFile = Paths.get("C:\\destination\\" + fileName);
-
-            try {
-
-                Files.copy(sourceFile, targetFile,
-                        StandardCopyOption.REPLACE_EXISTING);
-
-            } catch (IOException ex) {
-                System.err.format("I/O Error when copying file");
-            }
-
-            //IN ORDER TO SAVE DB
-            String[] array = file.getName().split("\\.");
-            System.out.println(Arrays.toString(array));
-            String fin = array[0];
-            String pathToSaveDb = DatatypeConverter.printHexBinary(Paths.get("profiles", fileName).toString().getBytes());
-            activityService.savePhoto(pathToSaveDb, fin);
-            counter++;
-        }
-
-        System.out.println(counter + " rows updated");
-    }
+//    @GetMapping("/test")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void addActivity111() throws IOException {
+//
+//        //IN ORDER TO COPY FILES
+//        File source = new File("C:\\source");
+//        Path destination = Paths.get("C:\\destination");
+//        File[] listOfFiles = source.listFiles();
+//
+//        int counter = 0;
+//
+//        for (File file : listOfFiles) {
+//            String fileName = UUID.randomUUID() + "&&" + file.getName();
+//
+//            Path sourceFile = Paths.get("C:\\source\\" + file.getName());
+//            Path targetFile = Paths.get("C:\\destination\\" + fileName);
+//
+//            try {
+//
+//                Files.copy(sourceFile, targetFile,
+//                        StandardCopyOption.REPLACE_EXISTING);
+//
+//            } catch (IOException ex) {
+//                System.err.format("I/O Error when copying file");
+//            }
+//
+//            //IN ORDER TO SAVE DB
+//            String[] array = file.getName().split("\\.");
+//            System.out.println(Arrays.toString(array));
+//            String fin = array[0];
+//            String pathToSaveDb = DatatypeConverter.printHexBinary(Paths.get("profiles", fileName).toString().getBytes());
+//            activityService.savePhoto(pathToSaveDb, fin);
+//            counter++;
+//        }
+//
+//        System.out.println(counter + " rows updated");
+//    }
 
 }
