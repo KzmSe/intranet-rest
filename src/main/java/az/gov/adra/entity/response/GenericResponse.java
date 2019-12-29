@@ -18,7 +18,6 @@ public class GenericResponse {
     private String description;
     private Object data;
     private LocalDateTime timestamp;
-    @Value("${spring.app-name}")
     private String appName;
 
 
@@ -28,6 +27,7 @@ public class GenericResponse {
         response.setDescription(description);
         response.setData(object);
         response.setTimestamp(LocalDateTime.now());
+        response.setAppName("INTRANET");
         return response;
     }
 
@@ -37,6 +37,7 @@ public class GenericResponse {
         response.setStatus(status.value());
         response.setDescription(description);
         response.setTimestamp(LocalDateTime.now());
+        response.setAppName("INTRANET");
         return response;
     }
 

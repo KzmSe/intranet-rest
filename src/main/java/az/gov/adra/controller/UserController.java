@@ -26,6 +26,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RestController
 public class UserController {
@@ -82,8 +84,8 @@ public class UserController {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
         User user = userService.findUserByEmail(dto.getEmail().trim());
-        //TODO: add thread to send email!
-        emailSenderUtil.sendEmailMessage(dto.getEmail(), subject, String.format(body, user.getToken()));
+
+        sendEmailJob(dto, user);
     }
 
     @PutMapping("/users/password/token")
@@ -133,6 +135,20 @@ public class UserController {
             }
         } else {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_PASSWORD_MUST_CONTAINS_MINIMUM_8_CHARACTERS);
+        }
+    }
+
+    //private methods
+    private void sendEmailJob(UserDTOForSendEmail dto, User user) {
+        if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
+            ExecutorService service = Executors.newSingleThreadExecutor();
+
+            Runnable runnableTask = () -> {
+                emailSenderUtil.sendEmailMessage(dto.getEmail(), subject, String.format(body, user.getToken()));
+            };
+
+            service.submit(runnableTask);
+            service.shutdown();
         }
     }
 
