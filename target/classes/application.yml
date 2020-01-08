@@ -22,7 +22,7 @@ spring:
     username: intranet.adra1@gmail.com
     password: adra@adra
     subject: Azərbaycan Dövlət Reklam Agentliyi (Yeni şifrə bildirişi)
-    body: Şifrəni dəyişmək üçün linkə daxil olun  http://intranet.adra.local:8082/intranet/sigin/forgetpassword/changepassword?token=%s
+    body: Şifrəni dəyişmək üçün linkə daxil olun  http://intranet.adra.local:8082/intranet/changepassword?token=%s
   app-name: INTRANET
 
 
