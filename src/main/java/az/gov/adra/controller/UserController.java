@@ -13,18 +13,17 @@ import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
+import javax.mail.Address;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,9 +39,9 @@ public class UserController {
     private BCryptPasswordEncoder encoder;
     @Value("${auth.server.paths.count-of-all-users}")
     private String countOfAllUsersUrl;
-    @Value("${spring.email.changePassword.subject}")
+    @Value("${spring.mail.subject}")
     private String subject;
-    @Value("${spring.email.changePassword.body}")
+    @Value("${spring.mail.body}")
     private String body;
 
     @PostMapping("/users/search")
@@ -79,13 +78,13 @@ public class UserController {
 
     @PostMapping("/users/email")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void sendEmail(@RequestBody UserDTOForSendEmail dto) throws UserCredentialsException {
+    public void sendEmail(@RequestBody UserDTOForSendEmail dto) throws UserCredentialsException, AddressException {
         if (ValidationUtil.isNullOrEmpty(dto.getEmail())) {
             throw new UserCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
         User user = userService.findUserByEmail(dto.getEmail().trim());
 
-        sendEmailJob(dto, user);
+        sendNewPasswordEmail(dto, user);
     }
 
     @PutMapping("/users/password/token")
@@ -138,13 +137,16 @@ public class UserController {
         }
     }
 
+
     //private methods
-    private void sendEmailJob(UserDTOForSendEmail dto, User user) {
+    private void sendNewPasswordEmail(UserDTOForSendEmail dto, User user) throws AddressException {
         if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
             ExecutorService service = Executors.newSingleThreadExecutor();
 
+            Address address = new InternetAddress(dto.getEmail());
+
             Runnable runnableTask = () -> {
-                emailSenderUtil.sendEmailMessage(dto.getEmail(), subject, String.format(body, user.getToken()));
+                emailSenderUtil.sendEmailMessage(address, subject, String.format(body, user.getToken()));
             };
 
             service.submit(runnableTask);

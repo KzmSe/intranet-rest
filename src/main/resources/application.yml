@@ -16,10 +16,13 @@ spring:
   jackson:
     serialization:
       INDENT_OUTPUT: true
-  email:
-    changePassword:
-      subject: Azerbaycan Dovlet Reklam Agentliyi
-      body: Shifreni deyishmek ucun linke daxil olun http://localhost:4200/sigin/forgetpassword/changepassword?token=%s
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: intranet.adra1@gmail.com
+    password: adra@adra
+    subject: Azərbaycan Dövlət Reklam Agentliyi (Yeni şifrə bildirişi)
+    body: Şifrəni dəyişmək üçün linkə daxil olun  http://intranet.adra.local:8082/intranet/sigin/forgetpassword/changepassword?token=%s
   app-name: INTRANET
 
 
