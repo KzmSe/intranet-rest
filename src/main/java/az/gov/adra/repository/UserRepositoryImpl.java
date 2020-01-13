@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final String FIND_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select u.name, u.surname, u.email, u.img_url, p.name as position_name from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
+    private static final String FIND_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select u.name, u.surname, u.email, u.img_url, u.username, p.name as position_name from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
     private static final String FIND_COUNT_OF_USERS_BY_MULTIPLE_PARAMETERS_SQL = "select count(*) as count from users u inner join Position p on u.position_id = p.id where u.enabled = ? ";
     private static final String FIND_USER_BY_EMAIL_SQL = "select token from users where email = ? and enabled = ?";
     private static final String UPDATE_PASSWORD_BY_TOKEN_SQL = "update users set password = ? where token = ? and enabled = ?";
@@ -93,6 +93,7 @@ public class UserRepositoryImpl implements UserRepository {
                     User user = new User();
                     user.setName(rs.getString("name"));
                     user.setSurname(rs.getString("surname"));
+                    user.setUsername(rs.getString("username"));
 
                     user.setEmail(rs.getString("email"));
                     user.setImgUrl(rs.getString("img_url"));

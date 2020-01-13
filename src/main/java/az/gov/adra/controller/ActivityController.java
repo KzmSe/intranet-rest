@@ -207,7 +207,7 @@ public class ActivityController {
         Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
         Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
         Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
-        activity.setImgUrl(pathToSaveDb.toString());
+        activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
 
 
         activityService.addActivity(activity);

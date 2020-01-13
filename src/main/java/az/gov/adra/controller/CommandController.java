@@ -62,13 +62,6 @@ public class CommandController {
         }
 
         List<CommandDTO> commands = commandService.findAllCommands(offset);
-        for (CommandDTO commandDTO : commands) {
-            if (commandDTO.getImgUrl() == null) {
-                continue;
-            }
-            commandDTO.setImgUrl(ResourceUtil.convertToString(commandDTO.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
     }
@@ -81,10 +74,7 @@ public class CommandController {
         }
 
         commandService.isCommandExistWithGivenId(id);
-
         CommandDTO command = commandService.findCommandByCommandId(id);
-        command.setImgUrl(ResourceUtil.convertToString(command.getImgUrl()));
-
         return GenericResponse.withSuccess(HttpStatus.OK, "specific command by id", command);
     }
 
@@ -138,7 +128,7 @@ public class CommandController {
             Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("commands", user.getUsername(), fileName);
 
-            command.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+            command.setImgUrl(pathToSaveDb.toString());
 
         } else {
             command.setImgUrl(null);
@@ -151,13 +141,6 @@ public class CommandController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findTopThreeCommands() {
         List<CommandDTO> commands = commandService.findTopThreeCommandsByLastAddedTime();
-        for (CommandDTO commandDTO : commands) {
-            if (commandDTO.getImgUrl() == null) {
-                continue;
-            }
-            commandDTO.setImgUrl(ResourceUtil.convertToString(commandDTO.getImgUrl()));
-        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "top three commands by last added time", commands);
     }
 
