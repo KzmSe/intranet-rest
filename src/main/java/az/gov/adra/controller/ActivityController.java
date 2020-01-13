@@ -179,30 +179,10 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivity(@RequestParam(value = "file", required = false) MultipartFile file,
                             Principal principal) throws ActivityCredentialsException, IOException {
-        boolean fileIsExist = false;
+        boolean fileIsExist = true;
 
         String title = "Amin agilli ol2!!!";
         String description = "sdsdssdsd";
-
-        if (ValidationUtil.isNullOrEmpty(title, description)) {
-            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
-        }
-
-        if (!ValidationUtil.isNull(file) && !file.isEmpty()) {
-            fileIsExist = true;
-        }
-
-        if (fileIsExist) {
-            if (!(file.getOriginalFilename().endsWith(".jpg")
-                    || file.getOriginalFilename().endsWith(".jpeg")
-                    || file.getOriginalFilename().endsWith(".png"))) {
-                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
-            }
-
-            if (file.getSize() >= maxFileSize) {
-                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
-            }
-        }
 
         //principal
         User user = new User();
@@ -216,23 +196,19 @@ public class ActivityController {
         activity.setDateOfReg(LocalDateTime.now().toString());
         activity.setStatus(ActivityConstants.ACTIVITY_STATUS_WAITING);
 
-        if (fileIsExist) {
-            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
 
-            if (!Files.exists(pathToSaveFile)) {
-                Files.createDirectories(pathToSaveFile);
-            }
+        Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
 
-            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
-            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-            Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
-
-            activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
-
-        } else {
-            activity.setImgUrl(defaultActivityHexCode);
+        if (!Files.exists(pathToSaveFile)) {
+            Files.createDirectories(pathToSaveFile);
         }
+
+        String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
+        Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
+        Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+        Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
+        activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+
 
         activityService.addActivity(activity);
     }
