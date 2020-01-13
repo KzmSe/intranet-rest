@@ -49,12 +49,6 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findAllDocuments(offset);
-        for (DocumentDTO documentDTO : documents) {
-            if (documentDTO.getFileUrl() == null) {
-                continue;
-            }
-            documentDTO.setFileUrl(ResourceUtil.convertToString(documentDTO.getFileUrl()));
-        }
 
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", documents);
@@ -85,12 +79,6 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findDocumentsByKeyword(keyword.trim(), offset);
-        for (DocumentDTO documentDTO : documents) {
-            if (documentDTO.getFileUrl() == null) {
-                continue;
-            }
-            documentDTO.setFileUrl(ResourceUtil.convertToString(documentDTO.getFileUrl()));
-        }
 
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "documents by keyword", documents);
@@ -100,13 +88,6 @@ public class DocumentController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findDocumentsByLastAddedTime() {
         List<DocumentDTO> documents = documentService.findTopDocumentsByLastAddedTime();
-        for (DocumentDTO documentDTO : documents) {
-            if (documentDTO.getFileUrl() == null) {
-                continue;
-            }
-            documentDTO.setFileUrl(ResourceUtil.convertToString(documentDTO.getFileUrl()));
-        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "last added documents", documents);
     }
 
