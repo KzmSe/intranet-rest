@@ -44,17 +44,17 @@ public class UserRepositoryImpl implements UserRepository {
 
         list.add(UserConstants.USER_STATUS_ENABLED);
 
-        if (!ValidationUtil.isNull(dto.getName())) {
+        if (!ValidationUtil.isNullOrEmpty(dto.getName())) {
             builder.append("and u.name = ? ");
             list.add(dto.getName());
         }
 
-        if (!ValidationUtil.isNull(dto.getSurname())) {
+        if (!ValidationUtil.isNullOrEmpty(dto.getSurname())) {
             builder.append("and u.surname = ? ");
             list.add(dto.getSurname());
         }
 
-        if (!ValidationUtil.isNull(dto.getKeyword())) {
+        if (!ValidationUtil.isNullOrEmpty(dto.getKeyword())) {
             builder.append("and CONCAT(u.name , ' ', u.surname) like ? ");
             list.add("%" + dto.getKeyword() + "%");
         }
