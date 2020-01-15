@@ -42,7 +42,7 @@ public class PostController {
     @Value("${file.upload.path.win}")
     private String imageUploadPath;
     private final int maxFileSize = 3145728;
-    private final String defaultPostHexCode = "706F7374735C64656661756C745F706F73742E6A7067";
+    private final String defaultPost = "posts\\default_post.jpg";
 
 
     @GetMapping("/posts")
@@ -69,13 +69,6 @@ public class PostController {
         }
 
         List<Post> posts = postService.findAllPosts(offset);
-        for (Post post : posts) {
-            if (post.getImgUrl() == null) {
-                continue;
-            }
-            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
     }
@@ -88,10 +81,7 @@ public class PostController {
         }
 
         postService.isPostExistWithGivenId(id);
-
         PostDTO postDTO = postService.findPostByPostId(id);
-        postDTO.setImgUrl(ResourceUtil.convertToString(postDTO.getImgUrl()));
-
         return GenericResponse.withSuccess(HttpStatus.OK, "specific post by id", postDTO);
     }
 
@@ -104,7 +94,6 @@ public class PostController {
         }
 
         postService.isPostExistWithGivenId(id);
-
         List<PostReview> reviews = postService.findReviewsByPostId(id, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific post", reviews);
     }
@@ -197,10 +186,10 @@ public class PostController {
             Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
 
-            post.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+            post.setImgUrl(pathToSaveDb.toString());
 
         } else {
-            post.setImgUrl(defaultPostHexCode);
+            post.setImgUrl(defaultPost);
         }
 
         postService.addPost(post);
@@ -263,15 +252,7 @@ public class PostController {
         }
 
         userService.isUserExistWithGivenUsername(username);
-
         List<Post> posts = postService.findPostsByUsername(username, offset);
-        for (Post post : posts) {
-            if (post.getImgUrl() == null) {
-                continue;
-            }
-            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
     }
@@ -318,7 +299,7 @@ public class PostController {
             Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
-            post.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+            post.setImgUrl(pathToSaveDb.toString());
         }
 
         post.setId(id);
@@ -376,13 +357,6 @@ public class PostController {
         }
 
         List<Post> posts = postService.findPostsByKeyword(keyword.trim(), offset);
-        for (Post post : posts) {
-            if (post.getImgUrl() == null) {
-                continue;
-            }
-            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
     }
@@ -398,12 +372,6 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findPostsByLastAddedTime() {
         List<Post> posts = postService.findTopPostsByLastAddedTime();
-        for (Post post : posts) {
-            if (post.getImgUrl() == null) {
-                continue;
-            }
-            post.setImgUrl(ResourceUtil.convertToString(post.getImgUrl()));
-        }
         return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
     }
 
@@ -423,7 +391,6 @@ public class PostController {
         }
 
         postService.isPostExistWithGivenId(id);
-
         postService.incrementViewCountOfPostById(id);
     }
 

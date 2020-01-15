@@ -49,7 +49,6 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findAllDocuments(offset);
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", documents);
     }
@@ -79,7 +78,6 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findDocumentsByKeyword(keyword.trim(), offset);
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "documents by keyword", documents);
     }

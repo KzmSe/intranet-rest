@@ -99,7 +99,7 @@ public class IdeaController {
             Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("ideas", user.getUsername(), fileName);
 
-            idea.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+            idea.setImgUrl(pathToSaveDb.toString());
 
         } else {
             idea.setImgUrl(null);

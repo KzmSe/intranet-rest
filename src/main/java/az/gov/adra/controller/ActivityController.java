@@ -76,13 +76,6 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findAllActivities(offset);
-        for (Activity activity : activities) {
-            if (activity.getImgUrl() == null) {
-                continue;
-            }
-            activity.setImgUrl(ResourceUtil.convertToString(activity.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
     }
@@ -95,10 +88,7 @@ public class ActivityController {
         }
 
         activityService.isActivityExistWithGivenId(id);
-
         ActivityDTO activityDTO = activityService.findActivityByActivityId(id);
-        activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
-
         return GenericResponse.withSuccess(HttpStatus.OK, "specific activity by id", activityDTO);
     }
 
@@ -111,7 +101,6 @@ public class ActivityController {
         }
 
         activityService.isActivityExistWithGivenId(id);
-
         List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific activity", reviews);
     }
@@ -174,76 +163,34 @@ public class ActivityController {
         activityService.deleteActivityReview(review);
     }
 
-//    @PostMapping("/activities")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public void addActivity(@RequestParam(value = "file", required = false) MultipartFile file,
-//                            Principal principal) throws ActivityCredentialsException, IOException {
-//        boolean fileIsExist = true;
-//
-//        String title = "Amin agilli ol2!!!";
-//        String description = "sdsdssdsd";
-//
-//        //principal
-//        User user = new User();
-//        user.setUsername(principal.getName());
-//
-//        Activity activity = new Activity();
-//        activity.setUser(user);
-//        activity.setTitle(title.trim());
-//        activity.setDescription(description.trim());
-//        activity.setViewCount(0);
-//        activity.setDateOfReg(LocalDateTime.now().toString());
-//        activity.setStatus(ActivityConstants.ACTIVITY_STATUS_WAITING);
-//
-//
-//        Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
-//
-//        if (!Files.exists(pathToSaveFile)) {
-//            Files.createDirectories(pathToSaveFile);
-//        }
-//
-//        String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
-//        Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-//        Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-//        Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
-//        activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
-//
-//
-//        activityService.addActivity(activity);
-//    }
-
     @PostMapping("/activities")
     @PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addActivity(//@RequestParam(value = "title", required = false) String title,
-                            //@RequestParam(value = "description", required = false) String description,
+    public void addActivity(@RequestParam(value = "title", required = false) String title,
+                            @RequestParam(value = "description", required = false) String description,
                             @RequestParam(value = "file", required = false) MultipartFile file,
                             Principal principal) throws ActivityCredentialsException, IOException {
-        String title = "w2";
-        String description = "w2";
+        boolean fileIsExist = false;
 
-//        boolean fileIsExist = false;
-//
-//        if (ValidationUtil.isNullOrEmpty(title, description)) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
-//        }
-//
-//        if (!ValidationUtil.isNull(file) && !file.isEmpty()) {
-//            fileIsExist = true;
-//        }
-//
-//        if (fileIsExist) {
-//            if (!(file.getOriginalFilename().endsWith(".jpg")
-//                    || file.getOriginalFilename().endsWith(".jpeg")
-//                    || file.getOriginalFilename().endsWith(".png"))) {
-//                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
-//            }
-//
-//            if (file.getSize() >= maxFileSize) {
-//                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
-//            }
-//        }
+        if (ValidationUtil.isNullOrEmpty(title, description)) {
+            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+        }
+
+        if (!ValidationUtil.isNull(file) && !file.isEmpty()) {
+            fileIsExist = true;
+        }
+
+        if (fileIsExist) {
+            if (!(file.getOriginalFilename().endsWith(".jpg")
+                    || file.getOriginalFilename().endsWith(".jpeg")
+                    || file.getOriginalFilename().endsWith(".png"))) {
+                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
+            }
+
+            if (file.getSize() >= maxFileSize) {
+                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
+            }
+        }
 
         //principal
         User user = new User();
@@ -257,86 +204,26 @@ public class ActivityController {
         activity.setDateOfReg(LocalDateTime.now().toString());
         activity.setStatus(ActivityConstants.ACTIVITY_STATUS_WAITING);
 
-//        if (fileIsExist) {
-//            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
-//
-//            if (!Files.exists(pathToSaveFile)) {
-//                Files.createDirectories(pathToSaveFile);
-//            }
-//
-//            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
-//            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-//            Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-//            Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
-//
-//            activity.setImgUrl(pathToSaveDb.toString());
-//
-//        } else {
-            activity.setImgUrl(file.getOriginalFilename());
-//        }
+        if (fileIsExist) {
+            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
+
+            if (!Files.exists(pathToSaveFile)) {
+                Files.createDirectories(pathToSaveFile);
+            }
+
+            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
+            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
+            Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+            Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
+
+            activity.setImgUrl(pathToSaveDb.toString());
+
+        } else {
+            activity.setImgUrl(defaultActivity);
+        }
 
         activityService.addActivity(activity);
     }
-
-//    @PostMapping("/activities")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public void addActivity(@RequestBody ActivityDTOForAddActivity dto,
-//                            Principal principal) throws ActivityCredentialsException, IOException {
-//        boolean fileIsExist = false;
-//
-//        if (ValidationUtil.isNullOrEmpty(dto.getTitle(), dto.getDescription())) {
-//            throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
-//        }
-//
-//        if (!ValidationUtil.isNull(dto.getFile()) && !dto.getFile().isEmpty()) {
-//            fileIsExist = true;
-//        }
-//
-//        if (fileIsExist) {
-//            if (!(dto.getFile().getOriginalFilename().endsWith(".jpg")
-//                    || dto.getFile().getOriginalFilename().endsWith(".jpeg")
-//                    || dto.getFile().getOriginalFilename().endsWith(".png"))) {
-//                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
-//            }
-//
-//            if (dto.getFile().getSize() >= maxFileSize) {
-//                throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
-//            }
-//        }
-//
-//        //principal
-//        User user = new User();
-//        user.setUsername(principal.getName());
-//
-//        Activity activity = new Activity();
-//        activity.setUser(user);
-//        activity.setTitle(dto.getTitle().trim());
-//        activity.setDescription(dto.getDescription().trim());
-//        activity.setViewCount(0);
-//        activity.setDateOfReg(LocalDateTime.now().toString());
-//        activity.setStatus(ActivityConstants.ACTIVITY_STATUS_WAITING);
-//
-//        if (fileIsExist) {
-//            Path pathToSaveFile = Paths.get(imageUploadPath, "activities", user.getUsername());
-//
-//            if (!Files.exists(pathToSaveFile)) {
-//                Files.createDirectories(pathToSaveFile);
-//            }
-//
-//            String fileName = UUID.randomUUID() + "&&" + dto.getFile().getOriginalFilename();
-//            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-//            Files.copy(dto.getFile().getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-//            Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
-//
-//            activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
-//
-//        } else {
-//            activity.setImgUrl(defaultActivityHexCode);
-//        }
-//
-//        activityService.addActivity(activity);
-//    }
 
     @GetMapping("/activities/{activityId}/responds")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -415,15 +302,7 @@ public class ActivityController {
         }
 
         userService.isUserExistWithGivenUsername(username);
-
         List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, offset);
-        for (ActivityDTO activityDTO : activities) {
-            if (activityDTO.getImgUrl() == null) {
-                continue;
-            }
-            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
     }
@@ -436,15 +315,7 @@ public class ActivityController {
         }
 
         userService.isUserExistWithGivenUsername(username);
-
         List<ActivityDTO> activities = activityService.findTopThreeActivitiesByUsername(username);
-        for (ActivityDTO activityDTO : activities) {
-            if (activityDTO.getImgUrl() == null) {
-                continue;
-            }
-            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
-        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "top three activities of specific employee", activities);
     }
 
@@ -491,7 +362,7 @@ public class ActivityController {
             Files.copy(multipartFile.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
             Path pathToSaveDb = Paths.get("activities", user.getUsername(), fileName);
 
-            activity.setImgUrl(DatatypeConverter.printHexBinary(pathToSaveDb.toString().getBytes()));
+            activity.setImgUrl(pathToSaveDb.toString());
         }
 
         activity.setId(id);
@@ -551,13 +422,6 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim(), offset);
-        for (Activity activity : activities) {
-            if (activity.getImgUrl() == null) {
-                continue;
-            }
-            activity.setImgUrl(ResourceUtil.convertToString(activity.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
     }
@@ -573,13 +437,6 @@ public class ActivityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findActivitiesByLastAddedTime() {
         List<ActivityDTO> activities = activityService.findTopActivitiesByLastAddedTime();
-        for (ActivityDTO activityDTO : activities) {
-            if (activityDTO.getImgUrl() == null) {
-                continue;
-            }
-            activityDTO.setImgUrl(ResourceUtil.convertToString(activityDTO.getImgUrl()));
-        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
     }
 
@@ -629,44 +486,5 @@ public class ActivityController {
         Map<Integer, Integer> respond = activityService.findRespondOfActivity(user.getUsername(), id);
         return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);
     }
-
-
-//    @GetMapping("/test")
-//    @ResponseStatus(HttpStatus.OK)
-//    public void addActivity111() throws IOException {
-//
-//        //IN ORDER TO COPY FILES
-//        File source = new File("C:\\source");
-//        Path destination = Paths.get("C:\\destination");
-//        File[] listOfFiles = source.listFiles();
-//
-//        int counter = 0;
-//
-//        for (File file : listOfFiles) {
-//            String fileName = UUID.randomUUID() + "&&" + file.getName();
-//
-//            Path sourceFile = Paths.get("C:\\source\\" + file.getName());
-//            Path targetFile = Paths.get("C:\\destination\\" + fileName);
-//
-//            try {
-//
-//                Files.copy(sourceFile, targetFile,
-//                        StandardCopyOption.REPLACE_EXISTING);
-//
-//            } catch (IOException ex) {
-//                System.err.format("I/O Error when copying file");
-//            }
-//
-//            //IN ORDER TO SAVE DB
-//            String[] array = file.getName().split("\\.");
-//            System.out.println(Arrays.toString(array));
-//            String fin = array[0];
-//            String pathToSaveDb = DatatypeConverter.printHexBinary(Paths.get("profiles", fileName).toString().getBytes());
-//            activityService.savePhoto(pathToSaveDb, fin);
-//            counter++;
-//        }
-//
-//        System.out.println(counter + " rows updated");
-//    }
 
 }

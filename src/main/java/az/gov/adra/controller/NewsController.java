@@ -22,13 +22,6 @@ public class NewsController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public GenericResponse findAllNews() {
         List<News> newsList = newsService.findNewsByLastAddedTime();
-        for (News news : newsList) {
-            if (news.getImgUrl() == null) {
-                continue;
-            }
-            news.setImgUrl(ResourceUtil.convertToString(news.getImgUrl()));
-        }
-
         return GenericResponse.withSuccess(HttpStatus.OK, "list of news", newsList);
     }
 

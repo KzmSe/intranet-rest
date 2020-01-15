@@ -40,13 +40,6 @@ public class GalleryController {
         }
 
         List<Gallery> galleries = galleryService.findAllGalleries(offset);
-        for (Gallery gallery : galleries) {
-            if (gallery.getImgUrl() == null) {
-                continue;
-            }
-            gallery.setImgUrl(ResourceUtil.convertToString(gallery.getImgUrl()));
-        }
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of galleries", galleries);
     }

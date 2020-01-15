@@ -47,7 +47,6 @@ public class AnnouncementController {
         }
 
         List<Announcement> allAnnouncements = announcementService.findAllAnnouncements(offset);
-
         response.setIntHeader("Total-Pages", totalPages);
         return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
     }
@@ -60,7 +59,6 @@ public class AnnouncementController {
         }
 
         announcementService.isAnnouncementExistWithGivenId(id);
-
         Announcement announcement = announcementService.findAnnouncementByAnnouncementId(id);
         return GenericResponse.withSuccess(HttpStatus.OK, "specific announcement by id", announcement);
     }
