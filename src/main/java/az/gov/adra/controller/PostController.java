@@ -138,29 +138,29 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addPost(@RequestParam(value = "title", required = false) String title,
                         @RequestParam(value = "description", required = false) String description,
-                        @RequestParam(value = "file", required = false) MultipartFile file,
+                        //@RequestParam(value = "file", required = false) MultipartFile file,
                         Principal principal) throws PostCredentialsException, IOException {
-        boolean fileIsExist = false;
+//        boolean fileIsExist = false;
+//
+//        if (ValidationUtil.isNullOrEmpty(title, description)) {
+//            throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
+//        }
+//
+//        if (!ValidationUtil.isNull(file) && !file.isEmpty()) {
+//            fileIsExist = true;
+//        }
 
-        if (ValidationUtil.isNullOrEmpty(title, description)) {
-            throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
-        }
-
-        if (!ValidationUtil.isNull(file) && !file.isEmpty()) {
-            fileIsExist = true;
-        }
-
-        if (fileIsExist) {
-            if (!(file.getOriginalFilename().endsWith(".jpg")
-                    || file.getOriginalFilename().endsWith(".jpeg")
-                    || file.getOriginalFilename().endsWith(".png"))) {
-                throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
-            }
-
-            if (file.getSize() >= maxFileSize) {
-                throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
-            }
-        }
+//        if (fileIsExist) {
+//            if (!(file.getOriginalFilename().endsWith(".jpg")
+//                    || file.getOriginalFilename().endsWith(".jpeg")
+//                    || file.getOriginalFilename().endsWith(".png"))) {
+//                throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_INVALID_FILE_TYPE);
+//            }
+//
+//            if (file.getSize() >= maxFileSize) {
+//                throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_FILE_SIZE_MUST_BE_SMALLER_THAN_5MB);
+//            }
+//        }
 
         //principal
         User user = new User();
@@ -174,23 +174,26 @@ public class PostController {
         post.setDateOfReg(LocalDateTime.now().toString());
         post.setStatus(PostConstants.POST_STATUS_ACTIVE);
 
-        if (fileIsExist) {
-            Path pathToSaveFile = Paths.get(imageUploadPath, "posts", user.getUsername());
+        //delete this line
+        post.setImgUrl(defaultPost);
 
-            if (!Files.exists(pathToSaveFile)) {
-                Files.createDirectories(pathToSaveFile);
-            }
-
-            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
-            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
-            Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-            Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
-
-            post.setImgUrl(pathToSaveDb.toString());
-
-        } else {
-            post.setImgUrl(defaultPost);
-        }
+//        if (fileIsExist) {
+//            Path pathToSaveFile = Paths.get(imageUploadPath, "posts", user.getUsername());
+//
+//            if (!Files.exists(pathToSaveFile)) {
+//                Files.createDirectories(pathToSaveFile);
+//            }
+//
+//            String fileName = UUID.randomUUID() + "&&" + file.getOriginalFilename();
+//            Path fullFilePath = Paths.get(pathToSaveFile.toString(), fileName);
+//            Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
+//            Path pathToSaveDb = Paths.get("posts", user.getUsername(), fileName);
+//
+//            post.setImgUrl(pathToSaveDb.toString());
+//
+//        } else {
+//            post.setImgUrl(defaultPost);
+//        }
 
         postService.addPost(post);
     }
