@@ -1,6 +1,7 @@
 package az.gov.adra.service;
 
 import az.gov.adra.dataTransferObjects.PostDTO;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.Post;
 import az.gov.adra.entity.PostLd;
 import az.gov.adra.entity.PostReview;
@@ -60,7 +61,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Map<Integer, Integer> findRespondOfPost(String username, int postId) {
+    public RespondDTO findRespondOfPost(String username, int postId) {
         return postRepository.findRespondOfPost(username, postId);
     }
 

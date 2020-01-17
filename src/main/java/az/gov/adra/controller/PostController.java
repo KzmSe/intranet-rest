@@ -4,6 +4,7 @@ import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
 import az.gov.adra.dataTransferObjects.PostDTO;
 import az.gov.adra.dataTransferObjects.PostReviewDTOForAddReview;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.UserCredentialsException;
@@ -410,8 +411,8 @@ public class PostController {
         User user = new User();
         user.setUsername(principal.getName());
 
-        Map<Integer, Integer> respond = postService.findRespondOfPost(user.getUsername(), id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific post", respond);
+        RespondDTO dto = postService.findRespondOfPost(user.getUsername(), id);
+        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific post", dto);
     }
 
 }

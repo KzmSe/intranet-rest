@@ -3,6 +3,7 @@ package az.gov.adra.repository;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.PostConstants;
 import az.gov.adra.dataTransferObjects.PostDTO;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.exception.PostCredentialsException;
 import az.gov.adra.repository.interfaces.PostRepository;
@@ -194,16 +195,15 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Map<Integer, Integer> findRespondOfPost(String username, int postId) {
-        Map<Integer, Integer> respondedPost = jdbcTemplate.query(findRespondOfPostSql, new Object[]{username, postId}, new ResultSetExtractor<Map<Integer, Integer>>() {
+    public RespondDTO findRespondOfPost(String username, int postId) {
+        RespondDTO respondedPost = jdbcTemplate.query(findRespondOfPostSql, new Object[]{username, postId}, new ResultSetExtractor<RespondDTO>() {
             @Override
-            public Map<Integer, Integer> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                Map<Integer, Integer> map = new HashMap<>();
+            public RespondDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
+                RespondDTO dto = new RespondDTO();
                 while (rs.next()) {
-                    map.put(rs.getInt("post_id"), rs.getInt("like_dislike"));
+                    dto.setValue(rs.getInt("like_dislike"));
                 }
-
-                return map;
+                return dto;
             }
         });
         return respondedPost;

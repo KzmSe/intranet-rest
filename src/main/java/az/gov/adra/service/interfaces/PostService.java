@@ -1,6 +1,7 @@
 package az.gov.adra.service.interfaces;
 
 import az.gov.adra.dataTransferObjects.PostDTO;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.Post;
 import az.gov.adra.entity.PostLd;
 import az.gov.adra.entity.PostReview;
@@ -25,7 +26,7 @@ public interface PostService {
 
     void incrementViewCountOfPostById(int id) throws PostCredentialsException;
 
-    Map<Integer, Integer> findRespondOfPost(String username, int postId);
+    RespondDTO findRespondOfPost(String username, int postId);
 
     void updatePostRespond(PostLd postLd) throws PostCredentialsException;
 
