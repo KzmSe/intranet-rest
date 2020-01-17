@@ -45,7 +45,14 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/users/email/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/users/password/token/**").permitAll()
+
                 .antMatchers(HttpMethod.POST, "/savefile/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/activities/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/posts/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/ideas/**").permitAll()
+                //.antMatchers(HttpMethod.POST, "/activities/**").access("#oauth2.hasScope('read')")
+                //.antMatchers(HttpMethod.POST, "/activities/**").access("#oauth2.hasScope('write')")
+
                 .antMatchers(HttpMethod.GET, ROOT_PATTERN).access("#oauth2.hasScope('read')")
                 .antMatchers(HttpMethod.POST, ROOT_PATTERN).access("#oauth2.hasScope('write')")
                 .antMatchers(HttpMethod.PATCH, ROOT_PATTERN).access("#oauth2.hasScope('write')")

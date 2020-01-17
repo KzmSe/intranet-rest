@@ -34,13 +34,14 @@ public class IdeaController {
     private final int maxFileSize = 3145728;
 
     @PostMapping("/ideas")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    //@PreAuthorize("hasRole('ROLE_USER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addIdea(@RequestParam(value = "title", required = false) String title,
+    public void addIdea(@RequestParam(value = "username", required = false) String username,
+                        @RequestParam(value = "title", required = false) String title,
                         @RequestParam(value = "description", required = false) String description,
                         @RequestParam(value = "choice", required = false) String choice,
-                        @RequestParam(value = "file", required = false) MultipartFile file,
-                        Principal principal) throws IdeaCredentialsException, IOException {
+                        @RequestParam(value = "file", required = false) MultipartFile file
+                        /*Principal principal*/) throws IdeaCredentialsException, IOException {
         boolean fileIsExist = false;
 
         if (ValidationUtil.isNullOrEmpty(choice, title, description)) {
@@ -77,7 +78,7 @@ public class IdeaController {
 
         //principal
         User user = new User();
-        user.setUsername(principal.getName());
+        user.setUsername(username);
 
         Idea idea = new Idea();
         idea.setUser(user);
