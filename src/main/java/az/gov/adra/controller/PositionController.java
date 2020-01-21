@@ -18,7 +18,7 @@ public class PositionController {
     private PositionService positionService;
 
     @GetMapping("/positions")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllPositions() {
         List<Position> positions = positionService.findAllPositions();
         return GenericResponse.withSuccess(HttpStatus.OK, "list of all positions", positions);

@@ -19,7 +19,7 @@ public class RegionController {
 
 
     @GetMapping("/regions")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllRegions() {
         List<Region> regions = regionService.findAllRegions();
         return GenericResponse.withSuccess(HttpStatus.OK, "list of all regions", regions);

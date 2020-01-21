@@ -44,7 +44,7 @@ public class ActivityController {
 
 
     @GetMapping("/activities")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivities(@RequestParam(name = "page", required = false) Integer page,
                                           HttpServletResponse response) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(page)) {
@@ -73,7 +73,7 @@ public class ActivityController {
     }
 
     @GetMapping("/activities/{activityId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivityById(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -85,7 +85,7 @@ public class ActivityController {
     }
 
     @GetMapping("/activities/{activityId}/reviews")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findReviewsByActivityId(@PathVariable(name = "activityId", required = false) Integer id,
                                                    @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(fetchNext)) {
@@ -98,7 +98,7 @@ public class ActivityController {
     }
 
     @PostMapping("/activities/{activityId}/reviews")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addActivityReview(@PathVariable(value = "activityId") Integer id,
                                   @RequestBody ActivityReviewDTOForAddReview dto,
@@ -134,7 +134,7 @@ public class ActivityController {
     }
 
     @DeleteMapping("activity/reviews/{reviewId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteActivityReview(@PathVariable(value = "reviewId") Integer id,
                                      Principal principal) throws ActivityCredentialsException {
@@ -220,7 +220,7 @@ public class ActivityController {
     }
 
     @GetMapping("/activities/{activityId}/responds")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivityResponds(@PathVariable(value = "activityId", required = false) Integer id,
                                                 @RequestParam(value = "respond", required = false) Integer respond,
                                                 @RequestParam(value = "offset", required = false) Integer offset) throws ActivityCredentialsException {
@@ -239,7 +239,7 @@ public class ActivityController {
     }
 
     @PutMapping("/activities/{activityId}/responds")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivityRespond(@PathVariable(value = "activityId", required = false) Integer id,
                                       @RequestParam(value = "respond", required = false) Integer respond,
@@ -271,7 +271,7 @@ public class ActivityController {
     }
 
     @GetMapping("/users/{username}/activities")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesByUsername(@PathVariable(value = "username", required = false) String username,
                                                     @RequestParam(name = "page", required = false) Integer page,
                                                     HttpServletResponse response) throws ActivityCredentialsException, UserCredentialsException {
@@ -302,7 +302,7 @@ public class ActivityController {
     }
 
     @GetMapping("/users/{username}/activities/top-three")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findTopThreeActivitiesByUsername(@PathVariable(value = "username", required = false) String username) throws ActivityCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNullOrEmpty(username)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -314,7 +314,7 @@ public class ActivityController {
     }
 
     @PutMapping("/activities/{activityId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void updateActivity(@PathVariable(value = "activityId", required = false) Integer id,
                                @RequestParam(value = "title", required = false) String title,
@@ -368,7 +368,7 @@ public class ActivityController {
     }
 
     @DeleteMapping("/activities/{activityId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void deleteActivity(@PathVariable(value = "activityId", required = false) Integer id,
                                Principal principal) throws ActivityCredentialsException {
@@ -391,7 +391,7 @@ public class ActivityController {
     }
 
     @GetMapping("/activities/keyword")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesByKeyword(@RequestParam(value = "page", required = false) Integer page,
                                                    @RequestParam(value = "keyword", required = false) String keyword,
                                                    HttpServletResponse response) throws ActivityCredentialsException {
@@ -421,21 +421,21 @@ public class ActivityController {
     }
 
     @GetMapping("/activities/random")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesRandomly() {
         List<Activity> activities = activityService.findActivitiesRandomly();
         return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
     }
 
     @GetMapping("/activities/top-three")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesByLastAddedTime() {
         List<ActivityDTO> activities = activityService.findTopActivitiesByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
     }
 
     @GetMapping("/activities/top-three/responds")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findTopThreeActivitiesByLastAddedTime(Principal principal) {
         //principal
         User user = new User();
@@ -453,7 +453,7 @@ public class ActivityController {
 //    }
 
     @PutMapping("/activities/{activityId}/view-count")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void incrementViewCountOfActivityById(@PathVariable(name = "activityId", required = false) Integer id) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {
@@ -464,7 +464,7 @@ public class ActivityController {
     }
 
     @GetMapping("/activities/{activityId}/respond")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findRespondOfActivity(@PathVariable(name = "activityId", required = false) Integer id,
                                                  Principal principal) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(id)) {

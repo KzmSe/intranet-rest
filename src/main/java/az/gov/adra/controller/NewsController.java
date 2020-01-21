@@ -19,7 +19,7 @@ public class NewsController {
     private NewsService newsService;
 
     @GetMapping("/news")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllNews() {
         List<News> newsList = newsService.findNewsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "list of news", newsList);

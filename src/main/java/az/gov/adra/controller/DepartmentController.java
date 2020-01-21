@@ -19,7 +19,7 @@ public class DepartmentController {
 
 
     @GetMapping("/departments")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllDepartments() {
         List<Department> departments = departmentService.findAllDepartments();
         return GenericResponse.withSuccess(HttpStatus.OK, "list of all departments", departments);

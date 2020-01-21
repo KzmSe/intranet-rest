@@ -21,7 +21,7 @@ public class GalleryController {
     private GalleryService galleryService;
 
     @GetMapping("/galleries")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllGalleries(@RequestParam(value = "page", required = false) Integer page,
                                             HttpServletResponse response) {
         int total = galleryService.findCountOfAllGalleries();

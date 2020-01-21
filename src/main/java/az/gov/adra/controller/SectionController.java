@@ -28,14 +28,14 @@ public class SectionController {
 
 
     @GetMapping("/sections")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllSections() {
         List<Section> sections = sectionService.findAllSections();
         return GenericResponse.withSuccess(HttpStatus.OK, "list of all sections", sections);
     }
 
     @GetMapping("/departments/{departmentId}/sections")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllSections(@PathVariable(value = "departmentId", required = false) Integer id) throws SectionCredentialsException, DepartmentCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new SectionCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);

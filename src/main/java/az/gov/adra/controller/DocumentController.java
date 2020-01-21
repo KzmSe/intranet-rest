@@ -26,7 +26,7 @@ public class DocumentController {
 
 
     @GetMapping("/documents")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllDocuments(@RequestParam(value = "page", required = false) Integer page,
                                             HttpServletResponse response) throws DocumentCredentialsException {
         if (ValidationUtil.isNull(page)) {
@@ -54,7 +54,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents/keyword")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findDocumentsByKeyword(@RequestParam(value = "page", required = false) Integer page,
                                                   @RequestParam(value = "keyword", required = false) String keyword,
                                                   HttpServletResponse response) throws DocumentCredentialsException {
@@ -83,7 +83,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents/top-three")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findDocumentsByLastAddedTime() {
         List<DocumentDTO> documents = documentService.findTopDocumentsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "last added documents", documents);

@@ -39,7 +39,7 @@ public class CommandController {
     private final int maxFileSize = 3145728;
 
     @GetMapping("/commands")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllCommands(@RequestParam(name = "page", required = false) Integer page,
                                            HttpServletResponse response) throws CommandCredentialsException {
         if (ValidationUtil.isNull(page)) {
@@ -67,7 +67,7 @@ public class CommandController {
     }
 
     @GetMapping("/commands/{commandId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findCommandById(@PathVariable(name = "commandId", required = false) Integer id) throws CommandCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new CommandCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -79,7 +79,7 @@ public class CommandController {
     }
 
     @PostMapping("/commands")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addCommand(@RequestParam(value = "title", required = false) String title,
                            @RequestParam(value = "description", required = false) String description,
@@ -138,7 +138,7 @@ public class CommandController {
     }
 
     @GetMapping("/commands/top-three")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findTopThreeCommands() {
         List<CommandDTO> commands = commandService.findTopThreeCommandsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "top three commands by last added time", commands);

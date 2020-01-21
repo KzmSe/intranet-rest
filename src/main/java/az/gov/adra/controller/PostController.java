@@ -47,7 +47,7 @@ public class PostController {
 
 
     @GetMapping("/posts")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPosts(@RequestParam(name = "page", required = false) Integer page,
                                      HttpServletResponse response) throws PostCredentialsException {
         if (ValidationUtil.isNull(page)) {
@@ -75,7 +75,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostById(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -87,7 +87,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}/reviews")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findReviewsByPostId(@PathVariable(name = "postId", required = false) Integer id,
                                                @RequestParam(name = "fetchNext", required = false) Integer fetchNext) throws PostCredentialsException {
         if (ValidationUtil.isNull(id) || ValidationUtil.isNull(fetchNext)) {
@@ -100,7 +100,7 @@ public class PostController {
     }
 
     @PostMapping("/posts/{postId}/reviews")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.CREATED)
     public void addPostReview(@PathVariable(value = "postId") Integer id,
                               @RequestBody PostReviewDTOForAddReview dto,
@@ -199,7 +199,7 @@ public class PostController {
     }
 
     @PutMapping("/posts/{postId}/responds")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePostRespond(@PathVariable(value = "postId", required = false) Integer id,
                                   @RequestParam(value = "respond", required = false) Integer respond,
@@ -231,7 +231,7 @@ public class PostController {
     }
 
     @GetMapping("/users/{username}/posts")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsByUsername(@PathVariable(value = "username",required = false) String username,
                                                @RequestParam(name = "page", required = false) Integer page,
                                                HttpServletResponse response) throws PostCredentialsException, UserCredentialsException {
@@ -261,7 +261,7 @@ public class PostController {
     }
 
     @PutMapping("/posts/{postId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePost(@PathVariable(value = "postId", required = false) Integer id,
                            @RequestParam(value = "title", required = false) String title,
@@ -314,7 +314,7 @@ public class PostController {
     }
 
     @DeleteMapping("/posts/{postId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void deletePost(@PathVariable(value = "postId", required = false) Integer id,
                            Principal principal) throws PostCredentialsException {
@@ -336,7 +336,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/keyword")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsByKeyword(@RequestParam(value = "page", required = false) Integer page,
                                               @RequestParam(value = "keyword", required = false) String keyword,
                                               HttpServletResponse response) throws PostCredentialsException {
@@ -365,14 +365,14 @@ public class PostController {
     }
 
     @GetMapping("/posts/random")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsRandomly() {
         List<Post> posts = postService.findPostsRandomly();
         return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
     }
 
     @GetMapping("/posts/top-three")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsByLastAddedTime() {
         List<Post> posts = postService.findTopPostsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
@@ -386,7 +386,7 @@ public class PostController {
 //    }
 
     @PutMapping("/posts/{postId}/view-count")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     @ResponseStatus(HttpStatus.OK)
     public void incrementViewCountOfPostById(@PathVariable(name = "postId", required = false) Integer id) throws PostCredentialsException {
         if (ValidationUtil.isNull(id)) {
@@ -398,7 +398,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}/respond")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findRespondOfPost(@PathVariable(name = "postId", required = false) Integer id,
                                              Principal principal) throws PostCredentialsException {
         if (ValidationUtil.isNull(id)) {

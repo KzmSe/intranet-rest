@@ -24,7 +24,7 @@ public class AnnouncementController {
     private AnnouncementService announcementService;
 
     @GetMapping("/announcements")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllAnnouncements(@RequestParam(name = "page", required = false) Integer page,
                                                 HttpServletResponse response) throws AnnouncementCredentialsException {
         if (ValidationUtil.isNull(page)) {
@@ -52,7 +52,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("/announcements/{announcementId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAnnouncementByAnnouncementId(@PathVariable(name = "announcementId", required = false) Integer id) throws AnnouncementCredentialsException {
         if (ValidationUtil.isNull(id)) {
             throw new AnnouncementCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
@@ -64,7 +64,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("/announcements/top-three")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findTopThreeAnnouncements() {
         List<Announcement> announcements = announcementService.findTopThreeAnnouncementsByLastAddedTime();
         return GenericResponse.withSuccess(HttpStatus.OK, "top three announcements by last added time", announcements);
