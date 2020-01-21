@@ -1,6 +1,7 @@
 package az.gov.adra.repository.interfaces;
 
 import az.gov.adra.dataTransferObjects.ActivityDTO;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.Activity;
 import az.gov.adra.entity.ActivityRespond;
 import az.gov.adra.entity.ActivityReview;
@@ -33,7 +34,7 @@ public interface ActivityRepository {
 
     Map<Integer, Integer> findTopThreeActivitiesByLastAddedTime(String username);
 
-    Map<Integer, Integer> findRespondOfActivity(String username, int activityId);
+    RespondDTO findRespondOfActivity(String username, int activityId);
 
     List<ActivityDTO> findActivitiesByUsername(String username, int offset);
 
@@ -56,7 +57,5 @@ public interface ActivityRepository {
     void isActivityExistWithGivenId(int id) throws ActivityCredentialsException;
 
     void isActivityReviewExistWithGivenId(int id) throws ActivityCredentialsException;
-
-    void savePhoto(String pathToSaveDb, String fin);
 
 }

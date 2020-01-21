@@ -1,6 +1,7 @@
 package az.gov.adra.service;
 
 import az.gov.adra.dataTransferObjects.ActivityDTO;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.Activity;
 import az.gov.adra.entity.ActivityRespond;
 import az.gov.adra.entity.ActivityReview;
@@ -79,7 +80,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Map<Integer, Integer> findRespondOfActivity(String username, int activityId) {
+    public RespondDTO findRespondOfActivity(String username, int activityId) {
         return activityRepository.findRespondOfActivity(username, activityId);
     }
 
@@ -136,11 +137,6 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<Activity> findActivitiesByKeyword(String keyword, int offset) {
         return activityRepository.findActivitiesByKeyword(keyword, offset);
-    }
-
-    @Override
-    public void savePhoto(String pathToSaveDb, String fin) {
-        activityRepository.savePhoto(pathToSaveDb, fin);
     }
 
 }

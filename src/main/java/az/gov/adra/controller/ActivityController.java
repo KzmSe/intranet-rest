@@ -4,6 +4,7 @@ import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
 import az.gov.adra.dataTransferObjects.ActivityReviewDTOForAddReview;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.ActivityCredentialsException;
@@ -64,7 +65,6 @@ public class ActivityController {
             } else if (page != null && page > 1) {
                 offset = (page - 1) * 9;
             }
-            ;
         }
 
         List<Activity> activities = activityService.findAllActivities(offset);
@@ -477,8 +477,8 @@ public class ActivityController {
         User user = new User();
         user.setUsername(principal.getName());
 
-        Map<Integer, Integer> respond = activityService.findRespondOfActivity(user.getUsername(), id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", respond);
+        RespondDTO dto = activityService.findRespondOfActivity(user.getUsername(), id);
+        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", dto);
     }
 
 }

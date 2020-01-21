@@ -4,6 +4,7 @@ import az.gov.adra.constant.ActivityConstants;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.constant.UserConstants;
 import az.gov.adra.dataTransferObjects.ActivityDTO;
+import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.repository.interfaces.ActivityRepository;
@@ -38,7 +39,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String addActivityRespondSql = "insert into Activity_Respond(activity_id, username, respond, date_of_reg, status) values(?, ?, ?, ?, ?)";
     private static final String findTopThreeActivitiesByLastAddedTimeSql = "select a_r.id,a_r.activity_id, a_r.username, a_r.respond, a_r.status, t_3_a.date_of_reg from Activity_Respond a_r inner join top_3_activity t_3_a on a_r.activity_id=t_3_a.id where a_r.username = ? and a_r.status = ? order by t_3_a.date_of_reg desc";
     private static final String updateActivityRespondSql = "update Activity_Respond set respond = ? where activity_id = ? and username = ? and status = ?";
-    private static final String findRespondOfActivitySql = "select ar.activity_id,ar.respond from Activity_Respond ar where ar.username = ? and ar.activity_id = ?";
+    private static final String findRespondOfActivitySql = "select ar.activity_id, ar.respond from Activity_Respond ar where ar.username = ? and ar.activity_id = ?";
     private static final String findActivitiesByUsernameSql = "select a.id as activity_id, a.title, a.description, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status = ? order by a.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String findTopThreeActivitiesByUsernameSql = "select top 3 a.id as activity_id, a.title, a.description, a.view_count, a.date_of_reg, a.img_url, a.status, isnull(act1.respond,0) positive, isnull(act0.respond,0) negative, u.username, u.name, u.surname from Activity a inner join users u on a.username = u.username full outer join act_res_1_view act1 on a.id = act1.activity_id full outer join act_res_0_view act0 on a.id = act0.activity_id where u.username = ? and a.status = ? order by a.date_of_reg desc";
     private static final String updateActivitySql = "update Activity set title = ?, description = ?";
@@ -275,16 +276,16 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
     @Override
-    public Map<Integer, Integer> findRespondOfActivity(String username, int activityId) {
-        Map<Integer, Integer> respondedActivity = jdbcTemplate.query(findRespondOfActivitySql, new Object[]{username, activityId}, new ResultSetExtractor<Map<Integer, Integer>>() {
+    public RespondDTO findRespondOfActivity(String username, int activityId) {
+        RespondDTO respondedActivity = jdbcTemplate.query(findRespondOfActivitySql, new Object[]{username, activityId}, new ResultSetExtractor<RespondDTO>() {
             @Override
-            public Map<Integer, Integer> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                Map<Integer, Integer> map = new HashMap<>();
+            public RespondDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
+                RespondDTO dto = new RespondDTO();
                 while (rs.next()) {
-                    map.put(rs.getInt("activity_id"), rs.getInt("respond"));
+                    dto.setValue(rs.getInt("respond"));
                 }
 
-                return map;
+                return dto;
             }
         });
         return respondedActivity;
@@ -494,8 +495,4 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         return result;
     }
 
-    @Override
-    public void savePhoto(String pathToSaveDb, String fin) {
-        int affectedRows = jdbcTemplate.update("update users set img_url = ? where fin = ? and enabled = 1", pathToSaveDb, fin);
-    }
 }
