@@ -28,7 +28,7 @@ public interface ActivityRepository {
 
     void incrementViewCountOfActivityById(int id) throws ActivityCredentialsException;
 
-    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int offset);
+    List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int fetchNext);
 
     void updateActivityRespond(ActivityRespond activityRespond) throws ActivityCredentialsException;
 

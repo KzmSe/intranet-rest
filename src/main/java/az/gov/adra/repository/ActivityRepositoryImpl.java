@@ -35,7 +35,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     private static final String deleteActivityReviewSql = "update Activity_Review set status = ? where id = ? and username = ? and status = ?";
     private static final String addActivitySql = "insert into Activity(username, title, description, view_count, img_url, date_of_reg, status) values(?, ?, ?, ?, ?, ?, ?)";
     private static final String incrementViewCountOfActivityByIdSql = "update Activity set view_count = view_count + 1 where id = ?";
-    private static final String findActivityRespondsByRespondSql = "select ar.id as acrivity_respond_id, u.name, u.surname, u.username from Activity_Respond ar inner join users u on ar.username = u.username where ar.activity_id = ? and ar.respond = ? and ar.status = ? order by ar.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+    private static final String findActivityRespondsByRespondSql = "select ar.id as activity_respond_id, u.name, u.surname, u.username from Activity_Respond ar inner join users u on ar.username = u.username where ar.activity_id = ? and ar.respond = ? and ar.status = ? order by ar.date_of_reg desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     private static final String addActivityRespondSql = "insert into Activity_Respond(activity_id, username, respond, date_of_reg, status) values(?, ?, ?, ?, ?)";
     private static final String findTopThreeActivitiesByLastAddedTimeSql = "select a_r.id,a_r.activity_id, a_r.username, a_r.respond, a_r.status, t_3_a.date_of_reg from Activity_Respond a_r inner join top_3_activity t_3_a on a_r.activity_id=t_3_a.id where a_r.username = ? and a_r.status = ? order by t_3_a.date_of_reg desc";
     private static final String updateActivityRespondSql = "update Activity_Respond set respond = ? where activity_id = ? and username = ? and status = ?";
@@ -217,8 +217,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     }
 
     @Override
-    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int offset) {
-        List<ActivityRespond> activityResponds = jdbcTemplate.query(findActivityRespondsByRespondSql, new Object[]{id, respond, ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE, offset, ActivityConstants.ACTIVITY_RESPOND_FETCH_NEXT}, new ResultSetExtractor<List<ActivityRespond>>() {
+    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int fetchNext) {
+        List<ActivityRespond> activityResponds = jdbcTemplate.query(findActivityRespondsByRespondSql, new Object[]{id, respond, ActivityConstants.ACTIVITY_RESPOND_STATUS_ACTIVE, ActivityConstants.ACTIVITY_RESPOND_OFFSET, fetchNext}, new ResultSetExtractor<List<ActivityRespond>>() {
             @Override
             public List<ActivityRespond> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<ActivityRespond> list = new LinkedList<>();

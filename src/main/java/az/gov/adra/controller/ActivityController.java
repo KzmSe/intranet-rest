@@ -223,8 +223,8 @@ public class ActivityController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivityResponds(@PathVariable(value = "activityId", required = false) Integer id,
                                                 @RequestParam(value = "respond", required = false) Integer respond,
-                                                @RequestParam(value = "offset", required = false) Integer offset) throws ActivityCredentialsException {
-        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond) || ValidationUtil.isNull(offset)) {
+                                                @RequestParam(value = "fetchNext", required = false) Integer fetchNext) throws ActivityCredentialsException {
+        if (ValidationUtil.isNull(id) || ValidationUtil.isNull(respond) || ValidationUtil.isNull(fetchNext)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
 
@@ -234,7 +234,7 @@ public class ActivityController {
 
         activityService.isActivityExistWithGivenId(id);
 
-        List<ActivityRespond> responds = activityService.findActivityRespondsByRespond(id, respond, offset);
+        List<ActivityRespond> responds = activityService.findActivityRespondsByRespond(id, respond, fetchNext);
         return GenericResponse.withSuccess(HttpStatus.OK, "responds of specific activity", responds);
     }
 

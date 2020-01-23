@@ -65,8 +65,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int offset) {
-        return activityRepository.findActivityRespondsByRespond(id, respond, offset);
+    public List<ActivityRespond> findActivityRespondsByRespond(int id, int respond, int fetchNext) {
+        return activityRepository.findActivityRespondsByRespond(id, respond, fetchNext);
     }
 
     @Override

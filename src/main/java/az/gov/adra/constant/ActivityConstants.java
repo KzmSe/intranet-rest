@@ -13,5 +13,6 @@ public class ActivityConstants {
     public static final Integer ACTIVITY_FETCH_NEXT = 9;
     public static final Integer ACTIVITY_FETCH_NEXT_BY_USERNAME = 3;
     public static final Integer ACTIVITY_RESPOND_FETCH_NEXT = 10;
+    public static final Integer ACTIVITY_RESPOND_OFFSET = 0;
 
 }
