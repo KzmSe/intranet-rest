@@ -445,12 +445,14 @@ public class ActivityController {
         return GenericResponse.withSuccess(HttpStatus.OK, "responds of top three activities by username and last added time", activities);
     }
 
-//    @GetMapping("/activities/count")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    public GenericResponse findCountOfAllActivities() {
-//        int count = activityService.findCountOfAllActivities();
-//        return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", count);
-//    }
+    @GetMapping("/activities/count")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
+    public GenericResponse findCountOfAllActivities() {
+        int count = activityService.findCountOfAllActivities();
+        ActivityDTO dto = new ActivityDTO();
+        dto.setTotalCount(count);
+        return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", dto);
+    }
 
     @PutMapping("/activities/{activityId}/view-count")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")

@@ -2,8 +2,10 @@ package az.gov.adra.controller;
 
 import az.gov.adra.constant.IdeaConstants;
 import az.gov.adra.constant.MessageConstants;
+import az.gov.adra.dataTransferObjects.IdeaDTO;
 import az.gov.adra.entity.Idea;
 import az.gov.adra.entity.User;
+import az.gov.adra.entity.response.GenericResponse;
 import az.gov.adra.exception.IdeaCredentialsException;
 import az.gov.adra.service.interfaces.IdeaService;
 import az.gov.adra.util.ValidationUtil;
@@ -107,6 +109,15 @@ public class IdeaController {
         }
 
         ideaService.addIdea(idea);
+    }
+
+    @GetMapping("/ideas/count")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
+    public GenericResponse findCountOfAllIdeas() {
+        int count = ideaService.findCountOfAllIdeas();
+        IdeaDTO dto = new IdeaDTO();
+        dto.setTotalCount(count);
+        return GenericResponse.withSuccess(HttpStatus.OK, "count of all ideas and complaints", dto);
     }
 
 }

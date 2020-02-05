@@ -378,12 +378,14 @@ public class PostController {
         return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
     }
 
-//    @GetMapping("/posts/count")
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    public GenericResponse findCountOfAllPosts() {
-//        int count = postService.findCountOfAllPosts();
-//        return GenericResponse.withSuccess(HttpStatus.OK, "count of all posts", count);
-//    }
+    @GetMapping("/posts/count")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
+    public GenericResponse findCountOfAllPosts() {
+        int count = postService.findCountOfAllPosts();
+        PostDTO dto = new PostDTO();
+        dto.setTotalCount(count);
+        return GenericResponse.withSuccess(HttpStatus.OK, "count of all posts", dto);
+    }
 
     @PutMapping("/posts/{postId}/view-count")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")

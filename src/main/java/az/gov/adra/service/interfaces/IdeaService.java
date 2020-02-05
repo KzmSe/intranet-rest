@@ -7,4 +7,6 @@ public interface IdeaService {
 
     void addIdea(Idea idea) throws IdeaCredentialsException;
 
+    int findCountOfAllIdeas();
+
 }

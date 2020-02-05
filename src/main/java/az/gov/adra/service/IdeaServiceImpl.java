@@ -22,4 +22,9 @@ public class IdeaServiceImpl implements IdeaService {
         ideaRepository.addIdea(idea);
     }
 
+    @Override
+    public int findCountOfAllIdeas() {
+        return ideaRepository.findCountOfAllIdeas();
+    }
+
 }

@@ -23,6 +23,6 @@ public class PostDTO {
     private String dateOfReg;
     private String dateOfDel;
     private Integer status;
-
+    private Integer totalCount;
 
 }

@@ -9,4 +9,6 @@ public interface IdeaRepository {
 
     void addIdea(Idea idea) throws IdeaCredentialsException;
 
+    int findCountOfAllIdeas();
+
 }
