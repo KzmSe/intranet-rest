@@ -3,17 +3,15 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.dataTransferObjects.DocumentDTO;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.DocumentCredentialsException;
 import az.gov.adra.service.interfaces.DocumentService;
-import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -21,14 +19,11 @@ public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
-    @Value("${file.upload.path.win}")
-    private String imageUploadPath;
 
 
     @GetMapping("/documents")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
-    public GenericResponse findAllDocuments(@RequestParam(value = "page", required = false) Integer page,
-                                            HttpServletResponse response) throws DocumentCredentialsException {
+    public GenericResponse findAllDocuments(@RequestParam(value = "page", required = false) Integer page) throws DocumentCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new DocumentCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -49,15 +44,18 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findAllDocuments(offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of documents", documents);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of documents")
+                .withData(documents)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/documents/keyword")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findDocumentsByKeyword(@RequestParam(value = "page", required = false) Integer page,
-                                                  @RequestParam(value = "keyword", required = false) String keyword,
-                                                  HttpServletResponse response) throws DocumentCredentialsException {
+                                                  @RequestParam(value = "keyword", required = false) String keyword) throws DocumentCredentialsException {
         if (ValidationUtil.isNull(page) || ValidationUtil.isNullOrEmpty(keyword)) {
             throw new DocumentCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -78,15 +76,23 @@ public class DocumentController {
         }
 
         List<DocumentDTO> documents = documentService.findDocumentsByKeyword(keyword.trim(), offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "documents by keyword", documents);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("documents by keyword")
+                .withData(documents)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/documents/top-three")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findDocumentsByLastAddedTime() {
         List<DocumentDTO> documents = documentService.findTopDocumentsByLastAddedTime();
-        return GenericResponse.withSuccess(HttpStatus.OK, "last added documents", documents);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("last added documents")
+                .withData(documents)
+                .build();
     }
 
 }

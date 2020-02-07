@@ -2,8 +2,8 @@ package az.gov.adra.exception.handler;
 
 import az.gov.adra.entity.response.Exception;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @Value("${spring.app-name}")
-    private String appName;
-
     @ExceptionHandler(DataAccessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GenericResponse handleDataAccessException(DataAccessException e) {
@@ -27,7 +24,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("DataAccessException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DataAccessException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("DataAccessException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(NumberFormatException.class)
@@ -39,7 +40,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("NumberFormatException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "NumberFormatException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("NumberFormatException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(ActivityCredentialsException.class)
@@ -51,7 +56,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("ActivityCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "ActivityCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("ActivityCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(UserCredentialsException.class)
@@ -63,7 +72,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("UserCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.BAD_REQUEST, "UserCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.BAD_REQUEST.value())
+                .withDescription("UserCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(PostCredentialsException.class)
@@ -75,7 +88,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("PostCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "PostCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("PostCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(AnnouncementCredentialsException.class)
@@ -87,7 +104,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("AnnouncementCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "AnnouncementCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("AnnouncementCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(CommandCredentialsException.class)
@@ -99,7 +120,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("CommandCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "CommandCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("CommandCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(DocumentCredentialsException.class)
@@ -111,7 +136,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("DocumentCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DocumentCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("DocumentCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(IdeaCredentialsException.class)
@@ -123,7 +152,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("IdeaCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "IdeaCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("IdeaCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(DepartmentCredentialsException.class)
@@ -135,7 +168,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("DepartmentCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "DepartmentCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("DepartmentCredentialsException")
+                .withException(exception)
+                .build();
     }
 
     @ExceptionHandler(SectionCredentialsException.class)
@@ -147,7 +184,11 @@ public class GlobalExceptionHandler {
         exception.setMessage(e.getMessage());
         exception.setErrorStack("SectionCredentialsException.");
 
-        return GenericResponse.withException(HttpStatus.INTERNAL_SERVER_ERROR, "SectionCredentialsException", exception);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .withDescription("SectionCredentialsException")
+                .withException(exception)
+                .build();
     }
 
 }

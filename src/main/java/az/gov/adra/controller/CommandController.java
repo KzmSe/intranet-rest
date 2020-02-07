@@ -6,9 +6,9 @@ import az.gov.adra.dataTransferObjects.CommandDTO;
 import az.gov.adra.entity.Command;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.CommandCredentialsException;
 import az.gov.adra.service.interfaces.CommandService;
-import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,8 +38,7 @@ public class CommandController {
 
     @GetMapping("/commands")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
-    public GenericResponse findAllCommands(@RequestParam(name = "page", required = false) Integer page,
-                                           HttpServletResponse response) throws CommandCredentialsException {
+    public GenericResponse findAllCommands(@RequestParam(name = "page", required = false) Integer page) throws CommandCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new CommandCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -62,8 +59,12 @@ public class CommandController {
         }
 
         List<CommandDTO> commands = commandService.findAllCommands(offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of commands", commands);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of commands")
+                .withData(commands)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/commands/{commandId}")
@@ -75,7 +76,11 @@ public class CommandController {
 
         commandService.isCommandExistWithGivenId(id);
         CommandDTO command = commandService.findCommandByCommandId(id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "specific command by id", command);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("specific command by id")
+                .withData(command)
+                .build();
     }
 
     @PostMapping("/commands")
@@ -141,7 +146,11 @@ public class CommandController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findTopThreeCommands() {
         List<CommandDTO> commands = commandService.findTopThreeCommandsByLastAddedTime();
-        return GenericResponse.withSuccess(HttpStatus.OK, "top three commands by last added time", commands);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("top three commands by last added time")
+                .withData(commands)
+                .build();
     }
 
 }

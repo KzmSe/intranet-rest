@@ -6,6 +6,7 @@ import az.gov.adra.dataTransferObjects.UserDTOForSendEmail;
 import az.gov.adra.dataTransferObjects.UserDTOForUpdateUser;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.service.interfaces.UserService;
 import az.gov.adra.util.EmailSenderUtil;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.Address;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
@@ -45,8 +45,7 @@ public class UserController {
     private String body;
 
     @PostMapping("/users/search")
-    public GenericResponse findUsersByMultipleParameters(@RequestBody UserDTOForAdvancedSearch dto,
-                                                         HttpServletResponse response) {
+    public GenericResponse findUsersByMultipleParameters(@RequestBody UserDTOForAdvancedSearch dto) {
         int total = userService.findCountOfUsersByMultipleParameters(dto);
         int totalPages = 0;
         int offset = 0;
@@ -72,8 +71,12 @@ public class UserController {
             user.setImgUrl(ResourceUtil.convertToString(user.getImgUrl()));
         }
 
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of users by multiple parameters", users);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of users by multiple parameters")
+                .withData(users)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @PostMapping("/users/email")

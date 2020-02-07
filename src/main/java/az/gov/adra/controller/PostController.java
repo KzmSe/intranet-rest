@@ -7,11 +7,11 @@ import az.gov.adra.dataTransferObjects.PostReviewDTOForAddReview;
 import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.exception.PostCredentialsException;
 import az.gov.adra.service.interfaces.UserService;
 import az.gov.adra.service.interfaces.PostService;
-import az.gov.adra.util.ResourceUtil;
 import az.gov.adra.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,7 +28,6 @@ import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -48,8 +45,7 @@ public class PostController {
 
     @GetMapping("/posts")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
-    public GenericResponse findPosts(@RequestParam(name = "page", required = false) Integer page,
-                                     HttpServletResponse response) throws PostCredentialsException {
+    public GenericResponse findPosts(@RequestParam(name = "page", required = false) Integer page) throws PostCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -70,8 +66,12 @@ public class PostController {
         }
 
         List<Post> posts = postService.findAllPosts(offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of posts", posts);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of posts")
+                .withData(posts)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/posts/{postId}")
@@ -83,7 +83,11 @@ public class PostController {
 
         postService.isPostExistWithGivenId(id);
         PostDTO postDTO = postService.findPostByPostId(id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "specific post by id", postDTO);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("specific post by id")
+                .withData(postDTO)
+                .build();
     }
 
     @GetMapping("/posts/{postId}/reviews")
@@ -96,7 +100,11 @@ public class PostController {
 
         postService.isPostExistWithGivenId(id);
         List<PostReview> reviews = postService.findReviewsByPostId(id, fetchNext);
-        return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific post", reviews);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("reviews of specific post")
+                .withData(reviews)
+                .build();
     }
 
     @PostMapping("/posts/{postId}/reviews")
@@ -233,8 +241,7 @@ public class PostController {
     @GetMapping("/users/{username}/posts")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsByUsername(@PathVariable(value = "username",required = false) String username,
-                                               @RequestParam(name = "page", required = false) Integer page,
-                                               HttpServletResponse response) throws PostCredentialsException, UserCredentialsException {
+                                               @RequestParam(name = "page", required = false) Integer page) throws PostCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNull(username) || ValidationUtil.isNull(page)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -256,8 +263,12 @@ public class PostController {
 
         userService.isUserExistWithGivenUsername(username);
         List<Post> posts = postService.findPostsByUsername(username, offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "posts of specific employee", posts);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("posts of specific employee")
+                .withData(posts)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @PutMapping("/posts/{postId}")
@@ -338,8 +349,7 @@ public class PostController {
     @GetMapping("/posts/keyword")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsByKeyword(@RequestParam(value = "page", required = false) Integer page,
-                                              @RequestParam(value = "keyword", required = false) String keyword,
-                                              HttpServletResponse response) throws PostCredentialsException {
+                                              @RequestParam(value = "keyword", required = false) String keyword) throws PostCredentialsException {
         if (ValidationUtil.isNull(page) || ValidationUtil.isNullOrEmpty(keyword)) {
             throw new PostCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -360,22 +370,34 @@ public class PostController {
         }
 
         List<Post> posts = postService.findPostsByKeyword(keyword.trim(), offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "posts by keyword", posts);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("posts by keyword")
+                .withData(posts)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/posts/random")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsRandomly() {
         List<Post> posts = postService.findPostsRandomly();
-        return GenericResponse.withSuccess(HttpStatus.OK, "random posts", posts);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("random posts")
+                .withData(posts)
+                .build();
     }
 
     @GetMapping("/posts/top-three")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findPostsByLastAddedTime() {
         List<Post> posts = postService.findTopPostsByLastAddedTime();
-        return GenericResponse.withSuccess(HttpStatus.OK, "last added posts", posts);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("last added posts")
+                .withData(posts)
+                .build();
     }
 
     @GetMapping("/posts/count")
@@ -384,7 +406,11 @@ public class PostController {
         int count = postService.findCountOfAllPosts();
         PostDTO dto = new PostDTO();
         dto.setTotalCount(count);
-        return GenericResponse.withSuccess(HttpStatus.OK, "count of all posts", dto);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("count of all posts")
+                .withData(dto)
+                .build();
     }
 
     @PutMapping("/posts/{postId}/view-count")
@@ -414,7 +440,11 @@ public class PostController {
         user.setUsername(principal.getName());
 
         RespondDTO dto = postService.findRespondOfPost(user.getUsername(), id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific post", dto);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("respond of specific post")
+                .withData(dto)
+                .build();
     }
 
 }

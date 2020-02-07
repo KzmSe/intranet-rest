@@ -2,6 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.entity.Position;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.service.interfaces.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,11 @@ public class PositionController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllPositions() {
         List<Position> positions = positionService.findAllPositions();
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of all positions", positions);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of all positions")
+                .withData(positions)
+                .build();
     }
 
 }

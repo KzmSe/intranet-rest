@@ -2,8 +2,8 @@ package az.gov.adra.controller;
 
 import az.gov.adra.entity.News;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.service.interfaces.NewsService;
-import az.gov.adra.util.ResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +22,11 @@ public class NewsController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllNews() {
         List<News> newsList = newsService.findNewsByLastAddedTime();
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of news", newsList);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of news")
+                .withData(newsList)
+                .build();
     }
 
 }

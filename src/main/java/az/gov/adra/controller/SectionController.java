@@ -1,9 +1,9 @@
 package az.gov.adra.controller;
 
 import az.gov.adra.constant.MessageConstants;
-import az.gov.adra.entity.Department;
 import az.gov.adra.entity.Section;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.DepartmentCredentialsException;
 import az.gov.adra.exception.SectionCredentialsException;
 import az.gov.adra.service.interfaces.DepartmentService;
@@ -31,7 +31,11 @@ public class SectionController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllSections() {
         List<Section> sections = sectionService.findAllSections();
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of all sections", sections);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of all sections")
+                .withData(sections)
+                .build();
     }
 
     @GetMapping("/departments/{departmentId}/sections")
@@ -44,7 +48,11 @@ public class SectionController {
         departmentService.isDepartmentExistWithGivenId(id);
 
         List<Section> sections = sectionService.findSectionsByDepartmentId(id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of specific sections of department", sections);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of specific sections of department")
+                .withData(sections)
+                .build();
     }
 
 }

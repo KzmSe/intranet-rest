@@ -2,6 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.entity.Department;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.service.interfaces.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,11 @@ public class DepartmentController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllDepartments() {
         List<Department> departments = departmentService.findAllDepartments();
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of all departments", departments);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of all departments")
+                .withData(departments)
+                .build();
     }
 
 }

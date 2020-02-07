@@ -6,6 +6,7 @@ import az.gov.adra.dataTransferObjects.IdeaDTO;
 import az.gov.adra.entity.Idea;
 import az.gov.adra.entity.User;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.IdeaCredentialsException;
 import az.gov.adra.service.interfaces.IdeaService;
 import az.gov.adra.util.ValidationUtil;
@@ -16,13 +17,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -117,7 +116,11 @@ public class IdeaController {
         int count = ideaService.findCountOfAllIdeas();
         IdeaDTO dto = new IdeaDTO();
         dto.setTotalCount(count);
-        return GenericResponse.withSuccess(HttpStatus.OK, "count of all ideas and complaints", dto);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("count of all ideas and complaints")
+                .withData(dto)
+                .build();
     }
 
 }

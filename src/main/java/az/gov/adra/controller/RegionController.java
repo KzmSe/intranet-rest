@@ -2,6 +2,7 @@ package az.gov.adra.controller;
 
 import az.gov.adra.entity.Region;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.service.interfaces.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,11 @@ public class RegionController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findAllRegions() {
         List<Region> regions = regionService.findAllRegions();
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of all regions", regions);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of all regions")
+                .withData(regions)
+                .build();
     }
 
 }

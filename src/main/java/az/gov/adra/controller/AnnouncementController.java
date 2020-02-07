@@ -3,6 +3,7 @@ package az.gov.adra.controller;
 import az.gov.adra.constant.MessageConstants;
 import az.gov.adra.entity.Announcement;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.AnnouncementCredentialsException;
 import az.gov.adra.service.interfaces.AnnouncementService;
 import az.gov.adra.util.ValidationUtil;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -25,8 +25,7 @@ public class AnnouncementController {
 
     @GetMapping("/announcements")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
-    public GenericResponse findAllAnnouncements(@RequestParam(name = "page", required = false) Integer page,
-                                                HttpServletResponse response) throws AnnouncementCredentialsException {
+    public GenericResponse findAllAnnouncements(@RequestParam(name = "page", required = false) Integer page) throws AnnouncementCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new AnnouncementCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -47,8 +46,12 @@ public class AnnouncementController {
         }
 
         List<Announcement> allAnnouncements = announcementService.findAllAnnouncements(offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of announcements", allAnnouncements);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of announcements")
+                .withData(allAnnouncements)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/announcements/{announcementId}")
@@ -60,14 +63,22 @@ public class AnnouncementController {
 
         announcementService.isAnnouncementExistWithGivenId(id);
         Announcement announcement = announcementService.findAnnouncementByAnnouncementId(id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "specific announcement by id", announcement);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("specific announcement by id")
+                .withData(announcement)
+                .build();
     }
 
     @GetMapping("/announcements/top-three")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findTopThreeAnnouncements() {
         List<Announcement> announcements = announcementService.findTopThreeAnnouncementsByLastAddedTime();
-        return GenericResponse.withSuccess(HttpStatus.OK, "top three announcements by last added time", announcements);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("top three announcements by last added time")
+                .withData(announcements)
+                .build();
     }
 
 }

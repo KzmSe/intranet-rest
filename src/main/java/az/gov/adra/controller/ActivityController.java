@@ -7,6 +7,7 @@ import az.gov.adra.dataTransferObjects.ActivityReviewDTOForAddReview;
 import az.gov.adra.dataTransferObjects.RespondDTO;
 import az.gov.adra.entity.*;
 import az.gov.adra.entity.response.GenericResponse;
+import az.gov.adra.entity.response.GenericResponseBuilder;
 import az.gov.adra.exception.ActivityCredentialsException;
 import az.gov.adra.exception.UserCredentialsException;
 import az.gov.adra.service.interfaces.ActivityService;
@@ -19,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,8 +46,7 @@ public class ActivityController {
 
     @GetMapping("/activities")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
-    public GenericResponse findActivities(@RequestParam(name = "page", required = false) Integer page,
-                                          HttpServletResponse response) throws ActivityCredentialsException {
+    public GenericResponse findActivities(@RequestParam(name = "page", required = false) Integer page) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(page)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -68,8 +67,12 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findAllActivities(offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "list of activities", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("list of activities")
+                .withData(activities)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/activities/{activityId}")
@@ -81,7 +84,11 @@ public class ActivityController {
 
         activityService.isActivityExistWithGivenId(id);
         ActivityDTO activityDTO = activityService.findActivityByActivityId(id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "specific activity by id", activityDTO);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("specific activity by id")
+                .withData(activityDTO)
+                .build();
     }
 
     @GetMapping("/activities/{activityId}/reviews")
@@ -94,7 +101,11 @@ public class ActivityController {
 
         activityService.isActivityExistWithGivenId(id);
         List<ActivityReview> reviews = activityService.findReviewsByActivityId(id, fetchNext);
-        return GenericResponse.withSuccess(HttpStatus.OK, "reviews of specific activity", reviews);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("reviews of specific activity")
+                .withData(reviews)
+                .build();
     }
 
     @PostMapping("/activities/{activityId}/reviews")
@@ -235,7 +246,11 @@ public class ActivityController {
         activityService.isActivityExistWithGivenId(id);
 
         List<ActivityRespond> responds = activityService.findActivityRespondsByRespond(id, respond, fetchNext);
-        return GenericResponse.withSuccess(HttpStatus.OK, "responds of specific activity", responds);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("responds of specific activity")
+                .withData(responds)
+                .build();
     }
 
     @PutMapping("/activities/{activityId}/responds")
@@ -273,8 +288,7 @@ public class ActivityController {
     @GetMapping("/users/{username}/activities")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesByUsername(@PathVariable(value = "username", required = false) String username,
-                                                    @RequestParam(name = "page", required = false) Integer page,
-                                                    HttpServletResponse response) throws ActivityCredentialsException, UserCredentialsException {
+                                                    @RequestParam(name = "page", required = false) Integer page) throws ActivityCredentialsException, UserCredentialsException {
         if (ValidationUtil.isNullOrEmpty(username) || ValidationUtil.isNull(page)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -297,8 +311,12 @@ public class ActivityController {
 
         userService.isUserExistWithGivenUsername(username);
         List<ActivityDTO> activities = activityService.findActivitiesByUsername(username, offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "activities of specific employee", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("activities of specific employee")
+                .withData(activities)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/users/{username}/activities/top-three")
@@ -310,7 +328,11 @@ public class ActivityController {
 
         userService.isUserExistWithGivenUsername(username);
         List<ActivityDTO> activities = activityService.findTopThreeActivitiesByUsername(username);
-        return GenericResponse.withSuccess(HttpStatus.OK, "top three activities of specific employee", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("top three activities of specific employee")
+                .withData(activities)
+                .build();
     }
 
     @PutMapping("/activities/{activityId}")
@@ -393,8 +415,7 @@ public class ActivityController {
     @GetMapping("/activities/keyword")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesByKeyword(@RequestParam(value = "page", required = false) Integer page,
-                                                   @RequestParam(value = "keyword", required = false) String keyword,
-                                                   HttpServletResponse response) throws ActivityCredentialsException {
+                                                   @RequestParam(value = "keyword", required = false) String keyword) throws ActivityCredentialsException {
         if (ValidationUtil.isNull(page) || ValidationUtil.isNullOrEmpty(keyword)) {
             throw new ActivityCredentialsException(MessageConstants.ERROR_MESSAGE_ONE_OR_MORE_FIELDS_ARE_EMPTY);
         }
@@ -416,22 +437,34 @@ public class ActivityController {
         }
 
         List<Activity> activities = activityService.findActivitiesByKeyword(keyword.trim(), offset);
-        response.setIntHeader("Total-Pages", totalPages);
-        return GenericResponse.withSuccess(HttpStatus.OK, "activities by keyword", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("activities by keyword")
+                .withData(activities)
+                .withTotalPages(totalPages)
+                .build();
     }
 
     @GetMapping("/activities/random")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesRandomly() {
         List<Activity> activities = activityService.findActivitiesRandomly();
-        return GenericResponse.withSuccess(HttpStatus.OK, "random activities", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("random activities")
+                .withData(activities)
+                .build();
     }
 
     @GetMapping("/activities/top-three")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_HR')")
     public GenericResponse findActivitiesByLastAddedTime() {
         List<ActivityDTO> activities = activityService.findTopActivitiesByLastAddedTime();
-        return GenericResponse.withSuccess(HttpStatus.OK, "last added activities", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("last added activities")
+                .withData(activities)
+                .build();
     }
 
     @GetMapping("/activities/top-three/responds")
@@ -442,7 +475,11 @@ public class ActivityController {
         user.setUsername(principal.getName());
 
         Map<Integer, Integer> activities = activityService.findTopThreeActivitiesByLastAddedTime(user.getUsername());
-        return GenericResponse.withSuccess(HttpStatus.OK, "responds of top three activities by username and last added time", activities);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("responds of top three activities by username and last added time")
+                .withData(activities)
+                .build();
     }
 
     @GetMapping("/activities/count")
@@ -451,7 +488,11 @@ public class ActivityController {
         int count = activityService.findCountOfAllActivities();
         ActivityDTO dto = new ActivityDTO();
         dto.setTotalCount(count);
-        return GenericResponse.withSuccess(HttpStatus.OK, "count of all activities", dto);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("count of all activities")
+                .withData(dto)
+                .build();
     }
 
     @PutMapping("/activities/{activityId}/view-count")
@@ -480,7 +521,11 @@ public class ActivityController {
         user.setUsername(principal.getName());
 
         RespondDTO dto = activityService.findRespondOfActivity(user.getUsername(), id);
-        return GenericResponse.withSuccess(HttpStatus.OK, "respond of specific activity", dto);
+        return new GenericResponseBuilder()
+                .withStatus(HttpStatus.OK.value())
+                .withDescription("respond of specific activity")
+                .withData(dto)
+                .build();
     }
 
 }
