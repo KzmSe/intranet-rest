@@ -27,13 +27,13 @@ public class GalleryController {
         int offset = 0;
 
         if (total != 0) {
-            totalPages = (int) Math.ceil((double) total / 9);
+            totalPages = (int) Math.ceil((double) total / 8);
 
             if (page != null && page >= totalPages) {
-                offset = (totalPages - 1) * 9;
+                offset = (totalPages - 1) * 8;
 
             } else if (page != null && page > 1) {
-                offset = (page - 1) * 9;
+                offset = (page - 1) * 8;
             };
         }
 
