@@ -51,13 +51,13 @@ public class UserController {
         int offset = 0;
 
         if (total != 0) {
-            totalPages = (int) Math.ceil((double) total / 9);
+            totalPages = (int) Math.ceil((double) total / 10);
 
             if (dto.getPage() != null && dto.getPage() >= totalPages) {
-                offset = (totalPages - 1) * 9;
+                offset = (totalPages - 1) * 10;
 
             } else if (dto.getPage() != null && dto.getPage() > 1) {
-                offset = (dto.getPage() - 1) * 9;
+                offset = (dto.getPage() - 1) * 10;
             };
         }
 
